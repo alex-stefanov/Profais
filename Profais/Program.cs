@@ -4,6 +4,7 @@ namespace Profais
     using Microsoft.EntityFrameworkCore;
     using Profais.Data;
     using Profais.Data.Configurations;
+    using Profais.Data.Models;
     using Profais.Data.Repositories;
 
     public class Program
@@ -42,7 +43,7 @@ namespace Profais
 
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-            builder.Services.AddDefaultIdentity<IdentityUser>(options =>
+            builder.Services.AddDefaultIdentity<ProfUser>(options =>
             {
                 //Sign in options
                 options.SignIn.RequireConfirmedAccount = false;
@@ -61,6 +62,7 @@ namespace Profais
             /*
                 Add scoped services with their interfaces
             */
+            builder.Services.AddScoped<IRepository, Repository>();
 
             builder.Services.AddSession(options =>
             {
@@ -84,9 +86,10 @@ namespace Profais
                 }
             }
 
+            /*
             using (var scope = app.Services.CreateScope())
             {
-                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ProfUser>>();
                 var userRepository = scope.ServiceProvider.GetRequiredService<IRepository>();
 
                 if (app.Environment.IsDevelopment())
@@ -98,6 +101,7 @@ namespace Profais
                     await DbSeeder.SeedProductionDataAsync(userRepository, userManager);
                 }
             }
+            */
 
             if (app.Environment.IsDevelopment())
             {
