@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ClassLibrary1\Profais.Common.csproj" />
+    <ProjectReference Include="..\Profais.Common\Profais.Common.csproj" />
   </ItemGroup>
 
 </Project>
