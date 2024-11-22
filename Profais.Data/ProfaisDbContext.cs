@@ -1,5 +1,6 @@
 ﻿namespace Profais.Data
 {
+    using System.Reflection;
     using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore;
     using Profais.Data.Models;
@@ -50,19 +51,8 @@
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Message>()
-                .HasKey(x => new { x.ProjectId, x.ClientId });
-
-            modelBuilder.Entity<ProfUserPenalty>()
-                .HasKey(x => new { x.UserId, x.PenaltyId });
-
-            modelBuilder.Entity<ProfUserTask>()
-                .HasKey(x => new { x.WorkerId, x.TaskId, x.VehicleId });
-
-            modelBuilder.Entity<TaskMaterial>()
-                .HasKey(x => new { x.MaterialId, x.TaskId });   
-
             base.OnModelCreating(modelBuilder);
+            modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         }
     }
 }

@@ -3,9 +3,8 @@ namespace Profais
     using Microsoft.AspNetCore.Identity;
     using Microsoft.EntityFrameworkCore;
     using Profais.Data;
-    using Profais.Data.Configurations;
     using Profais.Data.Models;
-    using Profais.Data.Repositories;
+    using Profais.Extensions;
 
     public class Program
     {
@@ -13,101 +12,52 @@ namespace Profais
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            var environment = builder.Environment.EnvironmentName;
-
-            var connectionString = string.Empty;
-
-            if (environment == "Development")
-            {
-                builder.Configuration
-                    .AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true);
-
-                connectionString = builder.Configuration.GetConnectionString("DevConnection");
-            }
-            else
-            {
-                builder.Configuration
-                    .AddJsonFile("appsettings.Production.json", optional: true, reloadOnChange: true);
-
-                connectionString = builder.Configuration.GetConnectionString("ProdConnection");
-            }
+            var environment = builder.Environment;
 
             builder.Configuration
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+                .AddEnvironmentSpecificJsonFiles(environment, out string connectionString);
 
-            builder.Services.AddDbContext<ProfaisDbContext>(options =>
-               options.UseSqlServer(connectionString));
+            builder.Services
+                .AddDbContext<ProfaisDbContext>(options =>
+                {
+                    options.UseSqlServer(connectionString);
+                });
 
-            builder.Services.AddControllersWithViews()
-               .AddRazorRuntimeCompilation();
+            builder.Services
+               .AddIdentity<ProfUser, IdentityRole<Guid>>(cfg =>
+               {
+                   ConfigureIdentity(builder, cfg);
+               })
+               .AddEntityFrameworkStores<ProfaisDbContext>()
+               .AddRoles<IdentityRole<Guid>>()
+               .AddSignInManager<SignInManager<ProfUser>>()
+               .AddUserManager<UserManager<ProfUser>>();
 
-            builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+            builder.Services
+                .RegisterRepositories()
+                .RegisterUserDefinedServices();
 
-            builder.Services.AddDefaultIdentity<ProfUser>(options =>
+            builder.Services
+                .AddControllersWithViews();
+
+            builder.Services
+                .AddRazorPages()
+                .AddRazorRuntimeCompilation();
+
+            builder.Services.ConfigureApplicationCookie(cfg =>
             {
-                //Sign in options
-                options.SignIn.RequireConfirmedAccount = false;
-            })
-           .AddRoles<IdentityRole>()
-           .AddEntityFrameworkStores<ProfaisDbContext>();
-
-            /*
-            builder.Services.ConfigureApplicationCookie(options =>
-            {
-                options.LoginPath = "/User/Login";
-                options.LogoutPath = "/User/Logout";
+                cfg.LoginPath = "/User/Login";
+                cfg.LogoutPath = "/User/Logout";
             });
-            */
 
-            /*
-                Add scoped services with their interfaces
-            */
-            builder.Services.AddScoped<IRepository, Repository>();
-
-            builder.Services.AddSession(options =>
+            builder.Services.AddSession(cfg =>
             {
-                options.IdleTimeout = TimeSpan.FromMinutes(30);
+                cfg.IdleTimeout = TimeSpan.FromMinutes(30);
             });
 
             var app = builder.Build();
 
-            using (var scope = app.Services.CreateScope())
-            {
-                var services = scope.ServiceProvider;
-                try
-                {
-                    var context = services.GetRequiredService<ProfaisDbContext>();
-                    context.Database.Migrate();
-                }
-                catch (Exception ex)
-                {
-                    var logger = services.GetRequiredService<ILogger<Program>>();
-                    logger.LogError(ex, "An error occurred while creating the database.");
-                }
-            }
-
-            /*
-            using (var scope = app.Services.CreateScope())
-            {
-                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ProfUser>>();
-                var userRepository = scope.ServiceProvider.GetRequiredService<IRepository>();
-
-                if (app.Environment.IsDevelopment())
-                {
-                    await DbSeeder.SeedDevelopmentDataAsync(userRepository, userManager);
-                }
-                else
-                {
-                    await DbSeeder.SeedProductionDataAsync(userRepository, userManager);
-                }
-            }
-            */
-
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseMigrationsEndPoint();
-            }
-            else
+            if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
@@ -121,8 +71,6 @@ namespace Profais
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseSession();
-
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
@@ -130,6 +78,32 @@ namespace Profais
             app.MapRazorPages();
 
             app.Run();
+        }
+
+        private static void ConfigureIdentity(WebApplicationBuilder builder, IdentityOptions cfg)
+        {
+            cfg.Password.RequireDigit =
+                builder.Configuration.GetValue<bool>("Identity:Password:RequireDigits");
+            cfg.Password.RequireLowercase =
+                builder.Configuration.GetValue<bool>("Identity:Password:RequireLowercase");
+            cfg.Password.RequireUppercase =
+                builder.Configuration.GetValue<bool>("Identity:Password:RequireUppercase");
+            cfg.Password.RequireNonAlphanumeric =
+                builder.Configuration.GetValue<bool>("Identity:Password:RequireNonAlphanumerical");
+            cfg.Password.RequiredLength =
+                builder.Configuration.GetValue<int>("Identity:Password:RequiredLength");
+            cfg.Password.RequiredUniqueChars =
+                builder.Configuration.GetValue<int>("Identity:Password:RequiredUniqueCharacters");
+
+            cfg.SignIn.RequireConfirmedAccount =
+                builder.Configuration.GetValue<bool>("Identity:SignIn:RequireConfirmedAccount");
+            cfg.SignIn.RequireConfirmedEmail =
+                builder.Configuration.GetValue<bool>("Identity:SignIn:RequireConfirmedEmail");
+            cfg.SignIn.RequireConfirmedPhoneNumber =
+                builder.Configuration.GetValue<bool>("Identity:SignIn:RequireConfirmedPhoneNumber");
+
+            cfg.User.RequireUniqueEmail =
+                builder.Configuration.GetValue<bool>("Identity:User:RequireUniqueEmail");
         }
     }
 }
