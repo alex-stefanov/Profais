@@ -39,4 +39,9 @@ public static class UserConstants
     /// The name of the admin role.
     /// </summary>
     public const string AdminRoleName = "Admin";
+
+    /// <summary>
+    /// The name of the manager role.
+    /// </summary>
+    public const string ManagerRoleName = "Manager";
 }

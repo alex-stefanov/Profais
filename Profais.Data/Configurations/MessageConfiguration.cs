@@ -12,8 +12,8 @@ public class MessageConfiguration
         builder
             .HasKey(x => new { x.ProjectId, x.ClientId });
 
-        builder
-            .HasData(this.CreateMessages());
+        //builder
+        //    .HasData(this.CreateMessages());
     }
 
     private IEnumerable<Message> CreateMessages()

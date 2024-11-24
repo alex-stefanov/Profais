@@ -12,8 +12,8 @@ public class UserTaskConfiguration
         builder
             .HasKey(x => new { x.WorkerId, x.TaskId, x.VehicleId });
 
-        builder
-            .HasData(this.CreateUserTasks());
+        //builder
+        //    .HasData(this.CreateUserTasks());
     }
 
     private IEnumerable<ProfUserTask> CreateUserTasks()

@@ -9,8 +9,8 @@ internal class SpecialistRequestConfiguration
 {
     public void Configure(EntityTypeBuilder<ProfSpecialistRequest> builder)
     {
-        builder
-            .HasData(this.CreateSpecialistRequests());
+        //builder
+        //    .HasData(this.CreateSpecialistRequests());
     }
 
     private IEnumerable<ProfSpecialistRequest> CreateSpecialistRequests()

@@ -9,8 +9,8 @@ public class WorkerRequestConfiguration
 {
     public void Configure(EntityTypeBuilder<ProfWorkerRequest> builder)
     {
-        builder
-            .HasData(this.CreateWorkerRequests());
+        //builder
+        //    .HasData(this.CreateWorkerRequests());
     }
 
     private IEnumerable<ProfWorkerRequest> CreateWorkerRequests()

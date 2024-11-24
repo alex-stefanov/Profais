@@ -9,8 +9,8 @@ public class ProjectRequestConfiguration
 {
     public void Configure(EntityTypeBuilder<ProfProjectRequest> builder)
     {
-        builder
-            .HasData(this.CreateProjectRequests());
+        //builder
+        //    .HasData(this.CreateProjectRequests());
     }
 
     private IEnumerable<ProfProjectRequest> CreateProjectRequests()

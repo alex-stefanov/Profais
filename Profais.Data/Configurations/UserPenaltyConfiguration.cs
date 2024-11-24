@@ -12,8 +12,8 @@ public class UserPenaltyConfiguration
         builder
             .HasKey(x => new { x.UserId, x.PenaltyId });
 
-        builder
-            .HasData(this.CreateUserPenalties());
+        //builder
+        //    .HasData(this.CreateUserPenalties());
     }
 
     private IEnumerable<ProfUserPenalty> CreateUserPenalties()

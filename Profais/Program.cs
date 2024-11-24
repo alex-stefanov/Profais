@@ -18,6 +18,13 @@ public class Program
         string adminLastName = builder.Configuration.GetValue<string>("Administrator:LastName")!;
         string adminPassword = builder.Configuration.GetValue<string>("Administrator:Password")!;
 
+        string[] managerEmails = builder.Configuration.GetSection("Managers:Emails").Get<string[]>()!;
+        string[] managerUsernames = builder.Configuration.GetSection("Managers:Usernames").Get<string[]>()!;
+        string[] managerFirstNames = builder.Configuration.GetSection("Managers:FirstNames").Get<string[]>()!;
+        string[] managerLastNames = builder.Configuration.GetSection("Managers:LastNames").Get<string[]>()!;
+        string[] managerPasswords = builder.Configuration.GetSection("Managers:Passwords").Get<string[]>()!;
+
+
         var environment = builder.Environment;
 
         builder.Configuration
@@ -77,8 +84,19 @@ public class Program
         app.UseAuthentication();
         app.UseAuthorization();
 
-        await app.SeedAdministratorAsync(adminEmail, adminUsername, adminFirstName,
-            adminLastName, adminPassword);
+        await app.SeedAdministratorAsync(
+            email: adminEmail,
+            username: adminUsername,
+            firstName: adminFirstName,
+            lastName: adminLastName,
+            password: adminPassword);
+
+        await app.SeedManagersAsync(
+            emails: managerEmails,
+            usernames: managerUsernames,
+            firstNames: managerFirstNames,
+            lastNames: managerLastNames,
+            passwords: managerPasswords);
 
         app.MapControllerRoute(
                 name: "Areas",
