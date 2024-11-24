@@ -8,7 +8,7 @@ public static class TaskConstants
     /// <summary>
     /// The maximum allowed length for a task title.
     /// </summary>
-    public const int TitleMaxLength = 35;
+    public const int TitleMaxLength = 65;
 
     /// <summary>
     /// The minimum required length for a task title.

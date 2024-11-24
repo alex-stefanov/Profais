@@ -8,7 +8,7 @@ public static class ProjectConstants
     /// <summary>
     /// The maximum allowed length for a project title.
     /// </summary>
-    public const int TitleMaxLength = 30;
+    public const int TitleMaxLength = 60;
 
     /// <summary>
     /// The minimum required length for a project title.

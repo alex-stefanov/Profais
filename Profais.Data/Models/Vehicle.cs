@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Profais.Common.Enums;
+using static Profais.Common.Constants.VehicleConstants;
 
 namespace Profais.Data.Models;
 
@@ -13,6 +14,13 @@ public class Vehicle
     /// </summary>
     [Key]
     public int Id { get; set; }
+
+    /// <summary>
+    /// Gets or sets the name of the vehicle.
+    /// </summary>
+    [Required]
+    [MaxLength(NameMaxLenght)]
+    public string Name { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the capacity of the vehicle.

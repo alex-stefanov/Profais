@@ -32,14 +32,13 @@ public class ProfProject
     /// <summary>
     /// Gets or sets the ID of the associated project request.
     /// </summary>
-    [Required]
-    public int ProfProjectRequestId { get; set; }
+    public int? ProfProjectRequestId { get; set; }
 
     /// <summary>
     /// Navigation property for the associated project request.
     /// </summary>
     [ForeignKey(nameof(ProfProjectRequestId))]
-    public virtual ProfProjectRequest ProfProjectRequest { get; set; } = null!;
+    public virtual ProfProjectRequest? ProfProjectRequest { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether the project is completed.
