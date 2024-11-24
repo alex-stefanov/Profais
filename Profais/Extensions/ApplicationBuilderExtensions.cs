@@ -60,7 +60,7 @@ public static class ApplicationBuilderExtensions
             && usernames.Length == firstNames.Length
             && firstNames.Length == lastNames.Length
             && lastNames.Length == passwords.Length))
-        throw new ArgumentException("The manager information arrays must have the same length.");
+            throw new ArgumentException("The manager information arrays must have the same length.");
 
         using IServiceScope serviceScope = app.ApplicationServices.CreateAsyncScope();
         IServiceProvider serviceProvider = serviceScope.ServiceProvider;
@@ -79,6 +79,80 @@ public static class ApplicationBuilderExtensions
         for (int i = 0; i <= emails.Length - 1; i++)
         {
             await EnsureUserExist(roleManager!, userStore!, userManager!, ManagerRoleName, emails[i],
+                usernames[i], firstNames[i], lastNames[i], passwords[i]);
+        }
+
+        return app;
+    }
+
+    public async static Task<IApplicationBuilder> SeedWorkersAsync(
+        this IApplicationBuilder app,
+        string[] emails,
+        string[] usernames,
+        string[] firstNames,
+        string[] lastNames,
+        string[] passwords)
+    {
+        if (!(emails.Length == usernames.Length
+            && usernames.Length == firstNames.Length
+            && firstNames.Length == lastNames.Length
+            && lastNames.Length == passwords.Length))
+            throw new ArgumentException("The worker information arrays must have the same length.");
+
+        using IServiceScope serviceScope = app.ApplicationServices.CreateAsyncScope();
+        IServiceProvider serviceProvider = serviceScope.ServiceProvider;
+
+        RoleManager<IdentityRole<string>>? roleManager = serviceProvider
+            .GetService<RoleManager<IdentityRole<string>>>();
+
+        IUserStore<ProfUser>? userStore = serviceProvider
+            .GetService<IUserStore<ProfUser>>();
+
+        UserManager<ProfUser>? userManager = serviceProvider
+            .GetService<UserManager<ProfUser>>();
+
+        IdentityRole<string> workerRole = await EnsureRoleExist(roleManager, userStore, userManager, WorkerRoleName);
+
+        for (int i = 0; i <= emails.Length - 1; i++)
+        {
+            await EnsureUserExist(roleManager!, userStore!, userManager!, WorkerRoleName, emails[i],
+                usernames[i], firstNames[i], lastNames[i], passwords[i]);
+        }
+
+        return app;
+    }
+
+    public async static Task<IApplicationBuilder> SeedSpecialistsAsync(
+        this IApplicationBuilder app,
+        string[] emails,
+        string[] usernames,
+        string[] firstNames,
+        string[] lastNames,
+        string[] passwords)
+    {
+        if (!(emails.Length == usernames.Length
+            && usernames.Length == firstNames.Length
+            && firstNames.Length == lastNames.Length
+            && lastNames.Length == passwords.Length))
+            throw new ArgumentException("The specialist information arrays must have the same length.");
+
+        using IServiceScope serviceScope = app.ApplicationServices.CreateAsyncScope();
+        IServiceProvider serviceProvider = serviceScope.ServiceProvider;
+
+        RoleManager<IdentityRole<string>>? roleManager = serviceProvider
+            .GetService<RoleManager<IdentityRole<string>>>();
+
+        IUserStore<ProfUser>? userStore = serviceProvider
+            .GetService<IUserStore<ProfUser>>();
+
+        UserManager<ProfUser>? userManager = serviceProvider
+            .GetService<UserManager<ProfUser>>();
+
+        IdentityRole<string> specialistRole = await EnsureRoleExist(roleManager, userStore, userManager, SpecialistRoleName);
+
+        for (int i = 0; i <= emails.Length - 1; i++)
+        {
+            await EnsureUserExist(roleManager!, userStore!, userManager!, SpecialistRoleName, emails[i],
                 usernames[i], firstNames[i], lastNames[i], passwords[i]);
         }
 

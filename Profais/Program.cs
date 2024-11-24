@@ -24,6 +24,17 @@ public class Program
         string[] managerLastNames = builder.Configuration.GetSection("Managers:LastNames").Get<string[]>()!;
         string[] managerPasswords = builder.Configuration.GetSection("Managers:Passwords").Get<string[]>()!;
 
+        string[] workerEmails = builder.Configuration.GetSection("Workers:Emails").Get<string[]>()!;
+        string[] workerUsernames = builder.Configuration.GetSection("Workers:Usernames").Get<string[]>()!;
+        string[] workerFirstNames = builder.Configuration.GetSection("Workers:FirstNames").Get<string[]>()!;
+        string[] workerLastNames = builder.Configuration.GetSection("Workers:LastNames").Get<string[]>()!;
+        string[] workerPasswords = builder.Configuration.GetSection("Workers:Passwords").Get<string[]>()!;
+
+        string[] specialistEmails = builder.Configuration.GetSection("Specialists:Emails").Get<string[]>()!;
+        string[] specialistUsernames = builder.Configuration.GetSection("Specialists:Usernames").Get<string[]>()!;
+        string[] specialistFirstNames = builder.Configuration.GetSection("Specialists:FirstNames").Get<string[]>()!;
+        string[] specialistLastNames = builder.Configuration.GetSection("Specialists:LastNames").Get<string[]>()!;
+        string[] specialistPasswords = builder.Configuration.GetSection("Specialists:Passwords").Get<string[]>()!;
 
         var environment = builder.Environment;
 
@@ -97,6 +108,13 @@ public class Program
             firstNames: managerFirstNames,
             lastNames: managerLastNames,
             passwords: managerPasswords);
+
+        await app.SeedWorkersAsync(
+            emails: workerEmails,
+            usernames: workerUsernames,
+            firstNames: workerFirstNames,
+            lastNames: workerLastNames,
+            passwords: workerPasswords);
 
         app.MapControllerRoute(
                 name: "Areas",

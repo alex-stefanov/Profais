@@ -44,4 +44,14 @@ public static class UserConstants
     /// The name of the manager role.
     /// </summary>
     public const string ManagerRoleName = "Manager";
+
+    /// <summary>
+    /// The name of the worker role.
+    /// </summary>
+    public const string WorkerRoleName = "Worker";
+
+    /// <summary>
+    /// The name of the specialist role.
+    /// </summary>
+    public const string SpecialistRoleName = "Specialist";
 }
