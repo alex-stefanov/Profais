@@ -8,9 +8,15 @@ namespace Profais;
 
 public class Program
 {
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+
+        string adminEmail = builder.Configuration.GetValue<string>("Administrator:Email")!;
+        string adminUsername = builder.Configuration.GetValue<string>("Administrator:Username")!;
+        string adminFirstName = builder.Configuration.GetValue<string>("Administrator:FirstName")!;
+        string adminLastName = builder.Configuration.GetValue<string>("Administrator:LastName")!;
+        string adminPassword = builder.Configuration.GetValue<string>("Administrator:Password")!;
 
         var environment = builder.Environment;
 
@@ -70,6 +76,13 @@ public class Program
 
         app.UseAuthentication();
         app.UseAuthorization();
+
+        await app.SeedAdministratorAsync(adminEmail, adminUsername, adminFirstName,
+            adminLastName, adminPassword);
+
+        app.MapControllerRoute(
+                name: "Areas",
+                pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 
         app.MapControllerRoute(
             name: "default",

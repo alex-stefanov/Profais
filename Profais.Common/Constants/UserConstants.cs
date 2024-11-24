@@ -34,4 +34,9 @@ public static class UserConstants
     /// The minimum required length for a user's password.
     /// </summary>
     public const int PasswordMinLength = 8;
+
+    /// <summary>
+    /// The name of the admin role.
+    /// </summary>
+    public const string AdminRoleName = "Admin";
 }

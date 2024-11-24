@@ -8,6 +8,7 @@ using Profais.Data.Models;
 namespace Profais.Areas.Identity.Pages.Account
 {
     public class LoginModel(
+        UserManager<ProfUser> userManager,
         SignInManager<ProfUser> signInManager,
         ILogger<LoginModel> logger)
         : PageModel
@@ -31,6 +32,8 @@ namespace Profais.Areas.Identity.Pages.Account
             [Required]
             [DataType(DataType.Password)]
             public string Password { get; set; } = null!;
+
+            public bool RememberMe { get; set; } = false;
         }
 
         public async Task OnGetAsync(string? returnUrl = null)
@@ -44,8 +47,6 @@ namespace Profais.Areas.Identity.Pages.Account
 
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
-            ExternalLogins = (await signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-
             ReturnUrl = returnUrl;
         }
 
@@ -53,18 +54,36 @@ namespace Profais.Areas.Identity.Pages.Account
         {
             returnUrl ??= Url.Content("~/");
 
-            ExternalLogins = (await signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-
             if (ModelState.IsValid)
             {
-                var result = await signInManager.PasswordSignInAsync(Input.Email, Input.Password, false, lockoutOnFailure: false);
+                var user = await userManager.FindByEmailAsync(Input.Email);
+
+                if (user is null)
+                {
+                    ModelState.AddModelError(string.Empty, "Invalid username!");
+                    return Page();
+                }
+
+                var result = await signInManager.PasswordSignInAsync(user.UserName!, Input.Password, Input.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
                     logger.LogInformation("User logged in.");
                     return LocalRedirect(returnUrl);
                 }
-
-                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                if (result.RequiresTwoFactor)
+                {
+                    return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input.RememberMe });
+                }
+                if (result.IsLockedOut)
+                {
+                    logger.LogWarning("User account locked out.");
+                    return RedirectToPage("./Lockout");
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    return Page();
+                }
             }
 
             return Page();

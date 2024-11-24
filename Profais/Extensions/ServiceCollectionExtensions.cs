@@ -1,5 +1,7 @@
 ﻿using Profais.Data.Models;
 using Profais.Data.Repositories;
+using Profais.Services.Implementations;
+using Profais.Services.Interfaces;
 
 namespace Profais.Extensions;
 
@@ -26,7 +28,7 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection RegisterUserDefinedServices(this IServiceCollection services)
     {
-        //Add Services
+        services.AddScoped<IUserService, UserService>();
 
         return services;
     }
