@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Profais.Data;
 using Profais.Data.Models;
-using static Profais.Common.Constants.UserConstants;
 
 namespace Profais.Extensions;
 

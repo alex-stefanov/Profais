@@ -7,7 +7,8 @@ namespace Profais.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection RegisterRepositories(this IServiceCollection services)
+    public static IServiceCollection RegisterRepositories(
+        this IServiceCollection services)
     {
         services.AddScoped<IRepository<Material, int>, ProfRepository<Material, int>>();
         services.AddScoped<IRepository<Message, object>, ProfRepository<Message, object>>();
@@ -26,7 +27,8 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    public static IServiceCollection RegisterUserDefinedServices(this IServiceCollection services)
+    public static IServiceCollection RegisterUserDefinedServices(
+        this IServiceCollection services)
     {
         services.AddScoped<IUserService, UserService>();
 
