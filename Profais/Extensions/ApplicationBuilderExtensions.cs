@@ -8,7 +8,8 @@ namespace Profais.Extensions;
 
 public static class ApplicationBuilderExtensions
 {
-    public static IApplicationBuilder ApplyMigrations(this IApplicationBuilder app)
+    public static IApplicationBuilder ApplyMigrations(
+        this IApplicationBuilder app)
     {
         using IServiceScope serviceScope = app.ApplicationServices.CreateScope();
 
@@ -20,13 +21,14 @@ public static class ApplicationBuilderExtensions
         return app;
     }
 
-    public async static Task<IApplicationBuilder> SeedAdministratorAsync(
+    public async static Task<IApplicationBuilder> SeedSignleUserAsync(
         this IApplicationBuilder app,
         string email,
         string username,
         string firstName,
         string lastName,
-        string password)
+        string password,
+        string roleName)
     {
         using IServiceScope serviceScope = app.ApplicationServices.CreateAsyncScope();
         IServiceProvider serviceProvider = serviceScope.ServiceProvider;
@@ -40,27 +42,28 @@ public static class ApplicationBuilderExtensions
         UserManager<ProfUser>? userManager = serviceProvider
             .GetService<UserManager<ProfUser>>();
 
-        IdentityRole<string> adminRole = await EnsureRoleExist(roleManager, userStore, userManager, AdminRoleName);
+        IdentityRole<string> role = await EnsureRoleExist(roleManager, userStore, userManager, roleName);
 
-        await EnsureUserExist(roleManager!, userStore!, userManager!, AdminRoleName, email,
+        await EnsureUserExist(roleManager!, userStore!, userManager!, roleName, email,
                  username, firstName, lastName, password);
 
         return app;
     }
 
-    public async static Task<IApplicationBuilder> SeedManagersAsync(
+    public async static Task<IApplicationBuilder> SeedMultipleUsersAsync(
         this IApplicationBuilder app,
         string[] emails,
         string[] usernames,
         string[] firstNames,
         string[] lastNames,
-        string[] passwords)
+        string[] passwords,
+        string roleName)
     {
         if (!(emails.Length == usernames.Length
             && usernames.Length == firstNames.Length
             && firstNames.Length == lastNames.Length
             && lastNames.Length == passwords.Length))
-            throw new ArgumentException("The manager information arrays must have the same length.");
+            throw new ArgumentException("The {0} information arrays must have the same length.", roleName);
 
         using IServiceScope serviceScope = app.ApplicationServices.CreateAsyncScope();
         IServiceProvider serviceProvider = serviceScope.ServiceProvider;
@@ -74,85 +77,11 @@ public static class ApplicationBuilderExtensions
         UserManager<ProfUser>? userManager = serviceProvider
             .GetService<UserManager<ProfUser>>();
 
-        IdentityRole<string> managerRole = await EnsureRoleExist(roleManager, userStore, userManager, ManagerRoleName);
+        IdentityRole<string> role = await EnsureRoleExist(roleManager, userStore, userManager, roleName);
 
         for (int i = 0; i <= emails.Length - 1; i++)
         {
-            await EnsureUserExist(roleManager!, userStore!, userManager!, ManagerRoleName, emails[i],
-                usernames[i], firstNames[i], lastNames[i], passwords[i]);
-        }
-
-        return app;
-    }
-
-    public async static Task<IApplicationBuilder> SeedWorkersAsync(
-        this IApplicationBuilder app,
-        string[] emails,
-        string[] usernames,
-        string[] firstNames,
-        string[] lastNames,
-        string[] passwords)
-    {
-        if (!(emails.Length == usernames.Length
-            && usernames.Length == firstNames.Length
-            && firstNames.Length == lastNames.Length
-            && lastNames.Length == passwords.Length))
-            throw new ArgumentException("The worker information arrays must have the same length.");
-
-        using IServiceScope serviceScope = app.ApplicationServices.CreateAsyncScope();
-        IServiceProvider serviceProvider = serviceScope.ServiceProvider;
-
-        RoleManager<IdentityRole<string>>? roleManager = serviceProvider
-            .GetService<RoleManager<IdentityRole<string>>>();
-
-        IUserStore<ProfUser>? userStore = serviceProvider
-            .GetService<IUserStore<ProfUser>>();
-
-        UserManager<ProfUser>? userManager = serviceProvider
-            .GetService<UserManager<ProfUser>>();
-
-        IdentityRole<string> workerRole = await EnsureRoleExist(roleManager, userStore, userManager, WorkerRoleName);
-
-        for (int i = 0; i <= emails.Length - 1; i++)
-        {
-            await EnsureUserExist(roleManager!, userStore!, userManager!, WorkerRoleName, emails[i],
-                usernames[i], firstNames[i], lastNames[i], passwords[i]);
-        }
-
-        return app;
-    }
-
-    public async static Task<IApplicationBuilder> SeedSpecialistsAsync(
-        this IApplicationBuilder app,
-        string[] emails,
-        string[] usernames,
-        string[] firstNames,
-        string[] lastNames,
-        string[] passwords)
-    {
-        if (!(emails.Length == usernames.Length
-            && usernames.Length == firstNames.Length
-            && firstNames.Length == lastNames.Length
-            && lastNames.Length == passwords.Length))
-            throw new ArgumentException("The specialist information arrays must have the same length.");
-
-        using IServiceScope serviceScope = app.ApplicationServices.CreateAsyncScope();
-        IServiceProvider serviceProvider = serviceScope.ServiceProvider;
-
-        RoleManager<IdentityRole<string>>? roleManager = serviceProvider
-            .GetService<RoleManager<IdentityRole<string>>>();
-
-        IUserStore<ProfUser>? userStore = serviceProvider
-            .GetService<IUserStore<ProfUser>>();
-
-        UserManager<ProfUser>? userManager = serviceProvider
-            .GetService<UserManager<ProfUser>>();
-
-        IdentityRole<string> specialistRole = await EnsureRoleExist(roleManager, userStore, userManager, SpecialistRoleName);
-
-        for (int i = 0; i <= emails.Length - 1; i++)
-        {
-            await EnsureUserExist(roleManager!, userStore!, userManager!, SpecialistRoleName, emails[i],
+            await EnsureUserExist(roleManager!, userStore!, userManager!, roleName, emails[i],
                 usernames[i], firstNames[i], lastNames[i], passwords[i]);
         }
 

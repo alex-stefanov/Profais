@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Profais.Data;
 using Profais.Data.Models;
 using Profais.Extensions;
+using static Profais.Common.Constants.UserConstants;
 
 namespace Profais;
 
@@ -11,6 +12,8 @@ public class Program
     public static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+
+        #region UsersInfo
 
         string adminEmail = builder.Configuration.GetValue<string>("Administrator:Email")!;
         string adminUsername = builder.Configuration.GetValue<string>("Administrator:Username")!;
@@ -35,6 +38,8 @@ public class Program
         string[] specialistFirstNames = builder.Configuration.GetSection("Specialists:FirstNames").Get<string[]>()!;
         string[] specialistLastNames = builder.Configuration.GetSection("Specialists:LastNames").Get<string[]>()!;
         string[] specialistPasswords = builder.Configuration.GetSection("Specialists:Passwords").Get<string[]>()!;
+
+        #endregion
 
         var environment = builder.Environment;
 
@@ -95,26 +100,41 @@ public class Program
         app.UseAuthentication();
         app.UseAuthorization();
 
-        await app.SeedAdministratorAsync(
+        #region SeedUsers
+
+        await app.SeedSignleUserAsync(
             email: adminEmail,
             username: adminUsername,
             firstName: adminFirstName,
             lastName: adminLastName,
-            password: adminPassword);
+            password: adminPassword,
+            roleName: AdminRoleName);
 
-        await app.SeedManagersAsync(
+        await app.SeedMultipleUsersAsync(
             emails: managerEmails,
             usernames: managerUsernames,
             firstNames: managerFirstNames,
             lastNames: managerLastNames,
-            passwords: managerPasswords);
+            passwords: managerPasswords,
+            roleName: ManagerRoleName);
 
-        await app.SeedWorkersAsync(
+        await app.SeedMultipleUsersAsync(
             emails: workerEmails,
             usernames: workerUsernames,
             firstNames: workerFirstNames,
             lastNames: workerLastNames,
-            passwords: workerPasswords);
+            passwords: workerPasswords,
+            roleName: WorkerRoleName);
+
+        await app.SeedMultipleUsersAsync(
+            emails: specialistEmails,
+            usernames: specialistUsernames,
+            firstNames: specialistFirstNames,
+            lastNames: specialistLastNames,
+            passwords: specialistPasswords,
+            roleName: SpecialistRoleName);
+
+        #endregion
 
         app.MapControllerRoute(
                 name: "Areas",
