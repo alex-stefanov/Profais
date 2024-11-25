@@ -1,0 +1,72 @@
+﻿@model PaginatedMaterialsViewModel
+
+@{
+    var usedForEnumValues = Model.UsedForEnumValues;
+    var materials = Model.Materials;
+    var totalPages = Model.TotalPages;
+    var currentPage = Model.CurrentPage;
+    var taskId = Model.TaskId;
+}
+
+<h2>Select Materials for Task</h2>
+
+<form method="get">
+    <div class="row">
+        <div class="col-md-3">
+            <h4>Filter by Usage Type</h4>
+            @foreach (var usedFor in usedForEnumValues)
+            {
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="@usedFor" name="UsedFor" value="@usedFor"
+                           onchange="this.form.submit()" 
+                           @checked(Request.Query["UsedFor"].ToString().Contains(usedFor.ToString()))>
+                    <label class="form-check-label" for="@usedFor">@usedFor</label>
+                </div>
+            }
+        </div>
+
+        <div class="col-md-9">
+            <h4>Materials</h4>
+            
+            <div class="row">
+                @foreach (var material in materials)
+                {
+                    <div class="col-md-2 mb-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">@material.Name</h5>
+                                <p class="card-text">@material.UsedFor.ToDisplayString()</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="@material.Id"
+                                           id="material-@material.Id" name="SelectedMaterials">
+                                    <label class="form-check-label" for="material-@material.Id">Select</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div class="pagination">
+                @if (currentPage > 1)
+                {
+                    <a class="btn btn-link" href="@Url.Action("AddMaterialsToTask", new { taskId = taskId, page = currentPage - 1 })">Previous</a>
+                }
+                
+                @for (var page = 1; page <= totalPages; page++)
+                {
+                    <a class="btn btn-link" href="@Url.Action("AddMaterialsToTask", new { taskId = taskId, page = page })">
+                        @(page)
+                    </a>
+                }
+
+                @if (currentPage < totalPages)
+                {
+                    <a class="btn btn-link" href="@Url.Action("AddMaterialsToTask", new { taskId = taskId, page = currentPage + 1 })">Next</a>
+                }
+            </div>
+
+            <button type="submit" class="btn btn-primary mt-3">Add Selected Materials</button>
+        </div>
+    </div>
+</form>

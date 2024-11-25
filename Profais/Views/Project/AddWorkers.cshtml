@@ -1,0 +1,35 @@
+﻿@model AddWorkersViewModel
+
+<h2>Add Workers to Task</h2>
+
+<form method="post" action="@Url.Action("AssignWorkersToTask")">
+    <input type="hidden" name="taskId" value="@Model.TaskId" />
+
+    <div class="row">
+        @foreach (var user in Model.Users)
+        {
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">@user.UserFirstName @user.UserLastName</h5>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="selectedWorkers" value="@user.Id" />
+                            <label class="form-check-label" for="selectedWorker-@user.Id">Select</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="pagination">
+        @for (var page = 1; page <= Model.TotalPages; page++)
+        {
+            <a href="@Url.Action("AddWorkers", new { taskId = Model.TaskId, page = page })" class="btn btn-link">
+                @(page)
+            </a>
+        }
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-3">Add Selected Workers</button>
+</form>

@@ -38,7 +38,7 @@
         {
             <tr>
                 <td>
-                    @request.ClientId
+                    @request.UserId
                 </td>
                 <td>
                     @request.FirstName
@@ -55,7 +55,7 @@
                 <td>
                     <form method="post" asp-action="ApproveWorkerRequest">
                         <input type="hidden" name="request.Id" value="@request.Id" />
-                        <input type="hidden" name="request.ClientId" value="@request.ClientId" />
+                        <input type="hidden" name="request.ClientId" value="@request.UserId" />
                         <input type="hidden" name="request.FirstName" value="@request.FirstName" />
                         <input type="hidden" name="request.LastName" value="@request.LastName" />
                         <input type="hidden" name="request.ProfixId" value="@request.ProfixId" />
@@ -67,7 +67,7 @@
 
                     <form method="post" asp-action="DeclineWorkerRequest">
                         <input type="hidden" name="request.Id" value="@request.Id" />
-                        <input type="hidden" name="request.ClientId" value="@request.ClientId" />
+                        <input type="hidden" name="request.ClientId" value="@request.UserId" />
                         <input type="hidden" name="request.FirstName" value="@request.FirstName" />
                         <input type="hidden" name="request.LastName" value="@request.LastName" />
                         <input type="hidden" name="request.ProfixId" value="@request.ProfixId" />
