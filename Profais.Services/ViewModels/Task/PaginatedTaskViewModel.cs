@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Profais.Services.ViewModels;
+using Profais.Services.ViewModels.Task;
 
 public class PaginatedTaskViewModel
 {

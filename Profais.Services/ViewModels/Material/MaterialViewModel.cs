@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using static Profais.Common.Constants.MaterialConstants;
 
-namespace Profais.Services.ViewModels;
+namespace Profais.Services.ViewModels.Material;
 
 public class MaterialViewModel
 {

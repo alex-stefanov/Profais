@@ -1,4 +1,4 @@
-﻿using Profais.Services.ViewModels;
+﻿using Profais.Services.ViewModels.User;
 
 namespace Profais.Services.Interfaces;
 

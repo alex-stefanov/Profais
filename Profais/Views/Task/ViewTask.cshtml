@@ -1,4 +1,4 @@
-﻿@model Profais.Services.ViewModels.TaskViewModel
+﻿@model TaskViewModel
 
 @{
     ViewData["Title"] = "Task Details";
@@ -50,11 +50,11 @@
             @if (!Model.IsCompleted)
             {
                 <div class="mt-4">
-                    <form asp-action="AddWorkers" asp-route-taskId="@Model.Id" method="get">
+                    <form asp-action="AddWorkers" asp-controller="Worker" asp-route-taskId="@Model.Id" method="get">
                         <button type="submit" class="btn btn-primary">Add Workers</button>
                     </form>
 
-                    <form asp-action="AddMaterials" asp-route-taskId="@Model.Id" method="get" class="mt-2">
+                    <form asp-action="AddMaterialsToTask" asp-controller="Material" asp-route-taskId="@Model.Id" method="get" class="mt-2">
                         <button type="submit" class="btn btn-secondary">Add Materials</button>
                     </form>
 

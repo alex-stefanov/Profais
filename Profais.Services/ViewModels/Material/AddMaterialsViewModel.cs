@@ -1,5 +1,6 @@
 ﻿using Profais.Common.Enums;
-using Profais.Services.ViewModels;
+
+namespace Profais.Services.ViewModels.Material;
 
 public class AddMaterialsViewModel
 {

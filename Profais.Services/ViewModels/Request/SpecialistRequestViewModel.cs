@@ -2,8 +2,9 @@
 using Profais.Common.Enums;
 using static Profais.Common.Constants.UserRequestConstants;
 
-namespace Profais.Services.ViewModels;
-public class WorkerRequestViewModel
+namespace Profais.Services.ViewModels.Request;
+
+public class SpecialistRequestViewModel
 {
     [Required(ErrorMessage = "Id is required.")]
     public int Id { get; set; }
@@ -17,7 +18,7 @@ public class WorkerRequestViewModel
 
     [Required(ErrorMessage = "Last Name is required.")]
     [StringLength(LastNameMaxLength, MinimumLength = FirstNameMinLength, ErrorMessage = "Last Name must be between {2} and {1} characters.")]
-    public required string LastName { get; set; } 
+    public required string LastName { get; set; }
 
     [Required(ErrorMessage = "Profix Id is required.")]
     public required string ProfixId { get; set; }

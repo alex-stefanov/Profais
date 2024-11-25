@@ -3,7 +3,7 @@ using Profais.Common.Enums;
 using Profais.Data.Models;
 using Profais.Data.Repositories;
 using Profais.Services.Interfaces;
-using Profais.Services.ViewModels;
+using Profais.Services.ViewModels.Material;
 
 namespace Profais.Services.Implementations;
 

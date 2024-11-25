@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Profais.Services.ViewModels;
+
+namespace Profais.Services.ViewModels.Worker;
 
 public class AddWorkersViewModel
 {
@@ -9,7 +10,7 @@ public class AddWorkersViewModel
 	[Required]
 	public required IEnumerable<UserViewModel> Users { get; set; }
 
-	public IEnumerable<int> SelectedWorkerIds { get; set; }
+	public IEnumerable<int> SelectedWorkerIds { get; set; } = new List<int>();
 
 	[Required]
 	public required int CurrentPage { get; set; }

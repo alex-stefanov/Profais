@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Profais.Services.Interfaces;
-using Profais.Services.ViewModels;
+using Profais.Services.ViewModels.User;
 using static Profais.Common.Constants.UserConstants;
 
 namespace Profais.Areas.Admin.Controllers;

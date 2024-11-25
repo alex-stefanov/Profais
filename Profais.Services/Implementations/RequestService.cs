@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using Profais.Data.Models;
 using Profais.Data.Repositories;
 using Profais.Services.Interfaces;
-using Profais.Services.ViewModels;
 using static Profais.Common.Enums.RequestStatus;
 using static Profais.Common.Constants.UserConstants;
+using Profais.Services.ViewModels.Request;
 
 namespace Profais.Services.Implementations;
 public class RequestService(

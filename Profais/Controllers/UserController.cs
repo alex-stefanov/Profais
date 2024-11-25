@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Profais.Data.Models;
 using Profais.Services.Interfaces;
-using Profais.Services.ViewModels;
+using Profais.Services.ViewModels.Request;
 using static Profais.Common.Constants.UserConstants;
 
 namespace Profais.Controllers;

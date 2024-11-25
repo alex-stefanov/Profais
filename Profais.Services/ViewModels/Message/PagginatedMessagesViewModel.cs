@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Profais.Services.ViewModels;
+using Profais.Services.ViewModels.Message;
+
+namespace Profais.Services.ViewModels.Message;
 
 public class PaginatedMessagesViewModel
 {

@@ -19,7 +19,7 @@
                         <p><strong>Status:</strong> @(task.IsCompleted ? "Completed" : "Not Completed")</p>
 
                         <form asp-action="ViewTask" method="get">
-                            <input type="hidden" name="id" value="@task.Id" />
+                            <input type="hidden" name="taskId" value="@task.Id" />
                             <button type="submit" class="btn btn-primary">View Task</button>
                         </form>
                     </div>

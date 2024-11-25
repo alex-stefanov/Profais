@@ -1,6 +1,6 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using Profais.Services.ViewModels;
+using Profais.Services.ViewModels.Shared;
 
 namespace Profais.Controllers;
 

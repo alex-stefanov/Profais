@@ -1,7 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Profais.Services.ViewModels.Message;
+using Profais.Services.ViewModels.Task;
 using static Profais.Common.Constants.ProjectConstants;
 
-namespace Profais.Services.ViewModels;
+namespace Profais.Services.ViewModels.Project;
 
 public class ProjectViewModel
 {

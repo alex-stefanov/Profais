@@ -1,4 +1,5 @@
 ﻿using Profais.Common.Enums;
+using Profais.Services.ViewModels.Material;
 
 namespace Profais.Services.Interfaces;
 

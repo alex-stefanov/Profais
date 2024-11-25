@@ -2,7 +2,7 @@
 using Profais.Data.Models;
 using Profais.Data.Repositories;
 using Profais.Services.Interfaces;
-using Profais.Services.ViewModels;
+using Profais.Services.ViewModels.Worker;
 
 namespace Profais.Services.Implementations;
 

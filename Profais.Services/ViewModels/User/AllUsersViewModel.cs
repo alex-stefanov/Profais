@@ -1,4 +1,4 @@
-﻿namespace Profais.Services.ViewModels;
+﻿namespace Profais.Services.ViewModels.User;
 
 public class AllUsersViewModel
 {

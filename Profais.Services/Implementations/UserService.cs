@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Profais.Data.Models;
 using Profais.Services.Interfaces;
-using Profais.Services.ViewModels;
+using Profais.Services.ViewModels.User;
 
 namespace Profais.Services.Implementations;
 

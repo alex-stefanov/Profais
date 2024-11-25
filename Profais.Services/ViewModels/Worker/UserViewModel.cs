@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using static Profais.Common.Constants.UserConstants;
-namespace Profais.Services.ViewModels;
+
+namespace Profais.Services.ViewModels.Worker;
 
 public class UserViewModel
 {

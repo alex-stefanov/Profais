@@ -2,8 +2,9 @@
 using Profais.Common.Enums;
 using static Profais.Common.Constants.UserRequestConstants;
 
-namespace Profais.Services.ViewModels;
-public class SpecialistRequestViewModel
+namespace Profais.Services.ViewModels.Request;
+
+public class WorkerRequestViewModel
 {
     [Required(ErrorMessage = "Id is required.")]
     public int Id { get; set; }

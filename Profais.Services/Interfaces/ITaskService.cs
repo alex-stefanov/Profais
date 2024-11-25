@@ -1,11 +1,14 @@
 ﻿using Profais.Common.Enums;
-using Profais.Services.ViewModels;
+using Profais.Services.ViewModels.Task;
+using Profais.Services.ViewModels.Material;
 
 namespace Profais.Services.Interfaces;
 
 public interface ITaskService
 {
-    Task CreateTaskAsync(TaskViewModel taskViewModel);
+    AddTaskViewModel GetAddTaskViewModelAsync(int projectId);
+
+    Task CreateTaskAsync(AddTaskViewModel taskViewModel);
 
     Task<TaskViewModel> GetTaskByIdAsync(int taskId);
 

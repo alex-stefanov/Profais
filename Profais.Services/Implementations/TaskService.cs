@@ -3,7 +3,9 @@ using Profais.Common.Enums;
 using Profais.Data.Models;
 using Profais.Data.Repositories;
 using Profais.Services.Interfaces;
-using Profais.Services.ViewModels;
+using Profais.Services.ViewModels.Task;
+using Profais.Services.ViewModels.Material;
+using Profais.Services.ViewModels.Worker;
 
 namespace Profais.Services.Implementations;
 
@@ -13,21 +15,25 @@ public class TaskService(
     IRepository<Material, int> materialRepository)
     : ITaskService
 {
+    public AddTaskViewModel GetAddTaskViewModelAsync(
+      int projectId)
+      => new AddTaskViewModel
+      {
+          Title = string.Empty,
+          Description = string.Empty,
+          ProjectId = projectId,
+      };
+
     public async Task CreateTaskAsync(
-        TaskViewModel taskViewModel)
+        AddTaskViewModel taskViewModel)
     {
         ProfTask profTask = new ProfTask
         {
             Title = taskViewModel.Title,
             Description = taskViewModel.Description,
-            HoursWorked = taskViewModel.HoursWorked,
+            HoursWorked = default,
             ProfProjectId = taskViewModel.ProjectId,
-            IsCompleted = taskViewModel.IsCompleted,
-            TaskMaterials = taskViewModel.Materials.Select(x => new TaskMaterial
-            {
-                MaterialId = x.Id,
-                TaskId = taskViewModel.Id,
-            }).ToArray(),
+            IsCompleted = false,
         };
 
         await taskRepository.AddAsync(profTask);
