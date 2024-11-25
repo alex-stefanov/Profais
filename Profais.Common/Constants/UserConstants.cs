@@ -54,4 +54,9 @@ public static class UserConstants
     /// The name of the specialist role.
     /// </summary>
     public const string SpecialistRoleName = "Specialist";
+
+    /// <summary>
+    /// The name of the client role.
+    /// </summary>
+    public const string ClientRoleName = "Client";
 }

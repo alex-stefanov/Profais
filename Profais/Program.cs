@@ -39,6 +39,12 @@ public class Program
         string[] specialistLastNames = builder.Configuration.GetSection("Specialists:LastNames").Get<string[]>()!;
         string[] specialistPasswords = builder.Configuration.GetSection("Specialists:Passwords").Get<string[]>()!;
 
+        string[] clientEmails = builder.Configuration.GetSection("Clients:Emails").Get<string[]>()!;
+        string[] clientUsernames = builder.Configuration.GetSection("Clients:Usernames").Get<string[]>()!;
+        string[] clientFirstNames = builder.Configuration.GetSection("Clients:FirstNames").Get<string[]>()!;
+        string[] clientLastNames = builder.Configuration.GetSection("Clients:LastNames").Get<string[]>()!;
+        string[] clientPasswords = builder.Configuration.GetSection("Clients:Passwords").Get<string[]>()!;
+
         #endregion
 
         var environment = builder.Environment;
@@ -133,6 +139,14 @@ public class Program
             lastNames: specialistLastNames,
             passwords: specialistPasswords,
             roleName: SpecialistRoleName);
+
+        await app.SeedMultipleUsersAsync(
+            emails: clientEmails,
+            usernames: clientUsernames,
+            firstNames: clientFirstNames,
+            lastNames: clientLastNames,
+            passwords: clientPasswords,
+            roleName: ClientRoleName);
 
         #endregion
 
