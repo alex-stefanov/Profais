@@ -10,8 +10,8 @@ public interface IRequestService
     Task<SpecialistRequestViewModel> GetEmptySpecialistViewModelAsync(string userId);
     Task CreateSpecialistRequestAsync(SpecialistRequestViewModel specialistRequestViewModel);
 
-    Task<ICollection<WorkerRequestViewModel>> GetAllWorkersViewModelsAsync();
-    Task<ICollection<SpecialistRequestViewModel>> GetAllSpecialistViewModelsAsync();
+    Task<IEnumerable<WorkerRequestViewModel>> GetAllWorkersViewModelsAsync();
+    Task<IEnumerable<SpecialistRequestViewModel>> GetAllSpecialistViewModelsAsync();
 
     Task ApproveWorkerRequestAsync(WorkerRequestViewModel workerRequestViewModel);
     Task ApproveSpecialistRequestAsync(SpecialistRequestViewModel specialistRequestViewModel);

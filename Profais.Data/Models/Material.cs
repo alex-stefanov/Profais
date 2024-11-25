@@ -19,7 +19,7 @@ public class Material
     /// Gets or sets the name of the material.
     /// </summary>
     [Required]
-    [MaxLength(NameMaxLenght)]
+    [MaxLength(NameMaxLength)]
     public string Name { get; set; } = null!;
 
     /// <summary>
@@ -31,6 +31,6 @@ public class Material
     /// <summary>
     /// Gets or sets the collection of task-material mappings associated with this material.
     /// </summary>
-    public virtual ICollection<TaskMaterial> TaskMaterials { get; }
+    public virtual ICollection<TaskMaterial> TaskMaterials { get; set; }
         = new HashSet<TaskMaterial>();
 }

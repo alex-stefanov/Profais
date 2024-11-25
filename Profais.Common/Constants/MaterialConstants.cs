@@ -8,10 +8,10 @@ public static class MaterialConstants
     /// <summary>
     /// The maximum allowed length for a material name.
     /// </summary>
-    public const int NameMaxLenght = 60;
+    public const int NameMaxLength = 60;
 
     /// <summary>
     /// The minimum required length for a material name.
     /// </summary>
-    public const int NameMinLenght = 3;
+    public const int NameMinLength = 3;
 }

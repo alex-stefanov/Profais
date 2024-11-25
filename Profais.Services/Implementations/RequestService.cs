@@ -35,7 +35,7 @@ public class RequestService(
 
         return new WorkerRequestViewModel()
         {
-            ClientId = userId,
+            UserId = userId,
             FirstName = user.FirstName,
             LastName = user.LastName,
             ProfixId = string.Empty,
@@ -48,7 +48,7 @@ public class RequestService(
     {
         ProfWorkerRequest profWorkerRequest = new ProfWorkerRequest()
         {
-            ClientId = workerRequestViewModel.ClientId,
+            ClientId = workerRequestViewModel.UserId,
             FirstName = workerRequestViewModel.FirstName,
             LastName = workerRequestViewModel.LastName,
             ProfixId = workerRequestViewModel.ProfixId,
@@ -78,7 +78,7 @@ public class RequestService(
 
         return new SpecialistRequestViewModel()
         {
-            ClientId = userId,
+            UserId = userId,
             FirstName = user.FirstName,
             LastName = user.LastName,
             ProfixId = string.Empty,
@@ -91,7 +91,7 @@ public class RequestService(
     {
         ProfSpecialistRequest profSpecialistRequest = new ProfSpecialistRequest()
         {
-            ClientId = specialistRequestViewModel.ClientId,
+            ClientId = specialistRequestViewModel.UserId,
             FirstName = specialistRequestViewModel.FirstName,
             LastName = specialistRequestViewModel.LastName,
             ProfixId = specialistRequestViewModel.ProfixId,
@@ -101,14 +101,14 @@ public class RequestService(
         await specialistRequestRepository.AddAsync(profSpecialistRequest);
     }
 
-    public async Task<ICollection<WorkerRequestViewModel>> GetAllWorkersViewModelsAsync()
+    public async Task<IEnumerable<WorkerRequestViewModel>> GetAllWorkersViewModelsAsync()
         => await workerRequestRepository
             .GetAllAttached()
             .Where(x => x.Status == Pending)
             .Select(x => new WorkerRequestViewModel()
             {
                 Id = x.Id,
-                ClientId = x.ClientId,
+                UserId = x.ClientId,
                 FirstName = x.FirstName,
                 LastName = x.LastName,
                 ProfixId = x.ProfixId,
@@ -116,14 +116,14 @@ public class RequestService(
             })
             .ToListAsync();
 
-    public async Task<ICollection<SpecialistRequestViewModel>> GetAllSpecialistViewModelsAsync()
+    public async Task<IEnumerable<SpecialistRequestViewModel>> GetAllSpecialistViewModelsAsync()
         => await specialistRequestRepository
             .GetAllAttached()
             .Where(x => x.Status == Pending)
             .Select(x => new SpecialistRequestViewModel()
             {
                 Id = x.Id,
-                ClientId = x.ClientId,
+                UserId = x.ClientId,
                 FirstName = x.FirstName,
                 LastName = x.LastName,
                 ProfixId = x.ProfixId,
@@ -155,7 +155,7 @@ public class RequestService(
         }
 
         ProfUser? user = await userManager
-            .FindByIdAsync(workerRequestViewModel.ClientId);
+            .FindByIdAsync(workerRequestViewModel.UserId);
 
         if (user is null)
         {
@@ -198,7 +198,7 @@ public class RequestService(
         }
 
         ProfUser? user = await userManager
-            .FindByIdAsync(specialistRequestViewModel.ClientId);
+            .FindByIdAsync(specialistRequestViewModel.UserId);
 
         if (user is null)
         {

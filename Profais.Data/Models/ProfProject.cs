@@ -55,12 +55,12 @@ public class ProfProject
     /// <summary>
     /// Navigation property for the collection of messages associated with the project.
     /// </summary>
-    public virtual ICollection<Message> Messages { get; }
+    public virtual ICollection<Message> Messages { get; set; }
         = new HashSet<Message>();
 
     /// <summary>
     /// Navigation property for the collection of tasks associated with the project.
     /// </summary>
-    public virtual ICollection<ProfTask> Tasks { get; }
+    public virtual ICollection<ProfTask> Tasks { get; set; }
         = new HashSet<ProfTask>();
 }

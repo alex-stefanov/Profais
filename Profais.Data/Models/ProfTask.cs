@@ -56,12 +56,12 @@ public class ProfTask
     /// <summary>
     /// Navigation property for the collection of task-material relationships.
     /// </summary>
-    public virtual ICollection<TaskMaterial> TaskMaterials { get; }
+    public virtual ICollection<TaskMaterial> TaskMaterials { get; set; }
         = new HashSet<TaskMaterial>();
 
     /// <summary>
     /// Navigation property for the collection of user-task relationships.
     /// </summary>
-    public virtual ICollection<ProfUserTask> UserTasks { get; }
+    public virtual ICollection<ProfUserTask> UserTasks { get; set; }
         = new HashSet<ProfUserTask>();
 }

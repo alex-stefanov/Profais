@@ -5,11 +5,11 @@ using static Profais.Common.Constants.UserRequestConstants;
 namespace Profais.Services.ViewModels;
 public class SpecialistRequestViewModel
 {
-    [Key]
+    [Required(ErrorMessage = "Id is required.")]
     public int Id { get; set; }
 
-    [Required]
-    public required string ClientId { get; set; }
+    [Required(ErrorMessage = "User id is required.")]
+    public required string UserId { get; set; }
 
     [Required(ErrorMessage = "First Name is required.")]
     [StringLength(FirstNameMaxLength, MinimumLength = FirstNameMinLength, ErrorMessage = "First Name must be between {2} and {1} characters.")]
