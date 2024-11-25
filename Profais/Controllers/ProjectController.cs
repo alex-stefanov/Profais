@@ -5,226 +5,174 @@ using Profais.Services.ViewModels;
 
 namespace Profais.Controllers;
 public class ProjectController(
-	ILogger<HomeController> logger,
-	IProjectService projectService)
-	: Controller
+    ILogger<HomeController> logger,
+    IProjectService projectService)
+    : Controller
 {
-	[HttpGet]
-	public async Task<IActionResult> IncompletedProjects()
-	{
-		try
-		{
-			return View(await projectService.GetAllInCompletedProjectsAsync());
-		}
-		catch (Exception ex)
-		{
-			logger.LogError($"An error occured while getting all the incompleted projects. {ex.Message}");
-			return RedirectToAction("Error", "Home");
-		}
-	}
+    [HttpGet]
+    public async Task<IActionResult> IncompletedProjects()
+    {
+        try
+        {
+            return View(await projectService.GetAllInCompletedProjectsAsync());
+        }
+        catch (Exception ex)
+        {
+            logger.LogError($"An error occured while getting all the incompleted projects. {ex.Message}");
+            return RedirectToAction("Error", "Home");
+        }
+    }
 
-	[HttpGet]
-	public async Task<IActionResult> CompletedProjects()
-	{
-		try
-		{
-			return View(await projectService.GetAllCompletedProjectsAsync());
-		}
-		catch (Exception ex)
-		{
-			logger.LogError($"An error occured while getting all the completed projects. {ex.Message}");
-			return RedirectToAction("Error", "Home");
-		}
-	}
+    [HttpGet]
+    public async Task<IActionResult> CompletedProjects()
+    {
+        try
+        {
+            return View(await projectService.GetAllCompletedProjectsAsync());
+        }
+        catch (Exception ex)
+        {
+            logger.LogError($"An error occured while getting all the completed projects. {ex.Message}");
+            return RedirectToAction("Error", "Home");
+        }
+    }
 
-	[HttpGet]
-	public async Task<IActionResult> ViewProject(
-		int projectId)
-		=> View(await projectService.GetProjectByIdAsync(projectId));
+    [HttpGet]
+    public async Task<IActionResult> ViewProject(
+        int projectId)
+        => View(await projectService.GetProjectByIdAsync(projectId));
 
-	[HttpGet]
-	public IActionResult AddProject()
-		=> View(projectService.GetEmptyProjectViewModelAsync());
+    #region Methods in ViewProject
 
-	[HttpPost]
-	public async Task<IActionResult> AddProject(
-		ProjectViewModel model)
-	{
-		if (!ModelState.IsValid)
-		{
-			return View(model);
-		}
+    [HttpGet]
+    public async Task<IActionResult> ViewTasks(
+        int projectId,
+        int page = 1)
+    {
+        const int pageSize = 6;
 
-		try
-		{
-			await projectService.CreateProjectAsync(model);
+        IEnumerable<TaskViewModel> tasks = await projectService.GetAllTasksByProjectIdAsync(projectId, page, pageSize);
 
-			return RedirectToAction(nameof(IncompletedProjects));
-		}
-		catch (Exception ex)
-		{
-			logger.LogError($"An error occured while adding project. {ex.Message}");
-			return RedirectToAction("Error", "Home");
-		}
-	}
+        int totalTasks = await projectService.GetTotalTasksByProjectIdAsync(projectId);
 
-	[HttpGet]
-	public IActionResult AddTask(
-		int projectId)
-		=> View(projectService.GetEmptyTaskViewModelAsync(projectId));
+        var totalPages = (int)Math.Ceiling(totalTasks / (double)pageSize);
 
-	[HttpPost]
-	public async Task<IActionResult> AddTask(
-		TaskViewModel model)
-	{
-		if (!ModelState.IsValid)
-		{
-			return View(model);
-		}
+        var viewModel = new PaginatedTaskViewModel
+        {
+            Tasks = tasks,
+            ProjectId = projectId,
+            CurrentPage = page,
+            TotalPages = totalPages
+        };
 
-		try
-		{
-			await projectService.CreateTaskAsync(model);
+        return View(viewModel);
+    }
 
-			return RedirectToAction(nameof(IncompletedProjects));
-		}
-		catch (Exception ex)
-		{
-			logger.LogError($"An error occured while adding project. {ex.Message}");
-			return RedirectToAction("Error", "Home");
-		}
-	}
+    [HttpGet]
+    public async Task<IActionResult> ViewMessages(
+        int projectId,
+        int page = 1)
+    {
+        const int pageSize = 6;
+        IEnumerable<MessageViewModel> messages = await projectService.
+            GetAllMessagesByProjectIdAsync(projectId, page, pageSize);
 
-	[HttpGet]
-	public async Task<IActionResult> ViewTasks(
-		int projectId,
-		int page = 1)
-	{
-		const int pageSize = 6;
+        int totalMessages = await projectService
+            .GetTotalMessagesByProjectIdAsync(projectId);
 
-		IEnumerable<TaskViewModel> tasks = await projectService.GetAllTasksByProjectIdAsync(projectId, page, pageSize);
+        var totalPages = (int)Math.Ceiling(totalMessages / (double)pageSize);
 
-		int totalTasks = await projectService.GetTotalTasksByProjectIdAsync(projectId);
+        var viewModel = new PaginatedMessagesViewModel
+        {
+            Messages = messages,
+            ProjectId = projectId,
+            CurrentPage = page,
+            TotalPages = totalPages
+        };
 
-		var totalPages = (int)Math.Ceiling(totalTasks / (double)pageSize);
+        return View(viewModel);
+    }
 
-		var viewModel = new PaginatedTaskViewModel
-		{
-			Tasks = tasks,
-			ProjectId = projectId,
-			CurrentPage = page,
-			TotalPages = totalPages
-		};
+    #region Methods in ViewTasks
 
-		return View(viewModel);
-	}
+    [HttpGet]
+    public async Task<IActionResult> ViewTask(
+        int taskId)
+        => View(await projectService.GetTaskByIdAsync(taskId));
 
-	[HttpGet]
-	public async Task<IActionResult> ViewMessages(
-		int projectId, int page = 1)
-	{
-		const int pageSize = 6;
-		IEnumerable<MessageViewModel> messages = await projectService.
-			GetAllMessagesByProjectIdAsync(projectId, page, pageSize);
+    #region Methods in ViewTask
 
-		int totalMessages = await projectService
-			.GetTotalMessagesByProjectIdAsync(projectId);
+    [HttpPost]
+    public async Task<IActionResult> CompleteTask(
+       int taskId)
+    {
+        if (!ModelState.IsValid)
+        {
+            return RedirectToAction(nameof(ViewTask), new { taskId });
+        }
+        try
+        {
+            await projectService.CompleteTaskByIdAsync(taskId);
 
-		var totalPages = (int)Math.Ceiling(totalMessages / (double)pageSize);
+            return RedirectToAction(nameof(ViewTask), new { taskId });
 
-		var viewModel = new PaginatedMessagesViewModel
-		{
-			Messages = messages,
-			ProjectId = projectId,
-			CurrentPage = page,
-			TotalPages = totalPages
-		};
+        }
+        catch (Exception ex)
+        {
+            logger.LogError($"An error occured while completing a task. {ex.Message}");
+            return RedirectToAction("Error", "Home");
+        }
+    }
 
-		return View(viewModel);
-	}
+    [HttpGet]
+    public async Task<IActionResult> AddMaterialsToTask(
+        int taskId,
+        int page = 1)
+    {
+        const int pageSize = 5;
 
-	[HttpGet]
-	public async Task<IActionResult> ViewMessage(
-		int projectId,
-		string userId)
-		=> View(await projectService.GetMessageByIdsAsync(projectId, userId));
+        var usedForFilter = Request.Query["UsedFor"].ToString().Split(',')
+            .Select(x => Enum.TryParse(x, out UsedFor usedFor) ? usedFor : (UsedFor?)null)
+            .Where(x => x.HasValue)
+            .Cast<UsedFor>()
+            .ToList();
 
-	[HttpGet]
-	public async Task<IActionResult> ViewTask(
-		int taskId)
-		=> View(await projectService.GetTaskByIdAsync(taskId));
+        var viewModel = await projectService.GetMaterialsWithPaginationAsync(taskId, page, pageSize, usedForFilter);
 
-	[HttpPost]
-	public async Task<IActionResult> CompleteTask(
-		int taskId)
-	{
-		if (!ModelState.IsValid)
-		{
-			return RedirectToAction(nameof(ViewTask), new { taskId });
-		}
-		try
-		{
-			await projectService.CompleteTaskByIdAsync(taskId);
+        return View(viewModel);
+    }
 
-			return RedirectToAction(nameof(ViewTask), new { taskId });
+    [HttpGet]
+    public async Task<IActionResult> AddWorkers(
+        int taskId,
+        int page = 1)
+    {
+        const int pageSize = 12;
 
-		}
-		catch (Exception ex)
-		{
-			logger.LogError($"An error occured while completing a task. {ex.Message}");
-			return RedirectToAction("Error", "Home");
-		}
-	}
+        var availableUsers = await projectService
+            .GetAvailableWorkersAsync(page, pageSize);
 
-	[HttpGet]
-	public async Task<IActionResult> AddMaterialsToTask(
-		int taskId,
-		int page = 1)
-	{
-		const int pageSize = 5;
+        var totalPages = await projectService
+            .GetTotalPagesAsync(pageSize);
 
-		var usedForFilter = Request.Query["UsedFor"].ToString().Split(',')
-			.Select(x => Enum.TryParse(x, out UsedFor usedFor) ? usedFor : (UsedFor?)null)
-			.Where(x => x.HasValue)
-			.Cast<UsedFor>()
-			.ToList();
+        var viewModel = new AddWorkersViewModel
+        {
+            TaskId = taskId,
+            Users = availableUsers,
+            CurrentPage = page,
+            TotalPages = totalPages
+        };
 
-		var viewModel = await projectService.GetMaterialsWithPaginationAsync(taskId, page, pageSize, usedForFilter);
-
-		return View(viewModel);
-	}
-
-	[HttpGet]
-	public async Task<IActionResult> AddWorkers(
-		int taskId,
-		int page = 1)
-	{
-		const int pageSize = 12;
-
-		var availableUsers = await projectService
-			.GetAvailableWorkersAsync(page, pageSize);
-
-		var totalPages = await projectService
-			.GetTotalPagesAsync(pageSize);
-
-		var viewModel = new AddWorkersViewModel
-		{
-			TaskId = taskId,
-			Users = availableUsers,
-			CurrentPage = page,
-			TotalPages = totalPages
-		};
-
-		return View(viewModel);
-	}
+        return View(viewModel);
+    }
 
     [HttpPost]
     public async Task<IActionResult> AssignWorkersToTask(
-		int taskId,
-		List<string> workerIds)
+        int taskId,
+        List<string> workerIds)
     {
-		if (!ModelState.IsValid)
-		{
+        if (!ModelState.IsValid)
+        {
             return RedirectToAction(nameof(ViewTask), new { taskId });
         }
 
@@ -236,6 +184,75 @@ public class ProjectController(
         catch (Exception ex)
         {
             logger.LogError($"Error assigning workers: {ex.Message}");
+            return RedirectToAction("Error", "Home");
+        }
+    }
+
+    #endregion
+
+    #endregion
+
+    #region Methods in ViewMessages
+
+    [HttpGet]
+    public async Task<IActionResult> ViewMessage(
+        int projectId,
+        string userId)
+        => View(await projectService.GetMessageByIdsAsync(projectId, userId));
+
+    #endregion
+
+    #endregion
+
+    [HttpGet]
+    public IActionResult AddProject()
+        => View(projectService.GetEmptyProjectViewModelAsync());
+
+    [HttpPost]
+    public async Task<IActionResult> AddProject(
+        ProjectViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
+        try
+        {
+            await projectService.CreateProjectAsync(model);
+
+            return RedirectToAction(nameof(IncompletedProjects));
+        }
+        catch (Exception ex)
+        {
+            logger.LogError($"An error occured while adding project. {ex.Message}");
+            return RedirectToAction("Error", "Home");
+        }
+    }
+
+    [HttpGet]
+    public IActionResult AddTask(
+        int projectId)
+        => View(projectService.GetEmptyTaskViewModelAsync(projectId));
+
+    [HttpPost]
+    public async Task<IActionResult> AddTask(
+        TaskViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
+        try
+        {
+            await projectService.CreateTaskAsync(model);
+
+            return RedirectToAction(nameof(IncompletedProjects));
+        }
+        catch (Exception ex)
+        {
+            logger.LogError($"An error occured while adding project. {ex.Message}");
             return RedirectToAction("Error", "Home");
         }
     }

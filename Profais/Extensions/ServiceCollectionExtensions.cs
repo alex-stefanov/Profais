@@ -30,7 +30,14 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection RegisterUserDefinedServices(
         this IServiceCollection services)
     {
+        services.AddScoped<ICommonService, CommonService>();
+        services.AddScoped<IMaterialService, MaterialService>();
+        services.AddScoped<IMessageService, MessageService>();
+        services.AddScoped<IProjectService, ProjectService>();
+        services.AddScoped<IRequestService, RequestService>();
+        services.AddScoped<ITaskService, TaskService>();
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IWorkerService, WorkerService>();
 
         return services;
     }

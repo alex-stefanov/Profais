@@ -42,4 +42,12 @@ public interface IProjectService
     Task<int> GetTotalPagesAsync(int pageSize);
 
     Task AssignWorkersToTaskAsync(int taskId, List<string> workerIds);
+
+    /*
+       Task<IEnumerable<ProjectViewModel>> GetAllInCompletedProjectsAsync();
+        Task<IEnumerable<ProjectViewModel>> GetAllCompletedProjectsAsync();
+        ProjectViewModel GetEmptyProjectViewModelAsync();
+        Task CreateProjectAsync(ProjectViewModel projectViewModel);
+        Task<ProjectViewModel> GetProjectByIdAsync(int projectId);
+    */
 }
