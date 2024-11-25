@@ -1,12 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Profais.Data.Models;
 using Profais.Data.Repositories;
 using Profais.Services.Interfaces;
 using Profais.Services.ViewModels;
 using static Profais.Common.Enums.RequestStatus;
+using static Profais.Common.Constants.UserConstants;
 
 namespace Profais.Services.Implementations;
 public class RequestService(
+    UserManager<ProfUser> userManager,
     IRepository<ProfWorkerRequest, int> workerRequestRepository,
     IRepository<ProfSpecialistRequest, int> specialistRequestRepository,
     IRepository<ProfUser, string> userRepository)
@@ -150,6 +153,25 @@ public class RequestService(
         {
             throw new ArgumentException($"Worker request with id `{workerRequestViewModel.Id}` wasn't updated");
         }
+
+        ProfUser? user = await userManager
+            .FindByIdAsync(workerRequestViewModel.ClientId);
+
+        if (user is null)
+        {
+            throw new ArgumentException("No user found");
+        }
+
+        if (await userManager.IsInRoleAsync(user, WorkerRoleName))
+        {
+            return;
+        }
+
+        IdentityResult userResult = await userManager.AddToRoleAsync(user, WorkerRoleName);
+        if (!userResult.Succeeded)
+        {
+            throw new InvalidOperationException($"Error occurred while adding the user {user.UserName} to the {WorkerRoleName} role!");
+        }
     }
 
     public async Task ApproveSpecialistRequestAsync(
@@ -173,6 +195,25 @@ public class RequestService(
         if (!await specialistRequestRepository.UpdateAsync(specialistRequest))
         {
             throw new ArgumentException($"Specialist request with id `{specialistRequestViewModel.Id}` wasn't updated");
+        }
+
+        ProfUser? user = await userManager
+            .FindByIdAsync(specialistRequestViewModel.ClientId);
+
+        if (user is null)
+        {
+            throw new ArgumentException("No user found");
+        }
+
+        if (await userManager.IsInRoleAsync(user, SpecialistRoleName))
+        {
+            return;
+        }
+
+        IdentityResult userResult = await userManager.AddToRoleAsync(user, SpecialistRoleName);
+        if (!userResult.Succeeded)
+        {
+            throw new InvalidOperationException($"Error occurred while adding the user {user.UserName} to the {SpecialistRoleName} role!");
         }
     }
 
