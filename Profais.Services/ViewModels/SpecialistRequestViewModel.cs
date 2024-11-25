@@ -1,0 +1,27 @@
+﻿using System.ComponentModel.DataAnnotations;
+using Profais.Common.Enums;
+using static Profais.Common.Constants.UserRequestConstants;
+
+namespace Profais.Services.ViewModels;
+public class SpecialistRequestViewModel
+{
+    [Key]
+    public int Id { get; set; }
+
+    [Required]
+    public required string ClientId { get; set; }
+
+    [Required(ErrorMessage = "First Name is required.")]
+    [StringLength(FirstNameMaxLength, MinimumLength = FirstNameMinLength, ErrorMessage = "First Name must be between {2} and {1} characters.")]
+    public required string FirstName { get; set; }
+
+    [Required(ErrorMessage = "Last Name is required.")]
+    [StringLength(LastNameMaxLength, MinimumLength = FirstNameMinLength, ErrorMessage = "Last Name must be between {2} and {1} characters.")]
+    public required string LastName { get; set; }
+
+    [Required(ErrorMessage = "Profix Id is required.")]
+    public required string ProfixId { get; set; }
+
+    [Required(ErrorMessage = "Status is required.")]
+    public required RequestStatus Status { get; set; }
+}

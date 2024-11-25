@@ -19,6 +19,12 @@ public class ProfUserRequest
     public int Id { get; set; }
 
     /// <summary>
+    /// Gets or sets the id of the user making the request.
+    /// </summary>
+    [Required]
+    public string ClientId { get; set; } = null!;
+
+    /// <summary>
     /// Gets or sets the first name of the user making the request.
     /// </summary>
     [Required]

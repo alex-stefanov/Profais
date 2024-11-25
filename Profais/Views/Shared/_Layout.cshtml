@@ -20,16 +20,61 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">
+                                @Localizer["Home"]
+                            </a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                        @if (User.IsInRole(AdminRoleName))
+                        @if (User.Identity is not null 
+                            && User.Identity.IsAuthenticated)
                         {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="Admin" asp-controller="UserPanel" asp-action="Index">AdminPanel</a>
-                            </li>
+                            @if (User.IsInRole(ClientRoleName))
+                            {
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle text-dark" id="makeRequestDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        @Localizer["Make Role Request"]
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="makeRequestDropdown">
+                                        <li>
+                                            <a class="dropdown-item" asp-area="" asp-controller="User" asp-action="MakeWorkerRequest">
+                                                @Localizer["Worker"]
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" asp-area="" asp-controller="User" asp-action="MakeSpecialistRequest">
+                                                @Localizer["Specialist"]
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            }
+                            @if (User.IsInRole(ManagerRoleName))
+                            {
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle text-dark" id="acceptRequestDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        @Localizer["Preview Role Requests"]
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="acceptRequestDropdown">
+                                        <li>
+                                            <a class="dropdown-item" asp-area="" asp-controller="User" asp-action="PreviewWorkerRequests">
+                                                @Localizer["Workers"]
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" asp-area="" asp-controller="User" asp-action="PreviewSpecialistRequests">
+                                                @Localizer["Specialists"]
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            }
+                            @if (User.IsInRole(AdminRoleName))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="Admin" asp-controller="UserPanel" asp-action="Index">
+                                        @Localizer["Admin Panel"]
+                                    </a>
+                                </li>
+                            }
                         }
                     </ul>
                     <partial name="_LoginPartial" />

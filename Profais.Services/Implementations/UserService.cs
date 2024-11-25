@@ -11,7 +11,6 @@ public class UserService(
     RoleManager<IdentityRole<string>> roleManager)
     : IUserService
 {
-
     public async Task<IEnumerable<AllUsersViewModel>> GetAllUsersAsync()
     {
         IEnumerable<ProfUser> allUsers = await userManager.Users

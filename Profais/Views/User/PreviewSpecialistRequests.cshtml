@@ -1,0 +1,82 @@
+﻿@using Profais.Services.ViewModels;
+@inject IViewLocalizer Localizer;
+@model ICollection<SpecialistRequestViewModel>;
+@{
+    ViewBag.Title = Localizer["Preview Requests - Specialist"];
+}
+
+<h1>
+    @Localizer["Worker Requests"]
+</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Localizer["Client Id"]
+            </th>
+            <th>
+                @Localizer["First Name"]
+            </th>
+            <th>
+                @Localizer["Last Name"]
+            </th>
+            <th>
+                @Localizer["Profix Id"]
+            </th>
+            <th>
+                @Localizer["Current Status"]
+            </th>
+            <th>
+                @Localizer["Actions"]
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var request in Model)
+        {
+            <tr>
+                <td>
+                    @request.ClientId
+                </td>
+                <td>
+                    @request.FirstName
+                </td>
+                <td>
+                    @request.LastName
+                </td>
+                <td>
+                    @request.ProfixId
+                </td>
+                <td>
+                    @Localizer[request.Status.ToString()]
+                </td>
+                <td>
+                    <form method="post" asp-action="ApproveSpecialistRequest">
+                        <input type="hidden" name="request.Id" value="@request.Id" />
+                        <input type="hidden" name="request.ClientId" value="@request.ClientId" />
+                        <input type="hidden" name="request.FirstName" value="@request.FirstName" />
+                        <input type="hidden" name="request.LastName" value="@request.LastName" />
+                        <input type="hidden" name="request.ProfixId" value="@request.ProfixId" />
+                        <input type="hidden" name="request.Status" value="Accepted" />
+                        <button type="submit" class="btn btn-success">
+                            @Localizer["Approve"]
+                        </button>
+                    </form>
+
+                    <form method="post" asp-action="DeclineSpecialistRequest">
+                        <input type="hidden" name="request.Id" value="@request.Id" />
+                        <input type="hidden" name="request.ClientId" value="@request.ClientId" />
+                        <input type="hidden" name="request.FirstName" value="@request.FirstName" />
+                        <input type="hidden" name="request.LastName" value="@request.LastName" />
+                        <input type="hidden" name="request.ProfixId" value="@request.ProfixId" />
+                        <input type="hidden" name="request.Status" value="Declined" />
+                        <button type="submit" class="btn btn-danger">
+                            @Localizer["Decline"]
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
