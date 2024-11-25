@@ -1,8 +1,7 @@
 ﻿@using Profais.Services.ViewModels;
-@inject IViewLocalizer Localizer;
 @model WorkerRequestViewModel;
 @{
-    ViewBag.Title = Localizer["Make Request - Worker"];
+    ViewBag.Title = "Make Request - Worker";
 }
 
 <h2>@ViewBag.Title</h2>
@@ -10,7 +9,7 @@
 <form asp-action="MakeWorkerRequest" method="post">
     <div class="form-group">
         <label asp-for="FirstName">
-            @Localizer["First Name"]
+           First Name
         </label>
         <input asp-for="FirstName" readonly class="form-control" />
         <span asp-validation-for="FirstName" class="text-danger"></span>
@@ -18,7 +17,7 @@
 
     <div class="form-group">
         <label asp-for="LastName">
-            @Localizer["Last Name"]
+            Last Name
         </label>
         <input asp-for="LastName" readonly class="form-control" />
         <span asp-validation-for="LastName" class="text-danger"></span>
@@ -26,7 +25,7 @@
 
     <div class="form-group">
         <label asp-for="ProfixId">
-            @Localizer["Profix ID"]
+            Profix ID
         </label>
         <input asp-for="ProfixId" class="form-control" />
         <span asp-validation-for="ProfixId" class="text-danger"></span>
@@ -34,7 +33,7 @@
 
     <div hidden class="form-group">
         <label asp-for="Status">
-            @Localizer["Status"]
+            Status
         </label>
         <input asp-for="Status" readonly class="form-control" />
         <span asp-validation-for="Status" class="text-danger"></span>
@@ -42,7 +41,7 @@
 
     <div class="form-group">
         <button type="submit" class="btn btn-primary">
-            @Localizer["Submit"]
+            Submit
         </button>
     </div>
 </form>

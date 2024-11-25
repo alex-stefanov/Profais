@@ -1,34 +1,33 @@
 ﻿@using Profais.Services.ViewModels;
-@inject IViewLocalizer Localizer;
 @model ICollection<SpecialistRequestViewModel>;
 @{
-    ViewBag.Title = Localizer["Preview Requests - Specialist"];
+    ViewBag.Title = "Preview Requests - Specialist";
 }
 
 <h1>
-    @Localizer["Worker Requests"]
+    Worker Requests
 </h1>
 
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Localizer["Client Id"]
+                Client Id
             </th>
             <th>
-                @Localizer["First Name"]
+                First Name
             </th>
             <th>
-                @Localizer["Last Name"]
+                Last Name
             </th>
             <th>
-                @Localizer["Profix Id"]
+                Profix Id
             </th>
             <th>
-                @Localizer["Current Status"]
+                Current Status
             </th>
             <th>
-                @Localizer["Actions"]
+                Actions
             </th>
         </tr>
     </thead>
@@ -49,7 +48,7 @@
                     @request.ProfixId
                 </td>
                 <td>
-                    @Localizer[request.Status.ToString()]
+                    @request.Status.ToString()
                 </td>
                 <td>
                     <form method="post" asp-action="ApproveSpecialistRequest">
@@ -60,7 +59,7 @@
                         <input type="hidden" name="request.ProfixId" value="@request.ProfixId" />
                         <input type="hidden" name="request.Status" value="Accepted" />
                         <button type="submit" class="btn btn-success">
-                            @Localizer["Approve"]
+                            Approve
                         </button>
                     </form>
 
@@ -72,7 +71,7 @@
                         <input type="hidden" name="request.ProfixId" value="@request.ProfixId" />
                         <input type="hidden" name="request.Status" value="Declined" />
                         <button type="submit" class="btn btn-danger">
-                            @Localizer["Decline"]
+                            Decline
                         </button>
                     </form>
                 </td>

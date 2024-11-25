@@ -1,5 +1,4 @@
 ﻿@model Profais.Services.ViewModels.ProjectViewModel
-@inject IViewLocalizer Localizer;
 @{
     ViewData["Title"] = "Project Details";
 }
@@ -59,21 +58,21 @@
                 <form method="get" asp-action="ViewTasks" asp-controller="Project" class="d-inline">
                     <input type="hidden" asp-for="Id" name="projectId" />
                     <button type="submit" class="btn btn-primary">
-                        @Localizer["See Tasks"]
+                        See Tasks
                     </button>
                 </form>
 
                 <form method="get" asp-action="ViewMessages" asp-controller="Project" class="d-inline">
                     <input type="hidden" asp-for="Id" name="projectId" />
                     <button type="submit" class="btn btn-info">
-                        @Localizer["See Messages"]
+                        "See Messages"
                     </button>
                 </form>
 
                 <form method="get" asp-action="AddTask" asp-controller="Project" class="d-inline">
                     <input type="hidden" asp-for="Id" name="projectId" />
                     <button type="submit" class="btn btn-success">
-                        @Localizer["Add Task"]
+                        "Add Task"
                     </button>
                 </form>
             </div>
