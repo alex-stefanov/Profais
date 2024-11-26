@@ -62,14 +62,15 @@ public class ProjectRequestService(
             ?? throw new ArgumentException("Project Request not found");
     }
 
-    public async Task<PagedResult<CollectionProjectRequestViewModel>> GetPagedOnGoingProjectRequestsAsync(
+    public async Task<PagedResult<CollectionProjectRequestViewModel>> GetPagedProjectRequestsAsync(
         int page,
-        int pageSize)
+        int pageSize,
+        RequestStatus status)
     {
         IQueryable<CollectionProjectRequestViewModel> query = projectRequestRepository
             .GetAllAttached()
             .Include(x => x.Client)
-            .Where(pr => pr.Status == RequestStatus.Pending)
+            .Where(pr => pr.Status == status)
             .OrderBy(pr => pr.Title)
             .Select(pr => new CollectionProjectRequestViewModel
             {

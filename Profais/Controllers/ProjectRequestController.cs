@@ -5,7 +5,7 @@ using Profais.Data.Models;
 using Profais.Services.Interfaces;
 using Profais.Services.ViewModels.ProjectRequest;
 using Profais.Services.ViewModels.Shared;
-using System.Drawing.Printing;
+using static Profais.Common.Enums.RequestStatus;
 using static Profais.Common.Constants.UserConstants;
 
 namespace Profais.Controllers;
@@ -72,13 +72,53 @@ public class ProjectRequestController(
         try
         {
             PagedResult<CollectionProjectRequestViewModel> model = await projectRequestService
-                .GetPagedOnGoingProjectRequestsAsync(page, pageSize);
+                .GetPagedProjectRequestsAsync(page, pageSize, Pending);
 
             return View(model);
         }
         catch (Exception ex)
         {
-            logger.LogError($"An error occurred while fetching ongoing project requests. {ex.Message}");
+            logger.LogError($"An error occurred while fetching on going project requests. {ex.Message}");
+            return RedirectToAction("Error", "Home");
+        }
+    }
+
+    [HttpGet]
+    [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
+    public async Task<IActionResult> ViewApprovedProjectRequests(
+        int page = 1,
+        int pageSize = 10)
+    {
+        try
+        {
+            PagedResult<CollectionProjectRequestViewModel> model = await projectRequestService
+                .GetPagedProjectRequestsAsync(page, pageSize, Approved);
+
+            return View(model);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError($"An error occurred while fetching approved project requests. {ex.Message}");
+            return RedirectToAction("Error", "Home");
+        }
+    }
+
+    [HttpGet]
+    [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
+    public async Task<IActionResult> ViewDeclinedProjectRequests(
+        int page = 1,
+        int pageSize = 10)
+    {
+        try
+        {
+            PagedResult<CollectionProjectRequestViewModel> model = await projectRequestService
+                .GetPagedProjectRequestsAsync(page, pageSize, Declined);
+
+            return View(model);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError($"An error occurred while fetching declined project requests. {ex.Message}");
             return RedirectToAction("Error", "Home");
         }
     }
@@ -103,6 +143,7 @@ public class ProjectRequestController(
     }
 
     [HttpPost]
+    [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
     public async Task<IActionResult> ApproveProject(
         int projectRequestId)
     {
@@ -119,6 +160,7 @@ public class ProjectRequestController(
     }
 
     [HttpPost]
+    [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
     public async Task<IActionResult> DeclineProject(
         int projectRequestId)
     {

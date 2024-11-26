@@ -1,6 +1,6 @@
 ﻿using Profais.Services.ViewModels.ProjectRequest;
 using Profais.Services.ViewModels.Shared;
-
+using Profais.Common.Enums;
 namespace Profais.Services.Interfaces;
 
 public interface IProjectRequestService
@@ -11,7 +11,7 @@ public interface IProjectRequestService
 
     Task<ProjectRequestViewModel> GetProjectRequestsByIdAsync(int projectRequestId);
 
-    Task<PagedResult<CollectionProjectRequestViewModel>> GetPagedOnGoingProjectRequestsAsync(int page, int pageSize);
+    Task<PagedResult<CollectionProjectRequestViewModel>> GetPagedProjectRequestsAsync(int page, int pageSize, RequestStatus status);
 
     Task ApproveProjectRequestById(int projectRequestId);
 

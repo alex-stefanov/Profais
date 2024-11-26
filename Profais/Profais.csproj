@@ -25,4 +25,8 @@
     <ProjectReference Include="..\Profais.Services\Profais.Services.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Views\Penalty\" />
+  </ItemGroup>
+
 </Project>
