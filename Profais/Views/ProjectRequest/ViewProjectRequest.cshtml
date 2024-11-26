@@ -1,0 +1,60 @@
+﻿@using Profais.Services.ViewModels.ProjectRequest;
+@model ProjectRequestViewModel
+
+@{
+    ViewData["Title"] = "Project Request - Details";
+}
+
+<h2>
+    @ViewData["Title"]
+</h2>
+
+<div class="form-container">
+    <form method="post" asp-action="ApproveProject" id="approveForm">
+        <div class="form-group">
+            <label asp-for="Title" class="control-label"></label>
+            <input asp-for="Title" class="form-control" readonly />
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Description" class="control-label"></label>
+            <textarea asp-for="Description" class="form-control" readonly></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="ClientName" class="control-label"></label>
+            <input asp-for="ClientName" class="form-control" readonly />
+            <span asp-validation-for="ClientName" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="ClientNumber" class="control-label"></label>
+            <input asp-for="ClientNumber" class="form-control" readonly />
+            <span asp-validation-for="ClientNumber" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Status" class="control-label"></label>
+            <select asp-for="Status" class="form-control" disabled>
+                <option value="@Model.Status">@Model.Status</option>
+            </select>
+            <span asp-validation-for="Status" class="text-danger"></span>
+        </div>
+
+        <input type="hidden" name="projectRequestId" value="@Model.Id" />
+
+        <button type="submit" class="btn btn-success">
+            Approve
+        </button>
+    </form>
+
+    <form method="post" asp-action="DeclineProject" id="declineForm">
+        <input type="hidden" name="projectRequestId" value="@Model.Id" />
+
+        <button type="submit" class="btn btn-danger">
+            Decline
+        </button>
+    </form>
+</div>

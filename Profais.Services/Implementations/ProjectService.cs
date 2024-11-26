@@ -8,6 +8,7 @@ using Profais.Services.ViewModels.Task;
 using Profais.Services.ViewModels.Worker;
 using Profais.Services.ViewModels.Material;
 using Profais.Services.ViewModels.Message;
+using Profais.Services.ViewModels.SpecialistRequest;
 
 namespace Profais.Services.Implementations;
 
@@ -197,6 +198,9 @@ public class ProjectService(
         project.AbsoluteAddress = model.AbsoluteAddress;
         project.IsCompleted = model.IsCompleted;
 
-        await projectRepository.UpdateAsync(project);
+        if (!await projectRepository.UpdateAsync(project))
+        {
+            throw new ArgumentException($"Project with id `{model.Id}` wasn't updated");
+        }
     }
 }

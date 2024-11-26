@@ -7,6 +7,7 @@ using Profais.Services.ViewModels.Task;
 using Profais.Services.ViewModels.Material;
 using Profais.Services.ViewModels.Worker;
 using Profais.Services.ViewModels.Shared;
+using Profais.Services.ViewModels.SpecialistRequest;
 
 namespace Profais.Services.Implementations;
 
@@ -261,6 +262,9 @@ public class TaskService(
         task.IsCompleted = model.IsCompleted;
         task.HoursWorked = model.HoursWorked;
 
-        await taskRepository.UpdateAsync(task);
+        if (!await taskRepository.UpdateAsync(task))
+        {
+            throw new ArgumentException($"Task with id `{model.Id}` wasn't updated");
+        }
     }
 }

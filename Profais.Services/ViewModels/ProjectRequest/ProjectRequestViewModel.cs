@@ -6,6 +6,9 @@ namespace Profais.Services.ViewModels.ProjectRequest;
 
 public class ProjectRequestViewModel
 {
+    [Required(ErrorMessage = "Id is required.")]
+    public int Id { get; set; }
+
     /// <summary>
     /// Gets or sets the title of the project request.
     /// </summary>
@@ -20,11 +23,8 @@ public class ProjectRequestViewModel
     [StringLength(DescriptionMaxLength, MinimumLength = DescriptionMinLength, ErrorMessage = "Description must be between {2} and {1} characters.")]
     public required string Description { get; set; }
 
-    /// <summary>
-    /// Gets or sets the client ID associated with the project request.
-    /// </summary>
-    [Required(ErrorMessage = "Client ID is required.")]
-    public required string ClientId { get; set; }
+    [Required(ErrorMessage = "Client name is required.")]
+    public required string ClientName { get; set; }
 
     /// <summary>
     /// Gets or sets the client number associated with the project request.

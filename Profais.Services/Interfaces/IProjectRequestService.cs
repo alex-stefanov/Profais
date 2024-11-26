@@ -1,4 +1,5 @@
 ﻿using Profais.Services.ViewModels.ProjectRequest;
+using Profais.Services.ViewModels.Shared;
 
 namespace Profais.Services.Interfaces;
 
@@ -8,5 +9,11 @@ public interface IProjectRequestService
 
     Task CreateAddProjectRequestAsync(AddProjectRequestViewModel model);
 
-    Task<IEnumerable<ProjectRequestViewModel>> GetProjectRequestsByClientAsync(string clientId);
+    Task<ProjectRequestViewModel> GetProjectRequestsByIdAsync(int projectRequestId);
+
+    Task<PagedResult<CollectionProjectRequestViewModel>> GetPagedOnGoingProjectRequestsAsync(int page, int pageSize);
+
+    Task ApproveProjectRequestById(int projectRequestId);
+
+    Task DeclineProjectRequestById(int projectRequestId);
 }
