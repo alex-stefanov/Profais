@@ -1,0 +1,38 @@
+﻿@using Profais.Services.ViewModels.Penalty;
+@model PenaltyViewModel
+
+@{
+	ViewData["Title"] = "Penalty - Details";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<div class="card">
+	<div class="card-header">
+		<h4>
+			@Model.Title
+		</h4>
+	</div>
+	<div class="card-body">
+		<div class="mb-3">
+			<label for="penaltyId" class="form-label">
+				Penalty ID
+			</label>
+			<input type="text" class="form-control" id="penaltyId" value="@Model.Id" readonly />
+		</div>
+
+		<div class="mb-3">
+			<label for="penaltyTitle" class="form-label">
+				Title
+			</label>
+			<input type="text" class="form-control" id="penaltyTitle" value="@Model.Title" readonly />
+		</div>
+
+		<div class="mb-3">
+			<label for="penaltyDescription" class="form-label">
+				Description
+			</label>
+			<textarea class="form-control" id="penaltyDescription" rows="4" readonly>@Model.Description</textarea>
+		</div>
+	</div>
+</div>

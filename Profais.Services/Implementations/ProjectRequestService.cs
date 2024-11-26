@@ -23,7 +23,7 @@ public class ProjectRequestService(
             Description = model.Description,
             ClientId = model.ClientId,
             ClientNumber = model.ClientNumber,
-            Status = RequestStatus.Pending,
+            Status = Pending,
         };
 
         await projectRequestRepository.AddAsync(projectRequest);

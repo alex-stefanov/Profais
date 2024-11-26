@@ -3,7 +3,6 @@ using System.Net.Mail;
 using System.Net;
 using Microsoft.Extensions.Options;
 using Profais.Common.Options;
-using Profais.Data.Models;
 
 namespace Profais.Services.Implementations;
 

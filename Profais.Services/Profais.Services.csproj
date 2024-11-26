@@ -21,8 +21,4 @@
     <ProjectReference Include="..\Profais.Data\Profais.Data.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="ViewModels\Penalty\" />
-  </ItemGroup>
-
 </Project>
