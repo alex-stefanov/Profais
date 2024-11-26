@@ -31,7 +31,9 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services)
     {
         services.AddScoped<ICommonService, CommonService>();
+        services.AddScoped<IEmailSenderService, EmailSenderService>();
         services.AddScoped<IMaterialService, MaterialService>();
+        services.AddScoped<IProjectRequestService, ProjectRequestService>();
         services.AddScoped<IMessageService, MessageService>();
         services.AddScoped<IProjectService, ProjectService>();
         services.AddScoped<ISpecialistRequestService, SpecialistRequestService>();
