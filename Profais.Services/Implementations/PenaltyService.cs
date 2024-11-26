@@ -8,9 +8,79 @@ using Profais.Services.ViewModels.Shared;
 namespace Profais.Services.Implementations;
 
 public class PenaltyService(
+    IRepository<ProfUserPenalty, object> userPenaltyRepository,
     IRepository<Penalty, int> penaltyRepository)
     : IPenaltyService
 {
+    public async Task AddUserPenaltyByIds(
+        string userId,
+        int penaltyId)
+    {
+        ProfUserPenalty profUserPenalty = new ProfUserPenalty()
+        {
+            PenaltyId = penaltyId,
+            UserId = userId,
+        };
+
+        await userPenaltyRepository.AddAsync(profUserPenalty);
+    }
+
+    public async Task<PagedResult<FullCollectionPenaltyViewModel>> GetAllPagedPenaltiesAsync(
+        int pageNumber,
+        int pageSize)
+    {
+        IQueryable<ProfUserPenalty> query = userPenaltyRepository
+            .GetAllAttached()
+            .Include(x => x.User)
+            .Include(x => x.Penalty);
+
+        int totalCount = await query.CountAsync();
+
+        List<FullCollectionPenaltyViewModel> items = await query
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .Select(x => new FullCollectionPenaltyViewModel
+            {
+                Id = x.PenaltyId,
+                Title = x.Penalty.Title,
+                UserId = x.UserId,
+                UserName = $"{x.User.FirstName} {x.User.LastName}",
+            })
+            .ToListAsync();
+
+        return new PagedResult<FullCollectionPenaltyViewModel>
+        {
+            Items = items,
+            CurrentPage = pageNumber,
+            TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
+        };
+    }
+
+    public async Task<UserPenaltyViewModel> GetAllPenaltyUsersAsync()
+    {
+        IQueryable<ProfUserPenalty> query = userPenaltyRepository
+             .GetAllAttached();
+
+        return new UserPenaltyViewModel
+        {
+            Penalties = await query
+            .Include(x => x.Penalty)
+            .Select(x => new PenaltyViewModel
+            {
+                Id = x.PenaltyId,
+                Title = x.Penalty.Title,
+                Description = string.Empty,
+            }).ToListAsync(),
+            Users = await query
+            .Include(x => x.User)
+            .Select(x => new UserForPenaltyViewModel
+            {
+                Id = x.UserId,
+                UserName = $"{x.User.FirstName} {x.User.LastName}",
+            }).ToListAsync(),
+        };
+    }
+
     public async Task<PagedResult<CollectionPenaltyViewModel>> GetPagedPenaltiesByUserIdAsync(
         string userId,
         int pageNumber,
@@ -59,5 +129,23 @@ public class PenaltyService(
             Description = penalty.Description,
             Title = penalty.Title,
         };
+    }
+
+    public async Task RemoveUserPenaltyByIds(
+        string userId,
+        int penaltyId)
+    {
+        ProfUserPenalty? profUserPenalty = await userPenaltyRepository
+            .FirstOrDefaultAsync(x => x.PenaltyId == penaltyId && x.UserId == userId);
+
+        if (profUserPenalty is null)
+        {
+            throw new ArgumentException("UserPenalty not found");
+        }
+
+        if (!await userPenaltyRepository.DeleteAsync(profUserPenalty))
+        {
+            throw new ArgumentException($"UserProject with ids: userId `{userId}`, penaltyId `{penaltyId}` wasn't removed");
+        }
     }
 }

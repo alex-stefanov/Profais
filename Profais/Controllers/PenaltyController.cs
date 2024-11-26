@@ -1,13 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 using Profais.Data.Models;
-using Profais.Services.Implementations;
 using Profais.Services.Interfaces;
 using Profais.Services.ViewModels.Penalty;
 using Profais.Services.ViewModels.Shared;
-
 using static Profais.Common.Constants.UserConstants;
 
 namespace Profais.Controllers;
@@ -67,27 +64,91 @@ public class PenaltyController(
 
     [HttpGet]
     [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
-    public IActionResult GetAllPenalties(
-        int page = 1)
+    public async Task<IActionResult> GetAllPenalties(
+        int pageNumber = 1,
+        int pageSize = 8)
     {
-        return View();
+		try
+		{
+			PagedResult<FullCollectionPenaltyViewModel> model = await penaltyService
+				.GetAllPagedPenaltiesAsync(pageNumber, pageSize);
+
+			return View(model);
+		}
+		catch (Exception ex)
+		{
+			logger.LogError($"An error occurred while getting penalties with users. {ex.Message}");
+			return RedirectToAction("Error", "Home");
+		}
+	}
+
+    [HttpGet]
+    [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
+    public async Task<IActionResult> AddPenaltyToUser()
+    {
+        try
+        {
+            UserPenaltyViewModel model = await penaltyService
+                .GetAllPenaltyUsersAsync();
+
+            return View(model);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError($"An error occurred while getting userPenalties. {ex.Message}");
+            return RedirectToAction("Error", "Home");
+        }
     }
 
     [HttpPost]
     [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
-    public IActionResult AddPenaltyToUser(
-        string userId,
-        int penaltyId)
+    public async Task<IActionResult> AddPenaltyToUser(
+        UserPenaltyViewModel model)
     {
-        return RedirectToAction("GetAllPenalties");
-    }
+        if(model.SelectedUserId is null)
+        {
+           ModelState.AddModelError(nameof(model.SelectedUserId), "User not selected");
+        }
+
+        if (model.SelectedPenaltyId is null)
+        {
+            ModelState.AddModelError(nameof(model.SelectedPenaltyId), "Penalty not selected");
+        }
+
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
+        try
+		{
+			await penaltyService.AddUserPenaltyByIds(model.SelectedUserId!, (int)model.SelectedPenaltyId!);
+
+			return RedirectToAction(nameof(GetAllPenalties));
+		}
+		catch (Exception ex)
+		{
+			logger.LogError($"An error occurred while adding a penalty to a user. {ex.Message}");
+			return RedirectToAction("Error", "Home");
+		}
+	}
 
     [HttpDelete]
-    [Authorize(Roles = "Manager, Admin")]
-    public IActionResult RemoveUserPenalty(
+	[Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
+	public async Task<IActionResult> RemoveUserPenalty(
         string userId,
         int penaltyId)
     {
-        return RedirectToAction("GetAllPenalties");
-    }
+		try
+		{
+            await penaltyService.RemoveUserPenaltyByIds(userId, penaltyId);
+
+            return RedirectToAction(nameof(GetAllPenalties));
+		}
+		catch (Exception ex)
+		{
+			logger.LogError($"An error occurred while removing penalty from a user. {ex.Message}");
+			return RedirectToAction("Error", "Home");
+		}
+	}
 }
