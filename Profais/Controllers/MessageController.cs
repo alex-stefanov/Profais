@@ -2,39 +2,37 @@
 using Microsoft.AspNetCore.Mvc;
 using Profais.Services.Interfaces;
 using Profais.Services.ViewModels.Message;
+using Profais.Services.ViewModels.Shared;
 using static Profais.Common.Constants.UserConstants;
 
 namespace Profais.Controllers;
 
 [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
 public class MessageController(
-    IMessageService messageService)
+    IMessageService messageService,
+    ILogger<MessageController> logger)
     : Controller
 {
     [HttpGet]
     public async Task<IActionResult> ViewMessages(
         int projectId,
-        int page = 1)
+        int page = 1,
+        int pageSize = 6)
     {
-        const int pageSize = 6;
-        IEnumerable<MessageViewModel> messages = await messageService
-            .GetAllMessagesByProjectIdAsync(projectId, page, pageSize);
-
-        int totalMessages = await messageService
-            .GetTotalMessagesByProjectIdAsync(projectId);
-
-        var totalPages = (int)Math.Ceiling(totalMessages / (double)pageSize);
-
-        var viewModel = new PaginatedMessagesViewModel
+        try
         {
-            Messages = messages,
-            ProjectId = projectId,
-            CurrentPage = page,
-            TotalPages = totalPages
-        };
+            PagedResult<MessageViewModel> model = await messageService
+                .GetPagedMessagesByProjectIdAsync(projectId, page, pageSize);
 
-        return View(viewModel);
+            return View(model);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError($"An error occurred while getting messages for project {projectId}. {ex.Message}");
+            return RedirectToAction("Error", "Home");
+        }
     }
+
 
     [HttpGet]
     public async Task<IActionResult> ViewMessage(

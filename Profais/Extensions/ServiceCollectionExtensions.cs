@@ -34,7 +34,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IMaterialService, MaterialService>();
         services.AddScoped<IMessageService, MessageService>();
         services.AddScoped<IProjectService, ProjectService>();
-        services.AddScoped<IRequestService, RequestService>();
+        services.AddScoped<ISpecialistRequestService, SpecialistRequestService>();
+        services.AddScoped<IWorkerRequestService, WorkerRequestService>();
         services.AddScoped<ITaskService, TaskService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IWorkerService, WorkerService>();

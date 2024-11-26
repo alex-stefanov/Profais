@@ -3,6 +3,7 @@ using Profais.Data.Models;
 using Profais.Data.Repositories;
 using Profais.Services.Interfaces;
 using Profais.Services.ViewModels.Message;
+using Profais.Services.ViewModels.Shared;
 using Profais.Services.ViewModels.Worker;
 
 namespace Profais.Services.Implementations;
@@ -37,33 +38,40 @@ public class MessageService(
         };
     }
 
-    public async Task<int> GetTotalMessagesByProjectIdAsync(
-        int projectId)
-        => await messageRepository
-        .GetAllAttached()
-        .Where(x => x.ProjectId == projectId)
-        .CountAsync();
-
-    public async Task<IEnumerable<MessageViewModel>> GetAllMessagesByProjectIdAsync(
+    public async Task<PagedResult<MessageViewModel>> GetPagedMessagesByProjectIdAsync(
         int projectId,
         int page,
         int pageSize)
-        => await messageRepository
-        .GetAllAttached()
-        .Where(x => x.ProjectId == projectId)
-        .Include(x => x.Client)
-        .Skip((page - 1) * pageSize)
-        .Take(pageSize)
-        .Select(x => new MessageViewModel
-        {
-            User = new UserViewModel
+    {
+        IQueryable<Message> query = messageRepository
+            .GetAllAttached()
+            .Where(x => x.ProjectId == projectId)
+            .Include(x => x.Client);
+
+        int totalCount = await query.CountAsync();
+
+        List<MessageViewModel> items = await query
+            .OrderBy(x => x.Description)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Select(x => new MessageViewModel
             {
-                Id = x.ClientId,
-                UserFirstName = x.Client.FirstName,
-                UserLastName = x.Client.LastName,
-            },
-            Description = x.Description,
-            ProjectId = x.ProjectId
-        })
-        .ToArrayAsync();
+                User = new UserViewModel
+                {
+                    Id = x.ClientId,
+                    UserFirstName = x.Client.FirstName,
+                    UserLastName = x.Client.LastName,
+                },
+                Description = x.Description,
+                ProjectId = x.ProjectId
+            })
+            .ToListAsync();
+
+        return new PagedResult<MessageViewModel>
+        {
+            Items = items,
+            CurrentPage = page,
+            TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
+        };
+    }
 }

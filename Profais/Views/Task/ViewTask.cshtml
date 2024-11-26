@@ -1,36 +1,61 @@
 ﻿@using Profais.Services.ViewModels.Task;
+@using Profais.Services.ViewModels.Material;
 @model TaskViewModel
 
 @{
-    ViewData["Title"] = "Task Details";
+    ViewData["Title"] = "Task - Details";
 }
 
 <div class="container mt-4">
     <div class="card">
         <div class="card-header">
-            <h3>Task Details</h3>
+            <h2>
+                @ViewData["Title"]
+            </h2>
         </div>
         <div class="card-body">
             <div class="row mb-3">
                 <div class="col-md-6">
-                    <strong>Title:</strong> @Model.Title
+                    <strong>
+                        Title:
+                    </strong> 
+                    <span>
+                        @Model.Title
+                    </span>
                 </div>
                 <div class="col-md-6">
-                    <strong>Description:</strong> @Model.Description
+                    <strong>
+                        Description:
+                    </strong> 
+                    <span>
+                        @Model.Description
+                    </span>
                 </div>
             </div>
             <div class="row mb-3">
                 <div class="col-md-6">
-                    <strong>Hours Worked:</strong> @Model.HoursWorked
+                    <strong>
+                        Hours Worked:
+                    </strong>
+                    <span>
+                        @Model.HoursWorked
+                    </span>
                 </div>
                 <div class="col-md-6">
-                    <strong>Status:</strong> @(Model.IsCompleted ? "Completed" : "Incomplete")
+                    <strong>
+                        Status:
+                     </strong>
+                     <span>
+                        @(Model.IsCompleted ? "Completed" : "Incomplete")
+                     </span>
                 </div>
             </div>
 
-            <h5>Materials</h5>
+            <h5>
+                Materials
+            </h5>
             <ul class="list-group mb-3">
-                @foreach (var material in Model.Materials)
+                @foreach (MaterialViewModel material in Model.Materials)
                 {
                     <li class="list-group-item">
                         @material.Name (Used for: @material.UsedFor)
@@ -52,15 +77,21 @@
             {
                 <div class="mt-4">
                     <form asp-action="AddWorkers" asp-controller="Worker" asp-route-taskId="@Model.Id" method="get">
-                        <button type="submit" class="btn btn-primary">Add Workers</button>
+                        <button type="submit" class="btn btn-primary">
+                            Add Workers
+                        </button>
                     </form>
 
                     <form asp-action="AddMaterialsToTask" asp-controller="Material" asp-route-taskId="@Model.Id" method="get" class="mt-2">
-                        <button type="submit" class="btn btn-secondary">Add Materials</button>
+                        <button type="submit" class="btn btn-secondary">
+                            Add Materials
+                        </button>
                     </form>
 
                     <form asp-action="CompleteTask" asp-route-taskId="@Model.Id" method="post" class="mt-2">
-                        <button type="submit" class="btn btn-success">Complete Task</button>
+                        <button type="submit" class="btn btn-success">
+                            Complete Task
+                        </button>
                     </form>
                 </div>
             }

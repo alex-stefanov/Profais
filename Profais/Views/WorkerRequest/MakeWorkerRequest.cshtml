@@ -1,12 +1,13 @@
 ﻿@using Profais.Services.ViewModels.WorkerRequest;
-
 @model WorkerRequestViewModel;
 
 @{
-    ViewBag.Title = "Make Request - Worker";
+    ViewData["Title"] = "Make Request - Worker";
 }
 
-<h2>@ViewBag.Title</h2>
+<h2>
+    @ViewData["Title"]
+</h2>
 
 <form asp-action="MakeWorkerRequest" method="post">
     <div class="form-group">

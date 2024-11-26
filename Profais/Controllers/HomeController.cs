@@ -4,8 +4,7 @@ using Profais.Services.ViewModels.Shared;
 
 namespace Profais.Controllers;
 
-public class HomeController(
-    ILogger<HomeController> logger)
+public class HomeController()
     : Controller
 {
     public IActionResult Index()

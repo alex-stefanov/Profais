@@ -6,6 +6,7 @@ using Profais.Services.Interfaces;
 using Profais.Services.ViewModels.Task;
 using Profais.Services.ViewModels.Material;
 using Profais.Services.ViewModels.Worker;
+using Profais.Services.ViewModels.Shared;
 
 namespace Profais.Services.Implementations;
 
@@ -98,18 +99,23 @@ public class TaskService(
         }
     }
 
-    public async Task<IEnumerable<TaskViewModel>> GetAllTasksByProjectIdAsync(
+    public async Task<PagedResult<TaskViewModel>> GetPagedTasksByProjectIdAsync(
         int projectId,
         int page,
         int pageSize)
-        => await taskRepository
+    {
+        IQueryable<ProfTask> query = taskRepository
             .GetAllAttached()
             .Where(x => x.ProfProjectId == projectId)
             .Include(x => x.TaskMaterials)
                 .ThenInclude(t => t.Material)
             .Include(x => x.UserTasks)
                 .ThenInclude(u => u.Worker)
-            .OrderByDescending(t => t.IsCompleted)
+            .OrderByDescending(t => t.IsCompleted);
+
+        int totalTasks = await query.CountAsync();
+
+        TaskViewModel[] tasks = await query
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .Select(x => new TaskViewModel
@@ -125,22 +131,25 @@ public class TaskService(
                     Id = t.MaterialId,
                     Name = t.Material.Name,
                     UsedFor = t.Material.UsedForId,
-                }),
+                }).ToArray(),
                 Users = x.UserTasks.Select(u => new UserViewModel
                 {
                     Id = u.WorkerId,
                     UserFirstName = u.Worker.FirstName,
                     UserLastName = u.Worker.LastName,
-                }),
+                }).ToArray(),
             })
             .ToArrayAsync();
 
-    public async Task<int> GetTotalTasksByProjectIdAsync(
-        int projectId)
-        => await taskRepository
-        .GetAllAttached()
-        .Where(x => x.ProfProjectId == projectId)
-        .CountAsync();
+        int totalPages = (int)Math.Ceiling(totalTasks / (double)pageSize);
+
+        return new PagedResult<TaskViewModel>
+        {
+            Items = tasks,
+            CurrentPage = page,
+            TotalPages = totalPages
+        };
+    }
 
     public async Task AddMaterialsToTaskAsync(
         int taskId,

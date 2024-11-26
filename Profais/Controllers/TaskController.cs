@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Profais.Services.Interfaces;
+using Profais.Services.ViewModels.Shared;
 using Profais.Services.ViewModels.Task;
 using static Profais.Common.Constants.UserConstants;
 
@@ -15,25 +16,21 @@ public class TaskController(
     [HttpGet]
     public async Task<IActionResult> ViewTasks(
         int projectId,
-        int page = 1)
+        int page = 1,
+        int pageSize = 6)
     {
-        const int pageSize = 6;
-
-        IEnumerable<TaskViewModel> tasks = await taskService.GetAllTasksByProjectIdAsync(projectId, page, pageSize);
-
-        int totalTasks = await taskService.GetTotalTasksByProjectIdAsync(projectId);
-
-        var totalPages = (int)Math.Ceiling(totalTasks / (double)pageSize);
-
-        var viewModel = new PaginatedTaskViewModel
+        try
         {
-            Tasks = tasks,
-            ProjectId = projectId,
-            CurrentPage = page,
-            TotalPages = totalPages
-        };
+            PagedResult<TaskViewModel> model = await taskService
+                .GetPagedTasksByProjectIdAsync(projectId, page, pageSize);
 
-        return View(viewModel);
+            return View(model);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError($"An error occurred while getting tasks for project {projectId}. {ex.Message}");
+            return RedirectToAction("Error", "Home");
+        }
     }
 
     [HttpGet]

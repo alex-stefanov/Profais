@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Profais.Services.Interfaces;
 using Profais.Services.ViewModels.Project;
+using Profais.Services.ViewModels.Shared;
 using static Profais.Common.Constants.UserConstants;
 
 namespace Profais.Controllers;
@@ -19,8 +20,10 @@ public class ProjectController(
     {
         try
         {
-            var result = await projectService.GetPagedInCompletedProjectsAsync(pageNumber, pageSize);
-            return View(result);
+            PagedResult<ProjectViewModel> model = await projectService
+                .GetPagedInCompletedProjectsAsync(pageNumber, pageSize);
+
+            return View(model);
         }
         catch (Exception ex)
         {
@@ -36,7 +39,10 @@ public class ProjectController(
     {
         try
         {
-            return View(await projectService.GetPagedCompletedProjectsAsync(pageNumber, pageSize));
+            PagedResult<ProjectViewModel> model = await projectService
+               .GetPagedCompletedProjectsAsync(pageNumber, pageSize);
+
+            return View(model);
         }
         catch (Exception ex)
         {

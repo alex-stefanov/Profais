@@ -2,6 +2,8 @@
 @model PaginatedMaterialsViewModel
 
 @{
+    ViewData["Title"] = "Material - Add To Task";
+
     var usedForEnumValues = Model.UsedForEnumValues;
     var materials = Model.Materials;
     var totalPages = Model.TotalPages;
@@ -9,7 +11,9 @@
     var taskId = Model.TaskId;
 }
 
-<h2>Select Materials for Task</h2>
+<h2>
+    @ViewData["Title"]
+</h2>
 
 <form method="get">
     <div class="row">

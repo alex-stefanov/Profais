@@ -2,10 +2,12 @@
 @model ICollection<WorkerRequestViewModel>
 
 @{
-    ViewBag.Title = "Preview Requests - Worker";
+    ViewData["Title"] = "Preview Requests - Worker";
 }
 
-<h2>@ViewBag.Title</h2>
+<h2>
+    @ViewData["Title"]
+</h2>
 
 <table class="table">
     <thead>

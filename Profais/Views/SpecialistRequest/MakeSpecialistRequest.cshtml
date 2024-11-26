@@ -1,11 +1,13 @@
 ﻿@using Profais.Services.ViewModels.SpecialistRequest;
-
 @model SpecialistRequestViewModel;
+
 @{
-    ViewBag.Title = "Make Request - Specialist";
+    ViewData["Title"] = "Make Request - Specialist";
 }
 
-<h2>@ViewBag.Title</h2>
+<h2>
+    @ViewData["Title"]
+</h2>
 
 <form asp-action="MakeSpecialistRequest" method="post">
     <div class="form-group">

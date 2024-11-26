@@ -1,6 +1,7 @@
 ﻿using Profais.Common.Enums;
 using Profais.Services.ViewModels.Task;
 using Profais.Services.ViewModels.Material;
+using Profais.Services.ViewModels.Shared;
 
 namespace Profais.Services.Interfaces;
 
@@ -14,9 +15,7 @@ public interface ITaskService
 
     Task CompleteTaskByIdAsync(int taskId);
 
-    Task<IEnumerable<TaskViewModel>> GetAllTasksByProjectIdAsync(int projectId, int page, int pageSize);
-
-    Task<int> GetTotalTasksByProjectIdAsync(int projectId);
+    Task<PagedResult<TaskViewModel>> GetPagedTasksByProjectIdAsync(int projectId, int page, int pageSize);
 
     Task AddMaterialsToTaskAsync(int taskId, List<int> materialIds);
 

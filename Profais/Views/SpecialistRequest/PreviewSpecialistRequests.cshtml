@@ -1,12 +1,13 @@
 ﻿@using Profais.Services.ViewModels.SpecialistRequest;
-
 @model ICollection<SpecialistRequestViewModel>;
 
 @{
-    ViewBag.Title = "Preview Requests - Specialist";
+    ViewData["Title"] = "Preview Requests - Specialist";
 }
 
-<h2>@ViewBag.Title</h2>
+<h2>
+    @ViewData["Title"]
+</h2>
 
 <table class="table">
     <thead>
@@ -32,7 +33,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var request in Model)
+        @foreach (SpecialistRequestViewModel request in Model)
         {
             <tr>
                 <td>

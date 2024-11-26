@@ -2,31 +2,41 @@
 @model MessageViewModel
 
 @{
-    ViewData["Title"] = "Message Detail";
+    ViewData["Title"] = "Message - Details";
 }
 
 <div class="container mt-5">
-    <h2>Message Detail</h2>
+   <h2>
+        @ViewData["Title"]
+   </h2>
 
     <div class="card">
         <div class="card-header">
-            <h4 class="card-title">Message from @Model.User.UserFirstName @Model.User.UserLastName</h4>
+            <h4 class="card-title">
+                Message from @Model.User.UserFirstName @Model.User.UserLastName
+            </h4>
         </div>
         <div class="card-body">
             <div class="row">
                 <div class="col-md-6">
                     <strong>User:</strong>
-                    <p>@Model.User.UserFirstName @Model.User.UserLastName</p>
+                    <p>
+                        @Model.User.UserFirstName @Model.User.UserLastName
+                    </p>
                 </div>
                 <div class="col-md-6">
                     <strong>Project ID:</strong>
-                    <p>@Model.ProjectId</p>
+                    <p>
+                        @Model.ProjectId
+                    </p>
                 </div>
             </div>
 
             <div class="mt-4">
                 <strong>Description:</strong>
-                <p>@Model.Description</p>
+                <p>
+                    @Model.Description
+                </p>
             </div>
         </div>
     </div>
