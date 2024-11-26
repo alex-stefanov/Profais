@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Profais.Common.Options;
 using Profais.Data;
 using Profais.Data.Models;
 using Profais.Extensions;
@@ -67,6 +68,9 @@ public class Program
            .AddRoles<IdentityRole<string>>()
            .AddSignInManager<SignInManager<ProfUser>>()
            .AddUserManager<UserManager<ProfUser>>();
+
+        builder.Services
+            .Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
 
         builder.Services
             .RegisterRepositories()
