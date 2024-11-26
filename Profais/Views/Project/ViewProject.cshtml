@@ -101,6 +101,12 @@
                         Add Task
                     </button>
                 </form>
+                <form method="get" asp-action="EditProject">
+                    <input type="hidden" asp-for="Id" name="projectId" />
+                    <button type="submit" class="btn btn-warning mt-3">
+                        Edit Project
+                    </button>
+                </form>
             </div>
         </div>
     </div>

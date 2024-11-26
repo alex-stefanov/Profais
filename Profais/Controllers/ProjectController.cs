@@ -81,4 +81,44 @@ public class ProjectController(
             return RedirectToAction("Error", "Home");
         }
     }
+
+    [HttpGet]
+    public async Task<IActionResult> EditProject(
+        int projectId)
+    {
+        try
+        {
+            EditProjectViewModel model = await projectService
+                .GetEditProjectByIdAsync(projectId);
+
+            return View(model);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError($"An error occurred while getting project details for editing. {ex.Message}");
+            return RedirectToAction("Error", "Home");
+        }
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> EditProject(
+        EditProjectViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
+        try
+        {
+            await projectService.UpdateProjectAsync(model);
+
+            return RedirectToAction(nameof(ViewProject), new { projectId = model.Id });
+        }
+        catch (Exception ex)
+        {
+            logger.LogError($"An error occurred while editing the project: {ex.Message}");
+            return RedirectToAction("Error", "Home");
+        }
+    }
 }

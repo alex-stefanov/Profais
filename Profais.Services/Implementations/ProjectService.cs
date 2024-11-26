@@ -159,4 +159,44 @@ public class ProjectService(
             TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
         };
     }
+
+    public async Task<EditProjectViewModel> GetEditProjectByIdAsync(
+        int projectId)
+    {
+        ProfProject? project = await projectRepository
+            .GetByIdAsync(projectId);
+
+        if (project is null)
+        {
+            throw new ArgumentNullException(nameof(project), "Project is not specified");
+        }
+
+        return new EditProjectViewModel
+        {
+            Id = projectId,
+            Title = project.Title,
+            AbsoluteAddress = project.AbsoluteAddress,
+            IsCompleted = project.IsCompleted,
+            Scheme = project.Scheme,
+        };
+    }
+
+    public async Task UpdateProjectAsync(
+        EditProjectViewModel model)
+    {
+        ProfProject? project = await projectRepository
+            .GetByIdAsync(model.Id);
+
+        if (project is null)
+        {
+            throw new Exception("Project not found.");
+        }
+
+        project.Title = model.Title;
+        project.Scheme = model.Scheme;
+        project.AbsoluteAddress = model.AbsoluteAddress;
+        project.IsCompleted = model.IsCompleted;
+
+        await projectRepository.UpdateAsync(project);
+    }
 }

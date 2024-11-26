@@ -1,0 +1,50 @@
+﻿@using Profais.Services.ViewModels.Project;
+@model EditProjectViewModel
+
+@{
+    ViewData["Title"] = "Project - Edit";
+}
+
+<div class="container mt-5">
+    <h2>
+        @ViewData["Title"]
+    </h2>
+
+    <form asp-action="EditProject" method="post">
+        <div class="form-group">
+            <label asp-for="Title">
+                Project Title
+            </label>
+            <input class="form-control" asp-for="Title" required />
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Scheme">
+                Scheme(Url)
+            </label>
+            <textarea class="form-control" asp-for="Scheme" required></textarea>
+            <span asp-validation-for="Scheme" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label for="AbsoluteAddress" asp-for="AbsoluteAddress">
+                Address
+            </label>
+            <input  class="form-control" id="AbsoluteAddress" name="AbsoluteAddress" asp-for="AbsoluteAddress" required />
+            <span asp-validation-for="AbsoluteAddress" class="text-danger"></span> 
+        </div>
+
+        <div class="form-group">
+            <label for="IsCompleted" asp-for="IsCompleted">
+                Is Completed
+             </label>
+            <input type="checkbox" asp-for="IsCompleted" />
+            <span asp-validation-for="IsCompleted" class="text-danger"></span> 
+        </div>
+
+        <button type="submit" class="btn btn-success mt-3">
+            Save Changes
+        </button>
+    </form>
+</div>
