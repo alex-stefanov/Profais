@@ -8,7 +8,7 @@ using static Profais.Common.Constants.UserConstants;
 
 namespace Profais.Controllers;
 
-[Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
+[Authorize]
 public class SpecialistRequestController(
     ISpecialistRequestService requestService,
     UserManager<ProfUser> userManager,
@@ -60,11 +60,12 @@ public class SpecialistRequestController(
     }
 
     [HttpGet]
-    [Authorize(Roles = ManagerRoleName)]
+    [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
     public async Task<IActionResult> PreviewSpecialistRequests()
        => View(await requestService.GetAllSpecialistViewModelsAsync());
 
     [HttpPost]
+    [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
     public async Task<IActionResult> ApproveSpecialistRequest(
         SpecialistRequestViewModel model)
     {
@@ -89,6 +90,7 @@ public class SpecialistRequestController(
     }
 
     [HttpPost]
+    [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
     public async Task<IActionResult> DeclineSpecialistRequest(
         SpecialistRequestViewModel model)
     {
