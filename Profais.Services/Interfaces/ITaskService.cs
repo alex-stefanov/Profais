@@ -20,4 +20,8 @@ public interface ITaskService
     Task AddMaterialsToTaskAsync(int taskId, List<int> materialIds);
 
     Task<PaginatedMaterialsViewModel> GetMaterialsWithPaginationAsync(int taskId, int page, int pageSize, List<UsedFor> usedForFilter);
+
+    Task<EditTaskViewModel> GetEditTaskByIdAsync(int taskId);
+
+    Task UpdateTaskAsync(EditTaskViewModel model);
 }

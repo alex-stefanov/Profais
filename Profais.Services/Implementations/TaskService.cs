@@ -220,4 +220,47 @@ public class TaskService(
             TaskId = taskId,
         };
     }
+
+    public async Task<EditTaskViewModel> GetEditTaskByIdAsync(
+        int taskId)
+    {
+        ProfTask? task = await taskRepository
+            .GetByIdAsync(taskId);
+
+        if (task is null)
+        {
+            throw new ArgumentNullException(nameof(task), "Task is not specified");
+        }
+
+        return new EditTaskViewModel
+        {
+            Id = taskId,
+            Title = task.Title,
+            Description = task.Description,
+            ProjectId = task.ProfProjectId,
+            IsCompleted = task.IsCompleted,
+            HoursWorked = task.HoursWorked,
+        };
+    }
+
+    public async Task UpdateTaskAsync(
+        EditTaskViewModel model)
+    {
+        ProfTask? task = await taskRepository
+            .GetByIdAsync(model.Id);
+
+        if (task is null)
+        {
+            throw new Exception("Task not found.");
+        }
+
+        task.Id = model.Id;
+        task.Title = model.Title;
+        task.Description = model.Description;
+        task.ProfProjectId = model.ProjectId;
+        task.IsCompleted = model.IsCompleted;
+        task.HoursWorked = model.HoursWorked;
+
+        await taskRepository.UpdateAsync(task);
+    }
 }

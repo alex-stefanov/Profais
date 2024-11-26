@@ -86,4 +86,44 @@ public class TaskController(
             return RedirectToAction("Error", "Home");
         }
     }
+
+    [HttpGet]
+    public async Task<IActionResult> EditTask(
+        int taskId)
+    {
+        try
+        {
+            EditTaskViewModel model = await taskService
+                .GetEditTaskByIdAsync(taskId);
+
+            return View(model);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError($"An error occurred while fetching the task for editing: {ex.Message}");
+            return RedirectToAction("Error", "Home");
+        }
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> EditTask(
+        EditTaskViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
+        try
+        {
+            await taskService.UpdateTaskAsync(model);
+
+            return RedirectToAction(nameof(ViewTask), new { taskId = model.Id });
+        }
+        catch (Exception ex)
+        {
+            logger.LogError($"An error occurred while updating the task: {ex.Message}");
+            return RedirectToAction("Error", "Home");
+        }
+    }
 }
