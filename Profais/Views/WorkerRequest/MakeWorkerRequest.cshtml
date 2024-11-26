@@ -1,8 +1,9 @@
-﻿@using Profais.Services.ViewModels.Request;
+﻿@using Profais.Services.ViewModels.WorkerRequest;
 
-@model SpecialistRequestViewModel;
+@model WorkerRequestViewModel;
+
 @{
-    ViewBag.Title = "Make Request - Specialist";
+    ViewBag.Title = "Make Request - Worker";
 }
 
 <h2>@ViewBag.Title</h2>
@@ -10,7 +11,7 @@
 <form asp-action="MakeWorkerRequest" method="post">
     <div class="form-group">
         <label asp-for="FirstName">
-            First Name
+           First Name
         </label>
         <input asp-for="FirstName" readonly class="form-control" />
         <span asp-validation-for="FirstName" class="text-danger"></span>

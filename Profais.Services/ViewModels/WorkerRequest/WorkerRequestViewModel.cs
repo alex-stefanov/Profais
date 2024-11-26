@@ -2,7 +2,7 @@
 using Profais.Common.Enums;
 using static Profais.Common.Constants.UserRequestConstants;
 
-namespace Profais.Services.ViewModels.Request;
+namespace Profais.Services.ViewModels.WorkerRequest;
 
 public class WorkerRequestViewModel
 {
