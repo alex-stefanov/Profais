@@ -16,6 +16,8 @@ public class SpecialistRequestController(
     : Controller
 {
     [HttpGet]
+    [Authorize(Roles = $"{WorkerRoleName},{ClientRoleName}")]
+
     public async Task<IActionResult> MakeSpecialistRequest()
     {
         string userId = userManager.GetUserId(User)!;
@@ -38,8 +40,9 @@ public class SpecialistRequestController(
     }
 
     [HttpPost]
+    [Authorize(Roles = $"{WorkerRoleName},{ClientRoleName}")]
     public async Task<IActionResult> MakeSpecialistRequest(
-        SpecialistRequestViewModel model)
+        MakeSpecialistRequestViewModel model)
     {
         if (!ModelState.IsValid)
         {
@@ -67,7 +70,7 @@ public class SpecialistRequestController(
     [HttpPost]
     [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
     public async Task<IActionResult> ApproveSpecialistRequest(
-        SpecialistRequestViewModel model)
+        ActionSpecialistRequestViewModel model)
     {
         if (!ModelState.IsValid
             || model is null)
@@ -92,7 +95,7 @@ public class SpecialistRequestController(
     [HttpPost]
     [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
     public async Task<IActionResult> DeclineSpecialistRequest(
-        SpecialistRequestViewModel model)
+        ActionSpecialistRequestViewModel model)
     {
         if (!ModelState.IsValid
             || model is null)

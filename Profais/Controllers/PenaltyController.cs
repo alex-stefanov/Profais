@@ -108,16 +108,13 @@ public class PenaltyController(
     {
         if(model.SelectedUserId is null)
         {
-           ModelState.AddModelError(nameof(model.SelectedUserId), "User not selected");
+            ModelState.AddModelError(nameof(model.SelectedUserId), "User not selected");
+            return View(model);
         }
 
         if (model.SelectedPenaltyId is null)
         {
             ModelState.AddModelError(nameof(model.SelectedPenaltyId), "Penalty not selected");
-        }
-
-        if (!ModelState.IsValid)
-        {
             return View(model);
         }
 
@@ -134,7 +131,7 @@ public class PenaltyController(
 		}
 	}
 
-    [HttpDelete]
+    [HttpPost]
 	[Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
 	public async Task<IActionResult> RemoveUserPenalty(
         string userId,

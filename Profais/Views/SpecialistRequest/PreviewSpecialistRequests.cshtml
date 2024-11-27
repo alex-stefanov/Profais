@@ -53,24 +53,16 @@
                 </td>
                 <td>
                     <form method="post" asp-action="ApproveSpecialistRequest">
-                        <input type="hidden" name="request.Id" value="@request.Id" />
-                        <input type="hidden" name="request.ClientId" value="@request.UserId" />
-                        <input type="hidden" name="request.FirstName" value="@request.FirstName" />
-                        <input type="hidden" name="request.LastName" value="@request.LastName" />
-                        <input type="hidden" name="request.ProfixId" value="@request.ProfixId" />
-                        <input type="hidden" name="request.Status" value="Accepted" />
+                        <input type="hidden" name="model.Id" value="@request.Id" />
+                        <input type="hidden" name="model.UserId" value="@request.UserId" />
                         <button type="submit" class="btn btn-success">
                             Approve
                         </button>
                     </form>
 
                     <form method="post" asp-action="DeclineSpecialistRequest">
-                        <input type="hidden" name="request.Id" value="@request.Id" />
-                        <input type="hidden" name="request.ClientId" value="@request.UserId" />
-                        <input type="hidden" name="request.FirstName" value="@request.FirstName" />
-                        <input type="hidden" name="request.LastName" value="@request.LastName" />
-                        <input type="hidden" name="request.ProfixId" value="@request.ProfixId" />
-                        <input type="hidden" name="request.Status" value="Declined" />
+                        <input type="hidden" name="model.Id" value="@request.Id" />
+                        <input type="hidden" name="model.UserId" value="@request.UserId" />
                         <button type="submit" class="btn btn-danger">
                             Decline
                         </button>

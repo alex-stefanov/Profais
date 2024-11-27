@@ -16,6 +16,7 @@ public class WorkerRequestController(
     : Controller
 {
     [HttpGet]
+    [Authorize(Roles = ClientRoleName)]
     public async Task<IActionResult> MakeWorkerRequest()
     {
         string userId = userManager.GetUserId(User)!;
@@ -38,8 +39,9 @@ public class WorkerRequestController(
     }
 
     [HttpPost]
+    [Authorize(Roles = ClientRoleName)]
     public async Task<IActionResult> MakeWorkerRequest(
-        WorkerRequestViewModel model)
+        MakeWorkerRequestViewModel model)
     {
         if (!ModelState.IsValid)
         {
@@ -67,7 +69,7 @@ public class WorkerRequestController(
     [HttpPost]
     [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
     public async Task<IActionResult> ApproveWorkerRequest(
-        WorkerRequestViewModel model)
+        ActionWorkerRequestViewModel model)
     {
         if (!ModelState.IsValid
             || model is null)
@@ -92,7 +94,7 @@ public class WorkerRequestController(
     [HttpPost]
     [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
     public async Task<IActionResult> DeclineWorkerRequest(
-        WorkerRequestViewModel model)
+        ActionWorkerRequestViewModel model)
     {
         if (!ModelState.IsValid
             || model is null)

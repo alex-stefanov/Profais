@@ -10,12 +10,12 @@ using Profais.Services.ViewModels.SpecialistRequest;
 namespace Profais.Services.Implementations;
 
 public class SpecialistRequestService(
-    IRepository<ProfUser,string> userRepository,
-    IRepository<ProfSpecialistRequest,int> specialistRequestRepository,
+    IRepository<ProfUser, string> userRepository,
+    IRepository<ProfSpecialistRequest, int> specialistRequestRepository,
     UserManager<ProfUser> userManager)
     : ISpecialistRequestService
 {
-    public async Task<SpecialistRequestViewModel> GetEmptySpecialistViewModelAsync(
+    public async Task<MakeSpecialistRequestViewModel> GetEmptySpecialistViewModelAsync(
         string userId)
     {
         ProfUser? user = await userRepository.GetByIdAsync(userId);
@@ -33,18 +33,17 @@ public class SpecialistRequestService(
             throw new ArgumentNullException(nameof(user), $"User with id `{userId}` already has a specialist request");
         }
 
-        return new SpecialistRequestViewModel()
+        return new MakeSpecialistRequestViewModel()
         {
             UserId = userId,
             FirstName = user.FirstName,
             LastName = user.LastName,
             ProfixId = string.Empty,
-            Status = Pending,
         };
     }
 
     public async Task CreateSpecialistRequestAsync(
-        SpecialistRequestViewModel specialistRequestViewModel)
+        MakeSpecialistRequestViewModel specialistRequestViewModel)
     {
         ProfSpecialistRequest profSpecialistRequest = new ProfSpecialistRequest()
         {
@@ -52,7 +51,6 @@ public class SpecialistRequestService(
             FirstName = specialistRequestViewModel.FirstName,
             LastName = specialistRequestViewModel.LastName,
             ProfixId = specialistRequestViewModel.ProfixId,
-            Status = specialistRequestViewModel.Status,
         };
 
         await specialistRequestRepository.AddAsync(profSpecialistRequest);
@@ -74,7 +72,7 @@ public class SpecialistRequestService(
             .ToListAsync();
 
     public async Task ApproveSpecialistRequestAsync(
-        SpecialistRequestViewModel specialistRequestViewModel)
+        ActionSpecialistRequestViewModel specialistRequestViewModel)
     {
         if (specialistRequestViewModel is null)
         {
@@ -114,10 +112,28 @@ public class SpecialistRequestService(
         {
             throw new InvalidOperationException($"Error occurred while adding the user {user.UserName} to the {SpecialistRoleName} role!");
         }
+
+        if (await userManager.IsInRoleAsync(user, WorkerRoleName))
+        {
+            IdentityResult userResult1 = await userManager.RemoveFromRoleAsync(user, WorkerRoleName);
+            if (!userResult1.Succeeded)
+            {
+                throw new InvalidOperationException($"Error occurred while removing the user {user.UserName} from {WorkerRoleName} role!");
+            }
+        }
+
+        if (await userManager.IsInRoleAsync(user, ClientRoleName))
+        {
+            IdentityResult userResult1 = await userManager.RemoveFromRoleAsync(user, ClientRoleName);
+            if (!userResult1.Succeeded)
+            {
+                throw new InvalidOperationException($"Error occurred while removing the user {user.UserName} from {ClientRoleName} role!");
+            }
+        }
     }
 
     public async Task DeclineSpecialistRequestAsync(
-        SpecialistRequestViewModel specialistRequestViewModel)
+        ActionSpecialistRequestViewModel specialistRequestViewModel)
     {
         if (specialistRequestViewModel is null)
         {

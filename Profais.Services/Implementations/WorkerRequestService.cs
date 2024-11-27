@@ -10,13 +10,13 @@ using static Profais.Common.Constants.UserConstants;
 namespace Profais.Services.Implementations;
 
 public class WorkerRequestService(
-    IRepository<ProfUser,string> userRepository,
+    IRepository<ProfUser, string> userRepository,
     IRepository<ProfWorkerRequest, int> workerRequestRepository,
     UserManager<ProfUser> userManager)
     : IWorkerRequestService
 {
     public async Task ApproveWorkerRequestAsync(
-       WorkerRequestViewModel workerRequestViewModel)
+       ActionWorkerRequestViewModel workerRequestViewModel)
     {
         if (workerRequestViewModel is null)
         {
@@ -56,10 +56,19 @@ public class WorkerRequestService(
         {
             throw new InvalidOperationException($"Error occurred while adding the user {user.UserName} to the {WorkerRoleName} role!");
         }
+
+        if (await userManager.IsInRoleAsync(user, ClientRoleName))
+        {
+            IdentityResult userResult1 = await userManager.RemoveFromRoleAsync(user, ClientRoleName);
+            if (!userResult1.Succeeded)
+            {
+                throw new InvalidOperationException($"Error occurred while removing the user {user.UserName} from {ClientRoleName} role!");
+            }
+        }
     }
 
     public async Task CreateWorkerRequestAsync(
-       WorkerRequestViewModel workerRequestViewModel)
+       MakeWorkerRequestViewModel workerRequestViewModel)
     {
         ProfWorkerRequest profWorkerRequest = new ProfWorkerRequest()
         {
@@ -67,14 +76,13 @@ public class WorkerRequestService(
             FirstName = workerRequestViewModel.FirstName,
             LastName = workerRequestViewModel.LastName,
             ProfixId = workerRequestViewModel.ProfixId,
-            Status = workerRequestViewModel.Status,
         };
 
         await workerRequestRepository.AddAsync(profWorkerRequest);
     }
 
     public async Task DeclineWorkerRequestAsync(
-        WorkerRequestViewModel workerRequestViewModel)
+        ActionWorkerRequestViewModel workerRequestViewModel)
     {
         if (workerRequestViewModel is null)
         {
@@ -112,7 +120,7 @@ public class WorkerRequestService(
            })
            .ToListAsync();
 
-    public async Task<WorkerRequestViewModel> GetEmptyWorkerViewModelAsync(
+    public async Task<MakeWorkerRequestViewModel> GetEmptyWorkerViewModelAsync(
         string userId)
     {
         ProfUser? user = await userRepository.GetByIdAsync(userId);
@@ -123,20 +131,19 @@ public class WorkerRequestService(
         }
 
         var result = await workerRequestRepository
-            .FirstOrDefaultAsync(x=>x.ClientId == userId && x.Status == Approved);
+            .FirstOrDefaultAsync(x => x.ClientId == userId && x.Status == Approved);
 
         if (result is not null)
         {
             throw new ArgumentNullException(nameof(user), $"User with id `{userId}` already has a worker request");
         }
 
-        return new WorkerRequestViewModel()
+        return new MakeWorkerRequestViewModel()
         {
             UserId = userId,
             FirstName = user.FirstName,
             LastName = user.LastName,
             ProfixId = string.Empty,
-            Status = Pending,
         };
     }
 }

@@ -4,13 +4,13 @@ namespace Profais.Services.Interfaces;
 
 public interface ISpecialistRequestService
 {
-    Task<SpecialistRequestViewModel> GetEmptySpecialistViewModelAsync(string userId);
+    Task<MakeSpecialistRequestViewModel> GetEmptySpecialistViewModelAsync(string userId);
 
-    Task CreateSpecialistRequestAsync(SpecialistRequestViewModel specialistRequestViewModel);
+    Task CreateSpecialistRequestAsync(MakeSpecialistRequestViewModel specialistRequestViewModel);
 
     Task<IEnumerable<SpecialistRequestViewModel>> GetAllSpecialistViewModelsAsync();
 
-    Task ApproveSpecialistRequestAsync(SpecialistRequestViewModel specialistRequestViewModel);
+    Task ApproveSpecialistRequestAsync(ActionSpecialistRequestViewModel specialistRequestViewModel);
 
-    Task DeclineSpecialistRequestAsync(SpecialistRequestViewModel specialistRequestViewModel);
+    Task DeclineSpecialistRequestAsync(ActionSpecialistRequestViewModel specialistRequestViewModel);
 }

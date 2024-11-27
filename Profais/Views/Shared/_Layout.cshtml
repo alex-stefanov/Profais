@@ -27,18 +27,22 @@
                         @if (User.Identity is not null
                             && User.Identity.IsAuthenticated)
                         {
-                            @if (User.IsInRole(WorkerRoleName))
+                            @if (User.IsInRole(WorkerRoleName)
+                                || User.IsInRole(ClientRoleName))
                             {
                                 <li class="nav-item dropdown">
                                     <a class="nav-link dropdown-toggle text-dark" id="makeRoleRequestDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                         Make Role Request
                                     </a>
                                     <ul class="dropdown-menu" aria-labelledby="makeRoleRequestDropdown">
-                                        <li>
-                                            <a class="dropdown-item" asp-area="" asp-controller="WorkerRequest" asp-action="MakeWorkerRequest">
-                                                Worker
-                                            </a>
-                                        </li>
+                                        @if (User.IsInRole(ClientRoleName))
+                                        {
+                                            <li>
+                                                <a class="dropdown-item" asp-area="" asp-controller="WorkerRequest" asp-action="MakeWorkerRequest">
+                                                    Worker
+                                                </a>
+                                            </li>
+                                        }
                                         <li>
                                             <a class="dropdown-item" asp-area="" asp-controller="SpecialistRequest" asp-action="MakeSpecialistRequest">
                                                 Specialist
@@ -109,11 +113,15 @@
                                         Penalties
                                     </a>
                                     <ul class="dropdown-menu" aria-labelledby="penaltyDropdown">
-                                        <li>
-                                            <a class="dropdown-item" asp-area="" asp-controller="Penalty" asp-action="GetMyPenalties">
-                                                My Penalties
-                                            </a>
-                                        </li>
+                                        @if(User.IsInRole(WorkerRoleName)
+                                           || User.IsInRole(SpecialistRoleName))
+                                        {
+                                            <li>
+                                                <a class="dropdown-item" asp-area="" asp-controller="Penalty" asp-action="GetMyPenalties">
+                                                    My Penalties
+                                                </a>
+                                            </li>
+                                        }
                                         @if (User.IsInRole(ManagerRoleName)
                                             || User.IsInRole(AdminRoleName))
                                         {

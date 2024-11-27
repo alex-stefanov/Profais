@@ -1,5 +1,5 @@
 ﻿@using Profais.Services.ViewModels.SpecialistRequest;
-@model SpecialistRequestViewModel;
+@model MakeSpecialistRequestViewModel;
 
 @{
     ViewData["Title"] = "Specialist Request - Make";
@@ -10,6 +10,11 @@
 </h2>
 
 <form asp-action="MakeSpecialistRequest" method="post">
+    <div class="form-group">
+        <input asp-for="UserId" hidden readonly class="form-control" />
+        <span asp-validation-for="UserId" class="text-danger"></span>
+    </div>
+
     <div class="form-group">
         <label asp-for="FirstName" class="form-label"></label>
         <input asp-for="FirstName" readonly class="form-control" />
@@ -26,12 +31,6 @@
         <label asp-for="ProfixId" class="form-label"></label>
         <input asp-for="ProfixId" class="form-control" />
         <span asp-validation-for="ProfixId" class="text-danger"></span>
-    </div>
-
-    <div hidden class="form-group">
-        <label asp-for="Status" class="form-label"></label>
-        <input asp-for="Status" readonly class="form-control" />
-        <span asp-validation-for="Status" class="text-danger"></span>
     </div>
 
     <div class="form-group">

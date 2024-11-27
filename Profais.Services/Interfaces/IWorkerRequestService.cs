@@ -4,13 +4,13 @@ namespace Profais.Services.Interfaces;
 
 public interface IWorkerRequestService
 {
-    Task<WorkerRequestViewModel> GetEmptyWorkerViewModelAsync(string userId);
+    Task<MakeWorkerRequestViewModel> GetEmptyWorkerViewModelAsync(string userId);
 
     Task<IEnumerable<WorkerRequestViewModel>> GetAllWorkersViewModelsAsync();
 
-    Task ApproveWorkerRequestAsync(WorkerRequestViewModel workerRequestViewModel);
+    Task ApproveWorkerRequestAsync(ActionWorkerRequestViewModel workerRequestViewModel);
 
-    Task CreateWorkerRequestAsync(WorkerRequestViewModel workerRequestViewModel);
+    Task CreateWorkerRequestAsync(MakeWorkerRequestViewModel workerRequestViewModel);
 
-    Task DeclineWorkerRequestAsync(WorkerRequestViewModel workerRequestViewModel);
+    Task DeclineWorkerRequestAsync(ActionWorkerRequestViewModel workerRequestViewModel);
 }
