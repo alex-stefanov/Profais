@@ -122,8 +122,8 @@ public class WorkerRequestService(
             throw new ArgumentNullException(nameof(user), $"No user found with id `{userId}`");
         }
 
-        var result = workerRequestRepository
-            .FirstOrDefaultAsync(x => x.ClientId == userId);
+        var result = await workerRequestRepository
+            .FirstOrDefaultAsync(x=>x.ClientId == userId && x.Status == Approved);
 
         if (result is not null)
         {

@@ -25,8 +25,8 @@ public class SpecialistRequestService(
             throw new ArgumentNullException(nameof(user), $"No user found with id `{userId}`");
         }
 
-        var result = specialistRequestRepository
-            .FirstOrDefaultAsync(x => x.ClientId == userId);
+        var result = await specialistRequestRepository
+            .FirstOrDefaultAsync(x => x.ClientId == userId && x.Status == Approved);
 
         if (result is not null)
         {

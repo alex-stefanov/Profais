@@ -20,6 +20,8 @@ public class ProfaisDbContext
 
     public virtual DbSet<ProfProject> Projects { get; set; }
 
+    public virtual DbSet<ProfUserRequest> UserRequests { get; set; }
+
     public virtual DbSet<ProfProjectRequest> ProjectsRequests { get; set; }
 
     public virtual DbSet<ProfSpecialistRequest> SpecialistRequests { get; set; }
