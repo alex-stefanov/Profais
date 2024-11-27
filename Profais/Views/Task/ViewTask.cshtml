@@ -1,5 +1,6 @@
 ﻿@using Profais.Services.ViewModels.Task;
 @using Profais.Services.ViewModels.Material;
+@using Profais.Services.ViewModels.Worker
 @model TaskViewModel
 
 @{
@@ -45,9 +46,22 @@
                     <strong>
                         Status:
                      </strong>
-                     <span>
-                        @(Model.IsCompleted ? "Completed" : "Incomplete")
-                     </span>
+                    <span>
+                        @if (Model.IsCompleted)
+
+                        {
+                            <span class="badge bg-success">
+                                Completed
+                            </span>
+                        }
+                        else
+
+                        {
+                            <span class="badge bg-warning">
+                                In Progress
+                            </span>
+                        }
+                    </span>
                 </div>
             </div>
 
@@ -65,7 +79,7 @@
 
             <h5>Assigned Workers</h5>
             <ul class="list-group mb-3">
-                @foreach (var user in Model.Users)
+                @foreach (UserViewModel user in Model.Users)
                 {
                     <li class="list-group-item">
                         @user.UserFirstName @user.UserLastName

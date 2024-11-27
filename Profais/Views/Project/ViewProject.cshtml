@@ -42,15 +42,12 @@
                 </strong>
                 <span>
                     @if (Model.IsCompleted)
-
                     {
                         <span class="badge bg-success">
                             Completed
                         </span>
                     }
-
                     else
-
                     {
                         <span class="badge bg-warning">
                             In Progress
@@ -94,8 +91,9 @@
                         See Messages
                     </button>
                 </form>
-
-                <form method="get" asp-action="AddTask" asp-controller="Task" class="d-inline">
+                @if (!Model.IsCompleted)
+                {
+                  <form method="get" asp-action="AddTask" asp-controller="Task" class="d-inline">
                     <input type="hidden" asp-for="Id" name="projectId" />
                     <button type="submit" class="btn btn-success">
                         Add Task
@@ -106,7 +104,8 @@
                     <button type="submit" class="btn btn-warning mt-3">
                         Edit Project
                     </button>
-                </form>
+                </form>   
+                }
             </div>
         </div>
     </div>
