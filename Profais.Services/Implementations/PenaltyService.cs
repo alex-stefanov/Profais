@@ -8,6 +8,7 @@ using Profais.Services.ViewModels.Shared;
 namespace Profais.Services.Implementations;
 
 public class PenaltyService(
+    IRepository<ProfUser,string> userRepository, 
     IRepository<ProfUserPenalty, object> userPenaltyRepository,
     IRepository<Penalty, int> penaltyRepository)
     : IPenaltyService
@@ -58,25 +59,26 @@ public class PenaltyService(
 
     public async Task<UserPenaltyViewModel> GetAllPenaltyUsersAsync()
     {
-        IQueryable<ProfUserPenalty> query = userPenaltyRepository
+        IQueryable<ProfUser> userQuery = userRepository
+             .GetAllAttached();
+
+        IQueryable<Penalty> penaltyQuery = penaltyRepository
              .GetAllAttached();
 
         return new UserPenaltyViewModel
         {
-            Penalties = await query
-            .Include(x => x.Penalty)
+            Penalties = await penaltyQuery
             .Select(x => new PenaltyViewModel
             {
-                Id = x.PenaltyId,
-                Title = x.Penalty.Title,
-                Description = string.Empty,
+                Id = x.Id,
+                Title = x.Title,
+                Description = x.Description,
             }).ToListAsync(),
-            Users = await query
-            .Include(x => x.User)
+            Users = await userQuery
             .Select(x => new UserForPenaltyViewModel
             {
-                Id = x.UserId,
-                UserName = $"{x.User.FirstName} {x.User.LastName}",
+                Id = x.Id,
+                UserName = $"{x.FirstName} {x.LastName}",
             }).ToListAsync(),
         };
     }
