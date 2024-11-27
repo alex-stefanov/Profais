@@ -16,5 +16,6 @@ public class SmtpSettings
 
     public bool EnableSsl { get; set; }
 
-    public List<string> EmailsTo { get; set; } = new List<string>();
+    public List<string> EmailsTo { get; set; } 
+        = new List<string>();
 }

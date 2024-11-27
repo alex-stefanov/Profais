@@ -70,6 +70,7 @@ public class ProjectService(
                 Description = x.Description,
                 HoursWorked = x.HoursWorked,
                 IsCompleted = x.IsCompleted,
+                ProjectId = projectId,
                 Materials = x.TaskMaterials.Select(t => new MaterialViewModel
                 {
                     Id = t.MaterialId,
@@ -79,6 +80,7 @@ public class ProjectService(
             }),
             Messages = project.Messages.Select(y => new MessageViewModel
             {
+                ProjectId = projectId,
                 User = new UserViewModel
                 {
                     Id = y.ClientId,
@@ -127,6 +129,7 @@ public class ProjectService(
                 Scheme = x.Scheme,
                 Messages = x.Messages.Select(y => new MessageViewModel
                 {
+                    ProjectId = y.ProjectId,
                     User = new UserViewModel
                     {
                         Id = y.ClientId,
@@ -141,6 +144,7 @@ public class ProjectService(
                     Title = z.Title,
                     Description = z.Description,
                     HoursWorked = z.HoursWorked,
+                    ProjectId = z.ProfProjectId,
                     IsCompleted = z.IsCompleted,
                     Materials = z.TaskMaterials.Select(t => new MaterialViewModel
                     {

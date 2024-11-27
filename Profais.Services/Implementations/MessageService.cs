@@ -28,6 +28,7 @@ public class MessageService(
 
         return new MessageViewModel
         {
+            ProjectId = projectId,
             User = new UserViewModel
             {
                 Id = message.ClientId,

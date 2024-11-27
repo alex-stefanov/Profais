@@ -5,14 +5,16 @@
     ViewData["Title"] = "Penalty - Add To User";
 }
 
-<h2>@ViewData["Title"]</h2>
+<h2>
+    @ViewData["Title"]
+</h2>
 
 <form asp-action="AddPenaltyToUser" method="post">
     <div>
-        <label for="userSelect">Select User:</label>
+        <label asp-for="SelectedUserId" class="form-label"></label>
         <select asp-for="SelectedUserId" class="form-control">
             <option value="">--Select User--</option>
-            @foreach (var user in Model.Users)
+            @foreach (UserForPenaltyViewModel user in Model.Users)
             {
                 <option value="@user.Id">@user.UserName</option>
             }
@@ -20,18 +22,19 @@
     </div>
 
     <div>
-        <label for="penaltySelect">Select Penalty:</label>
+        <label asp-for="SelectedPenaltyId" class="form-label"></label>
         <select asp-for="SelectedPenaltyId" class="form-control">
             <option value="">--Select Penalty--</option>
-            @foreach (var penalty in Model.Penalties)
+            @foreach (PenaltyViewModel penalty in Model.Penalties)
             {
                 <option value="@penalty.Id">@penalty.Title</option>
             }
         </select>
     </div>
 
-    <!-- Submit Button -->
     <div>
-        <button type="submit" class="btn btn-primary">Add Penalty to User</button>
+        <button type="submit" class="btn btn-primary">
+            Add Penalty to User
+        </button>
     </div>
 </form>

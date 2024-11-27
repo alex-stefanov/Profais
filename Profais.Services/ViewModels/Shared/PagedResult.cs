@@ -1,21 +1,15 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Profais.Services.ViewModels.Shared;
+﻿namespace Profais.Services.ViewModels.Shared;
 
 public class PagedResult<T>
 {
-    [Required]
-    public IEnumerable<T> Items { get; set; } = new List<T>();
+    public IEnumerable<T> Items { get; set; } 
+        = new HashSet<T>();
 
-    [Required]
-    public int CurrentPage { get; set; }
+	public required int CurrentPage { get; set; }
 
-    [Required]
-    public int TotalPages { get; set; }
+    public required int TotalPages { get; set; }
 
-    [Required]
     public bool HasPreviousPage => CurrentPage > 1;
 
-    [Required]
     public bool HasNextPage => CurrentPage < TotalPages;
 }

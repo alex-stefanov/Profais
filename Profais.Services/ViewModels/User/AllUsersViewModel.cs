@@ -2,9 +2,10 @@
 
 public class AllUsersViewModel
 {
-    public string Id { get; set; } = null!;
+	public required string Id { get; set; }
 
     public string? Email { get; set; }
 
-    public IEnumerable<string> Roles { get; set; } = null!;
+    public IEnumerable<string> Roles { get; set; }
+        = new HashSet<string>();
 }
