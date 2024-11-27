@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Profais.Data.Models;
 using Profais.Services.Interfaces;
 using Profais.Services.ViewModels.Shared;
 using Profais.Services.ViewModels.Task;
@@ -7,13 +9,32 @@ using static Profais.Common.Constants.UserConstants;
 
 namespace Profais.Controllers;
 
-[Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
+[Authorize]
 public class TaskController(
+    UserManager<ProfUser> userManager,
     ITaskService taskService,
     ILogger<TaskController> logger)
     : Controller
 {
     [HttpGet]
+    [Authorize(Roles = $"{WorkerRoleName},{SpecialistRoleName}")]
+    public IActionResult ViewMyTask()
+    {
+        string userId = userManager.GetUserId(User)!;
+
+        if (string.IsNullOrEmpty(userId))
+        {
+            logger.LogError("No user found");
+            return RedirectToAction("Error", "Home");
+        }
+
+        int taskId = 0;
+
+        return RedirectToAction(nameof(ViewTask), new { taskId });
+    }
+
+    [HttpGet]
+    [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
     public async Task<IActionResult> ViewTasks(
         int projectId,
         int page = 1,
@@ -61,11 +82,13 @@ public class TaskController(
     }
 
     [HttpGet]
+    [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
     public IActionResult AddTask(
         int projectId)
         => View(taskService.GetAddTaskViewModelAsync(projectId));
 
     [HttpPost]
+    [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
     public async Task<IActionResult> AddTask(
         AddTaskViewModel model)
     {
@@ -88,6 +111,7 @@ public class TaskController(
     }
 
     [HttpGet]
+    [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
     public async Task<IActionResult> EditTask(
         int taskId)
     {
@@ -106,6 +130,7 @@ public class TaskController(
     }
 
     [HttpPost]
+    [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
     public async Task<IActionResult> EditTask(
         EditTaskViewModel model)
     {

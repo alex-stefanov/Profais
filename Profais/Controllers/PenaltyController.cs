@@ -9,6 +9,7 @@ using static Profais.Common.Constants.UserConstants;
 
 namespace Profais.Controllers;
 
+[Authorize]
 public class PenaltyController(
     IPenaltyService penaltyService,
     UserManager<ProfUser> userManager,
@@ -16,7 +17,7 @@ public class PenaltyController(
     : Controller
 {
     [HttpGet]
-    [Authorize(Roles = $"{WorkerRoleName}, {SpecialistRoleName}, {AdminRoleName}")]
+    [Authorize(Roles = $"{WorkerRoleName}, {SpecialistRoleName}")]
     public async Task<IActionResult> GetMyPenalties(
         int pageNumber = 1,
         int pageSize = 8)
@@ -44,7 +45,7 @@ public class PenaltyController(
     }
 
     [HttpGet]
-    [Authorize(Roles = $"{WorkerRoleName}, {SpecialistRoleName}, {AdminRoleName}")]
+    [Authorize(Roles = $"{WorkerRoleName}, {SpecialistRoleName}")]
     public async Task<IActionResult> ViewPenalty(
         int penaltyId)
     {

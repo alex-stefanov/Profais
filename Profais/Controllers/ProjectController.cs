@@ -7,13 +7,14 @@ using static Profais.Common.Constants.UserConstants;
 
 namespace Profais.Controllers;
 
-[Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
+[Authorize]
 public class ProjectController(
     IProjectService projectService,
     ILogger<HomeController> logger)
     : Controller
 {
     [HttpGet]
+    [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
     public async Task<IActionResult> IncompletedProjects(
         int pageNumber = 1,
         int pageSize = 9)
@@ -33,6 +34,7 @@ public class ProjectController(
     }
 
     [HttpGet]
+    [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
     public async Task<IActionResult> CompletedProjects(
         int pageNumber = 1,
         int pageSize = 9)
@@ -57,10 +59,12 @@ public class ProjectController(
         => View(await projectService.GetProjectByIdAsync(projectId));
 
     [HttpGet]
+    [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
     public IActionResult AddProject()
         => View(projectService.GetAddProjectViewModelAsync());
 
     [HttpPost]
+    [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
     public async Task<IActionResult> AddProject(
         AddProjectViewModel model)
     {
@@ -83,6 +87,7 @@ public class ProjectController(
     }
 
     [HttpGet]
+    [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
     public async Task<IActionResult> EditProject(
         int projectId)
     {
@@ -101,6 +106,7 @@ public class ProjectController(
     }
 
     [HttpPost]
+    [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
     public async Task<IActionResult> EditProject(
         EditProjectViewModel model)
     {
