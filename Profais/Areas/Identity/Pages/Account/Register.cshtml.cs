@@ -79,6 +79,11 @@ public class RegisterModel(
             {
                 logger.LogInformation("User created a new account with password.");
 
+                IdentityResult userResult = await userManager.AddToRoleAsync(user, ClientRoleName);
+                if (!userResult.Succeeded)
+                {
+                    throw new InvalidOperationException($"Error occurred while adding the user {user.UserName} to the {ClientRoleName} role!");
+                }
                 await signInManager.SignInAsync(user, isPersistent: false);
                 return LocalRedirect(returnUrl);
             }

@@ -110,7 +110,7 @@ public class ProjectService(
                 Title = x.Title,
                 AbsoluteAddress = x.AbsoluteAddress,
                 IsCompleted = x.IsCompleted,
-                Scheme = x.Scheme,         
+                Scheme = x.Scheme,
                 Tasks = x.Tasks.Select(z => new TaskViewModel
                 {
                     Id = z.Id,
@@ -195,9 +195,59 @@ public class ProjectService(
 
         project.IsDeleted = true;
 
-        if(!await projectRepository.UpdateAsync(project))
-{
+        if (!await projectRepository.UpdateAsync(project))
+        {
             throw new ArgumentException($"Project with id `{project.Id}` wasn't updated");
+        }
+    }
+
+    public async Task<PagedResult<RecoverProjectViewModel>> GetPagedDeletedProjectsAsync(
+        int pageNumber,
+        int pageSize)
+    {
+        IQueryable<ProfProject> query = projectRepository
+             .GetAllAttached()
+             .Where(x => x.IsDeleted == true);
+
+        int totalTasks = await query.CountAsync();
+
+        RecoverProjectViewModel[] tasks = await query
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .Select(x => new RecoverProjectViewModel
+            {
+                Id = x.Id,
+                Title = x.Title,
+                AbsoluteAddress = x.AbsoluteAddress,
+            })
+            .ToArrayAsync();
+
+        int totalPages = (int)Math.Ceiling(totalTasks / (double)pageSize);
+
+        return new PagedResult<RecoverProjectViewModel>
+        {
+            Items = tasks,
+            CurrentPage = pageNumber,
+            TotalPages = totalPages
+        };
+    }
+
+    public async Task RecoverProjectByIdAsync(
+        int projectId)
+    {
+        ProfProject? project = await projectRepository
+            .GetByIdAsync(projectId);
+
+        if (project is null)
+        {
+            throw new Exception("Project not found.");
+        }
+
+        project.IsDeleted = false;
+
+        if (!await projectRepository.UpdateAsync(project))
+        {
+            throw new ArgumentException($"Project with id `{projectId}` couldn't be recovered");
         }
     }
 }

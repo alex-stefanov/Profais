@@ -36,8 +36,6 @@ public class ProfaisDbContext
 
     public virtual DbSet<TaskMaterial> TasksMaterials { get; set; }
 
-    public virtual DbSet<Vehicle> Vehicles { get; set; }
-
     public ProfaisDbContext() { }
 
     /// <summary>

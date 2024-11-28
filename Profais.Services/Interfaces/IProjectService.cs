@@ -20,4 +20,8 @@ public interface IProjectService
     AddProjectViewModel GetAddProjectViewModelAsync();
 
     Task RemoveProjectByIdAsync(int projectId);
+
+    Task<PagedResult<RecoverProjectViewModel>> GetPagedDeletedProjectsAsync(int pageNumber, int pageSize);
+
+    Task RecoverProjectByIdAsync(int projectId);
 }

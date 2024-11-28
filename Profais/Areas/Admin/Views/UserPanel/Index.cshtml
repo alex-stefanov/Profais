@@ -6,13 +6,17 @@
 @inject RoleManager<IdentityRole<string>> roleManager
 
 @{
+    ViewData["Title"] = "User Panel - Index";
+
     IEnumerable<string?> allRoles = await roleManager.Roles
         .Select(r => r.Name)
         .ToArrayAsync();
 }
 
 <div class="container mt-5">
-    <h1 class="text-center mb-4">User Management</h1>
+    <h2 class="mb-4">
+        @ViewData["Title"]
+    </h2>
 
     <table class="table table-bordered table-hover">
         <thead class="thead-light">

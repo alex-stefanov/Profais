@@ -31,16 +31,4 @@ public class ProfUserTask
     /// </summary>
     [ForeignKey(nameof(TaskId))]
     public virtual ProfTask Task { get; set; } = null!;
-
-    /// <summary>
-    /// Gets or sets the vehicle ID associated with the worker's task.
-    /// </summary>
-    [Required]
-    public int VehicleId { get; set; }
-
-    /// <summary>
-    /// Navigation property for the vehicle associated with the task.
-    /// </summary>
-    [ForeignKey(nameof(VehicleId))]
-    public virtual Vehicle Vehicle { get; set; } = null!;
 }

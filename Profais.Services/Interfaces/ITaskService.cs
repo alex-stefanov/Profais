@@ -26,4 +26,8 @@ public interface ITaskService
     Task UpdateTaskAsync(EditTaskViewModel model);
 
     Task<int> DeleteTaskByIdAsync(int taskId);
+
+    Task<PagedResult<RecoverTaskViewModel>> GetPagedDeletedTasksAsync(int pageNumber, int pageSize);
+
+    Task RecoverTaskByIdAsync(int taskId);
 }
