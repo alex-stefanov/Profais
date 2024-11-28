@@ -24,4 +24,6 @@ public interface ITaskService
     Task<EditTaskViewModel> GetEditTaskByIdAsync(int taskId);
 
     Task UpdateTaskAsync(EditTaskViewModel model);
+
+    Task<int> DeleteTaskByIdAsync(int taskId);
 }

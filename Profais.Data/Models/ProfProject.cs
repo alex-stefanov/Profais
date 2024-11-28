@@ -47,6 +47,12 @@ public class ProfProject
     public bool IsCompleted { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the project is deleted.
+    /// </summary>
+    [Required]
+    public bool IsDeleted { get; set; } = false;
+
+    /// <summary>
     /// Gets or sets the optional scheme for the project.
     /// </summary>
     [MaxLength(SchemeMaxLength)]

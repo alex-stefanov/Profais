@@ -54,6 +54,12 @@ public class ProfTask
     public bool IsCompleted { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the task is deleted.
+    /// </summary>
+    [Required]
+    public bool IsDeleted { get; set; } = false;
+
+    /// <summary>
     /// Navigation property for the collection of task-material relationships.
     /// </summary>
     public virtual ICollection<TaskMaterial> TaskMaterials { get; set; }

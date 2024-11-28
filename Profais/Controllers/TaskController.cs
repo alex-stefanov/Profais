@@ -81,6 +81,30 @@ public class TaskController(
         }
     }
 
+    [HttpPost]
+    [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
+    public async Task<IActionResult> DeleteTask(
+        int taskId)
+    {
+        if (!ModelState.IsValid)
+        {
+            return RedirectToAction(nameof(ViewTask), new { taskId });
+        }
+
+        try
+        {
+            int projectId = await taskService.DeleteTaskByIdAsync(taskId);
+
+            return RedirectToAction(nameof(ViewTasks), new { projectId });
+
+        }
+        catch (Exception ex)
+        {
+            logger.LogError($"An error occured while completing a task. {ex.Message}");
+            return RedirectToAction("Error", "Home");
+        }
+    }
+
     [HttpGet]
     [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
     public IActionResult AddTask(

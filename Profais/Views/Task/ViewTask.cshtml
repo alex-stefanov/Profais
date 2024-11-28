@@ -107,6 +107,12 @@
                             Complete Task
                         </button>
                     </form>
+
+                    <form asp-action="DeleteTask" asp-route-taskId="@Model.Id" method="post" class="mt-2">
+                        <button type="submit" class="btn btn-warning">
+                            Delete Task
+                        </button>
+                    </form>
                 </div>
             }
         </div>

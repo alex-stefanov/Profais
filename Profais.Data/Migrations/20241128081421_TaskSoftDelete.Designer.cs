@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Profais.Data;
 
@@ -11,9 +12,11 @@ using Profais.Data;
 namespace Profais.Data.Migrations
 {
     [DbContext(typeof(ProfaisDbContext))]
-    partial class ProfaisDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241128081421_TaskSoftDelete")]
+    partial class TaskSoftDelete
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -615,9 +618,6 @@ namespace Profais.Data.Migrations
                     b.Property<bool>("IsCompleted")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
                     b.Property<int?>("ProfProjectRequestId")
                         .HasColumnType("int");
 
@@ -642,7 +642,6 @@ namespace Profais.Data.Migrations
                             Id = 1,
                             AbsoluteAddress = "Ulitsa Tsarigradsko Shose 125, Sofia, Bulgaria",
                             IsCompleted = true,
-                            IsDeleted = false,
                             Scheme = "https://www.handyman.net.au/wp-content/uploads/old_images/g-lawns-lawnirrigation-DIAGRAM.jpg",
                             Title = "Sofia Central Water Supply"
                         },
@@ -651,7 +650,6 @@ namespace Profais.Data.Migrations
                             Id = 2,
                             AbsoluteAddress = "Ulitsa Ivan Vazov 17, Plovdiv, Bulgaria",
                             IsCompleted = true,
-                            IsDeleted = false,
                             Scheme = "https://www.handyman.net.au/wp-content/uploads/old_images/g-lawns-lawnirrigation-DIAGRAM.jpg",
                             Title = "Plovdiv Irrigation Upgrade"
                         },
@@ -660,7 +658,6 @@ namespace Profais.Data.Migrations
                             Id = 3,
                             AbsoluteAddress = "Ulitsa Levski 55, Varna, Bulgaria",
                             IsCompleted = true,
-                            IsDeleted = false,
                             Scheme = "https://www.handyman.net.au/wp-content/uploads/old_images/g-lawns-lawnirrigation-DIAGRAM.jpg",
                             Title = "Varna Wastewater Management"
                         },
@@ -669,7 +666,6 @@ namespace Profais.Data.Migrations
                             Id = 4,
                             AbsoluteAddress = "Ulitsa Aleksandrovska 10, Burgas, Bulgaria",
                             IsCompleted = true,
-                            IsDeleted = false,
                             Scheme = "https://www.handyman.net.au/wp-content/uploads/old_images/g-lawns-lawnirrigation-DIAGRAM.jpg",
                             Title = "Burgas Hydrophore System"
                         },
@@ -678,7 +674,6 @@ namespace Profais.Data.Migrations
                             Id = 5,
                             AbsoluteAddress = "Ulitsa Angel Kanchev 25, Ruse, Bulgaria",
                             IsCompleted = true,
-                            IsDeleted = false,
                             Scheme = "https://www.handyman.net.au/wp-content/uploads/old_images/g-lawns-lawnirrigation-DIAGRAM.jpg",
                             Title = "Ruse Drainage Network"
                         },
@@ -687,7 +682,6 @@ namespace Profais.Data.Migrations
                             Id = 6,
                             AbsoluteAddress = "Ulitsa Gotse Delchev 12, Blagoevgrad, Bulgaria",
                             IsCompleted = true,
-                            IsDeleted = false,
                             Scheme = "https://www.handyman.net.au/wp-content/uploads/old_images/g-lawns-lawnirrigation-DIAGRAM.jpg",
                             Title = "Blagoevgrad Water Storage Facility"
                         },
@@ -696,7 +690,6 @@ namespace Profais.Data.Migrations
                             Id = 7,
                             AbsoluteAddress = "Ulitsa Hristo Botev 15, Pleven, Bulgaria",
                             IsCompleted = false,
-                            IsDeleted = false,
                             Scheme = "https://www.handyman.net.au/wp-content/uploads/old_images/g-lawns-lawnirrigation-DIAGRAM.jpg",
                             Title = "Pleven Irrigation System"
                         },
@@ -705,7 +698,6 @@ namespace Profais.Data.Migrations
                             Id = 8,
                             AbsoluteAddress = "Ulitsa General Gurko 19, Stara Zagora, Bulgaria",
                             IsCompleted = false,
-                            IsDeleted = false,
                             Scheme = "https://www.handyman.net.au/wp-content/uploads/old_images/g-lawns-lawnirrigation-DIAGRAM.jpg",
                             Title = "Stara Zagora Drainage Improvement"
                         },
@@ -714,7 +706,6 @@ namespace Profais.Data.Migrations
                             Id = 9,
                             AbsoluteAddress = "Ulitsa Vasil Levski 22, Dobrich, Bulgaria",
                             IsCompleted = false,
-                            IsDeleted = false,
                             Scheme = "https://www.handyman.net.au/wp-content/uploads/old_images/g-lawns-lawnirrigation-DIAGRAM.jpg",
                             Title = "Dobrich Hydrophore Installation"
                         },
@@ -723,7 +714,6 @@ namespace Profais.Data.Migrations
                             Id = 10,
                             AbsoluteAddress = "Ulitsa Osvobozhdenie 8, Haskovo, Bulgaria",
                             IsCompleted = false,
-                            IsDeleted = false,
                             Scheme = "https://www.handyman.net.au/wp-content/uploads/old_images/g-lawns-lawnirrigation-DIAGRAM.jpg",
                             Title = "Haskovo Water Distribution Network"
                         },
@@ -732,7 +722,6 @@ namespace Profais.Data.Migrations
                             Id = 11,
                             AbsoluteAddress = "Ulitsa Simeon Veliki 18, Shumen, Bulgaria",
                             IsCompleted = false,
-                            IsDeleted = false,
                             Scheme = "https://www.handyman.net.au/wp-content/uploads/old_images/g-lawns-lawnirrigation-DIAGRAM.jpg",
                             Title = "Shumen Pump Station"
                         },
@@ -741,7 +730,6 @@ namespace Profais.Data.Migrations
                             Id = 12,
                             AbsoluteAddress = "Ulitsa Neofit Rilski 5, Kyustendil, Bulgaria",
                             IsCompleted = false,
-                            IsDeleted = false,
                             Scheme = "https://www.handyman.net.au/wp-content/uploads/old_images/g-lawns-lawnirrigation-DIAGRAM.jpg",
                             Title = "Kyustendil Water Filtration Upgrade"
                         });

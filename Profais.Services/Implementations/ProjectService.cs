@@ -32,6 +32,7 @@ public class ProjectService(
             AbsoluteAddress = projectViewModel.AbsoluteAddress,
             IsCompleted = projectViewModel.IsCompleted,
             Scheme = projectViewModel.Scheme,
+            IsDeleted = false,
         };
 
         await projectRepository.AddAsync(profProject);
@@ -47,7 +48,8 @@ public class ProjectService(
                 .ThenInclude(x => x.Material)
             .FirstOrDefaultAsync(x => x.Id == projectId);
 
-        if (project is null)
+        if (project is null
+            || project.IsDeleted == true)
         {
             throw new ArgumentNullException(nameof(project), "Project is not specified");
         }
@@ -95,7 +97,7 @@ public class ProjectService(
             .Include(x => x.Tasks)
                 .ThenInclude(x => x.TaskMaterials)
                 .ThenInclude(x => x.Material)
-            .Where(x => x.IsCompleted == isCompleted);
+            .Where(x => x.IsCompleted == isCompleted && x.IsDeleted == false);
 
         int totalCount = await query.CountAsync();
 
@@ -142,7 +144,8 @@ public class ProjectService(
         ProfProject? project = await projectRepository
             .GetByIdAsync(projectId);
 
-        if (project is null)
+        if (project is null
+            || project.IsDeleted == true)
         {
             throw new ArgumentNullException(nameof(project), "Project is not specified");
         }
@@ -163,7 +166,8 @@ public class ProjectService(
         ProfProject? project = await projectRepository
             .GetByIdAsync(model.Id);
 
-        if (project is null)
+        if (project is null
+            || project.IsDeleted == true)
         {
             throw new Exception("Project not found.");
         }
@@ -176,6 +180,26 @@ public class ProjectService(
         if (!await projectRepository.UpdateAsync(project))
         {
             throw new ArgumentException($"Project with id `{model.Id}` wasn't updated");
+        }
+    }
+
+    public async Task RemoveProjectByIdAsync(
+        int projectId)
+    {
+        ProfProject? project = await projectRepository
+            .GetByIdAsync(projectId);
+
+        if (project is null
+            || project.IsDeleted)
+        {
+            throw new Exception("Task not found.");
+        }
+
+        project.IsDeleted = true;
+
+        if(!await projectRepository.UpdateAsync(project))
+{
+            throw new ArgumentException($"Project with id `{project.Id}` wasn't updated");
         }
     }
 }

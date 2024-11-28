@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Profais.Services.Interfaces;
 using Profais.Services.ViewModels.Project;
@@ -124,6 +125,29 @@ public class ProjectController(
         catch (Exception ex)
         {
             logger.LogError($"An error occurred while editing the project: {ex.Message}");
+            return RedirectToAction("Error", "Home");
+        }
+    }
+
+    [HttpPost]
+    [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
+    public async Task<IActionResult> DeleteProject(
+        int projectId)
+    {
+        if (!ModelState.IsValid)
+        {
+            return RedirectToAction(nameof(ViewProject), new { projectId });
+        }
+
+        try
+        {
+            await projectService.RemoveProjectByIdAsync(projectId);
+
+            return RedirectToAction(nameof(IncompletedProjects));
+        }
+        catch (Exception ex)
+        {
+            logger.LogError($"An error occurred while removing the project: {ex.Message}");
             return RedirectToAction("Error", "Home");
         }
     }

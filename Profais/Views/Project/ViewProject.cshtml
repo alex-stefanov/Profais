@@ -86,18 +86,24 @@
                 </form>
                 @if (!Model.IsCompleted)
                 {
-                  <form method="get" asp-action="AddTask" asp-controller="Task" class="d-inline">
-                    <input type="hidden" asp-for="Id" name="projectId" />
-                    <button type="submit" class="btn btn-success">
-                        Add Task
-                    </button>
-                </form>
-                <form method="get" asp-action="EditProject">
-                    <input type="hidden" asp-for="Id" name="projectId" />
-                    <button type="submit" class="btn btn-warning">
-                        Edit Project
-                    </button>
-                </form>   
+                    <form method="get" asp-action="AddTask" asp-controller="Task" class="d-inline">
+                        <input type="hidden" asp-for="Id" name="projectId" />
+                        <button type="submit" class="btn btn-success">
+                            Add Task
+                        </button>
+                    </form>
+                    <form method="get" asp-action="EditProject">
+                        <input type="hidden" asp-for="Id" name="projectId" />
+                        <button type="submit" class="btn btn-warning">
+                            Edit Project
+                        </button>
+                    </form>  
+                    <form method="post" asp-action="DeleteProject">
+                        <input type="hidden" asp-for="Id" name="projectId" />
+                        <button type="submit" class="btn btn-warning">
+                            Delete Project
+                        </button>
+                    </form>
                 }
             </div>
         </div>

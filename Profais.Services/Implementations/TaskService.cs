@@ -35,6 +35,7 @@ public class TaskService(
             HoursWorked = default,
             ProfProjectId = taskViewModel.ProjectId,
             IsCompleted = false,
+            IsDeleted = false,
         };
 
         await taskRepository.AddAsync(profTask);
@@ -45,7 +46,7 @@ public class TaskService(
     {
         ProfTask? task = await taskRepository
             .GetAllAttached()
-            .Where(x => x.Id == taskId)
+            .Where(x => x.Id == taskId && x.IsDeleted == false)
             .Include(x => x.TaskMaterials)
                 .ThenInclude(t => t.Material)
             .Include(x => x.UserTasks)
@@ -106,7 +107,7 @@ public class TaskService(
     {
         IQueryable<ProfTask> query = taskRepository
             .GetAllAttached()
-            .Where(x => x.ProfProjectId == projectId)
+            .Where(x => x.ProfProjectId == projectId && x.IsDeleted == false)
             .Include(x => x.TaskMaterials)
                 .ThenInclude(t => t.Material)
             .Include(x => x.UserTasks)
@@ -158,7 +159,8 @@ public class TaskService(
         ProfTask? task = await taskRepository
             .GetByIdAsync(taskId);
 
-        if (task is null)
+        if (task is null
+            || task.IsDeleted == true)
         {
             throw new ArgumentException(nameof(task), "Task not found");
         }
@@ -227,7 +229,8 @@ public class TaskService(
         ProfTask? task = await taskRepository
             .GetByIdAsync(taskId);
 
-        if (task is null)
+        if (task is null
+            || task.IsDeleted == true)
         {
             throw new ArgumentNullException(nameof(task), "Task is not specified");
         }
@@ -249,7 +252,8 @@ public class TaskService(
         ProfTask? task = await taskRepository
             .GetByIdAsync(model.Id);
 
-        if (task is null)
+        if (task is null
+            || task.IsDeleted)
         {
             throw new Exception("Task not found.");
         }
@@ -265,5 +269,27 @@ public class TaskService(
         {
             throw new ArgumentException($"Task with id `{model.Id}` wasn't updated");
         }
+    }
+
+    public async Task<int> DeleteTaskByIdAsync(
+        int taskId)
+    {
+        ProfTask? task = await taskRepository
+            .GetByIdAsync(taskId);
+
+        if (task is null
+            || task.IsDeleted)
+        {
+            throw new Exception("Task not found.");
+        }
+
+        task.IsDeleted = true;
+
+        if (!await taskRepository.UpdateAsync(task))
+        {
+            throw new ArgumentException($"Task with id `{task.Id}` wasn't updated");
+        }
+
+        return task.ProfProjectId;
     }
 }
