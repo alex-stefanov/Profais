@@ -10,7 +10,7 @@ public class UserTaskConfiguration
     public void Configure(EntityTypeBuilder<ProfUserTask> builder)
     {
         builder
-            .HasKey(x => new { x.WorkerId, x.TaskId, x.VehicleId });
+            .HasKey(x => new { x.WorkerId, x.TaskId });
 
         //builder
         //    .HasData(this.CreateUserTasks());
