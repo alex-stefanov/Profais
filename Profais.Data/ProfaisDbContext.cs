@@ -14,8 +14,6 @@ public class ProfaisDbContext
 {
     public virtual DbSet<Material> Materials { get; set; }
 
-    public virtual DbSet<Message> Messages { get; set; }
-
     public virtual DbSet<Penalty> Penalties { get; set; }
 
     public virtual DbSet<ProfProject> Projects { get; set; }

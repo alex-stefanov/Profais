@@ -1,5 +1,4 @@
-﻿using Profais.Services.ViewModels.Message;
-using Profais.Services.ViewModels.Task;
+﻿using Profais.Services.ViewModels.Task;
 
 namespace Profais.Services.ViewModels.Project;
 
@@ -14,9 +13,6 @@ public class ProjectViewModel
     public required bool IsCompleted { get; set; }
 
     public string? Scheme { get; set; }
-
-    public virtual IEnumerable<MessageViewModel> Messages { get; set; }
-        = new HashSet<MessageViewModel>();
 
     public virtual IEnumerable<TaskViewModel> Tasks { get; set; }
         = new HashSet<TaskViewModel>();

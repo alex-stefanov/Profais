@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Profais.Data;
 
@@ -11,9 +12,11 @@ using Profais.Data;
 namespace Profais.Data.Migrations
 {
     [DbContext(typeof(ProfaisDbContext))]
-    partial class ProfaisDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241128072055_NoMessages")]
+    partial class NoMessages
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

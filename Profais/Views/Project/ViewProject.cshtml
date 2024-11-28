@@ -84,13 +84,6 @@
                         See Tasks
                     </button>
                 </form>
-
-                <form method="get" asp-action="ViewMessages" asp-controller="Message" class="d-inline">
-                    <input type="hidden" asp-for="Id" name="projectId" />
-                    <button type="submit" class="btn btn-info">
-                        See Messages
-                    </button>
-                </form>
                 @if (!Model.IsCompleted)
                 {
                   <form method="get" asp-action="AddTask" asp-controller="Task" class="d-inline">

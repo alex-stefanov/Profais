@@ -11,7 +11,6 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services)
     {
         services.AddScoped<IRepository<Material, int>, ProfRepository<Material, int>>();
-        services.AddScoped<IRepository<Message, object>, ProfRepository<Message, object>>();
         services.AddScoped<IRepository<Penalty, int>, ProfRepository<Penalty, int>>();
         services.AddScoped<IRepository<ProfProject, int>, ProfRepository<ProfProject, int>>();
         services.AddScoped<IRepository<ProfProjectRequest, int>, ProfRepository<ProfProjectRequest, int>>();
@@ -34,7 +33,6 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IEmailSenderService, EmailSenderService>();
         services.AddScoped<IMaterialService, MaterialService>();
         services.AddScoped<IProjectRequestService, ProjectRequestService>();
-        services.AddScoped<IMessageService, MessageService>();
         services.AddScoped<IPenaltyService, PenaltyService>();
         services.AddScoped<IProjectService, ProjectService>();
         services.AddScoped<ISpecialistRequestService, SpecialistRequestService>();

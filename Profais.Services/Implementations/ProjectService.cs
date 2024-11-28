@@ -5,9 +5,7 @@ using Profais.Services.Interfaces;
 using Profais.Services.ViewModels.Project;
 using Profais.Services.ViewModels.Shared;
 using Profais.Services.ViewModels.Task;
-using Profais.Services.ViewModels.Worker;
 using Profais.Services.ViewModels.Material;
-using Profais.Services.ViewModels.Message;
 
 namespace Profais.Services.Implementations;
 
@@ -47,8 +45,6 @@ public class ProjectService(
             .Include(x => x.Tasks)
                 .ThenInclude(x => x.TaskMaterials)
                 .ThenInclude(x => x.Material)
-            .Include(x => x.Messages)
-                .ThenInclude(x => x.Client)
             .FirstOrDefaultAsync(x => x.Id == projectId);
 
         if (project is null)
@@ -78,17 +74,6 @@ public class ProjectService(
                     UsedFor = t.Material.UsedForId,
                 }).ToArray(),
             }),
-            Messages = project.Messages.Select(y => new MessageViewModel
-            {
-                ProjectId = projectId,
-                User = new UserViewModel
-                {
-                    Id = y.ClientId,
-                    UserFirstName = y.Client.FirstName,
-                    UserLastName = y.Client.LastName,
-                },
-                Description = y.Description,
-            }).ToArray(),
         };
     }
 
@@ -107,8 +92,6 @@ public class ProjectService(
     {
         IQueryable<ProfProject> query = projectRepository
             .GetAllAttached()
-            .Include(x => x.Messages)
-                .ThenInclude(x => x.Client)
             .Include(x => x.Tasks)
                 .ThenInclude(x => x.TaskMaterials)
                 .ThenInclude(x => x.Material)
@@ -126,18 +109,7 @@ public class ProjectService(
                 Title = x.Title,
                 AbsoluteAddress = x.AbsoluteAddress,
                 IsCompleted = x.IsCompleted,
-                Scheme = x.Scheme,
-                Messages = x.Messages.Select(y => new MessageViewModel
-                {
-                    ProjectId = y.ProjectId,
-                    User = new UserViewModel
-                    {
-                        Id = y.ClientId,
-                        UserFirstName = y.Client.FirstName,
-                        UserLastName = y.Client.LastName,
-                    },
-                    Description = y.Description,
-                }).ToArray(),
+                Scheme = x.Scheme,         
                 Tasks = x.Tasks.Select(z => new TaskViewModel
                 {
                     Id = z.Id,

@@ -25,12 +25,6 @@ public class ProfUser
     public string LastName { get; set; } = null!;
 
     /// <summary>
-    /// Navigation property for the messages sent by the user.
-    /// </summary>
-    public virtual ICollection<Message> Messages { get; }
-        = new HashSet<Message>();
-
-    /// <summary>
     /// Navigation property for the penalties associated with the user.
     /// </summary>
     public virtual ICollection<ProfUserPenalty> UserPenalties { get; }
