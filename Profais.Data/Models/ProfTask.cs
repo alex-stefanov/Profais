@@ -30,12 +30,6 @@ public class ProfTask
     public string Description { get; set; } = null!;
 
     /// <summary>
-    /// Gets or sets the number of hours worked on the task.
-    /// </summary>
-    [Required]
-    public int HoursWorked { get; set; }
-
-    /// <summary>
     /// Gets or sets the identifier of the associated project for the task.
     /// </summary>
     [Required]

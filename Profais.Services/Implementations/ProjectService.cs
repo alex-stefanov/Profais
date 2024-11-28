@@ -66,7 +66,6 @@ public class ProjectService(
                 Id = x.Id,
                 Title = x.Title,
                 Description = x.Description,
-                HoursWorked = x.HoursWorked,
                 IsCompleted = x.IsCompleted,
                 ProjectId = projectId,
                 Materials = x.TaskMaterials.Select(t => new MaterialViewModel
@@ -117,7 +116,6 @@ public class ProjectService(
                     Id = z.Id,
                     Title = z.Title,
                     Description = z.Description,
-                    HoursWorked = z.HoursWorked,
                     ProjectId = z.ProfProjectId,
                     IsCompleted = z.IsCompleted,
                     Materials = z.TaskMaterials.Select(t => new MaterialViewModel

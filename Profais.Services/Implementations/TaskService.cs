@@ -32,7 +32,6 @@ public class TaskService(
         {
             Title = taskViewModel.Title,
             Description = taskViewModel.Description,
-            HoursWorked = default,
             ProfProjectId = taskViewModel.ProjectId,
             IsCompleted = false,
             IsDeleted = false,
@@ -63,7 +62,6 @@ public class TaskService(
             Id = taskId,
             Title = task.Title,
             Description = task.Description,
-            HoursWorked = task.HoursWorked,
             ProjectId = task.ProfProjectId,
             IsCompleted = task.IsCompleted,
             Materials = task.TaskMaterials.Select(x => new MaterialViewModel
@@ -124,7 +122,6 @@ public class TaskService(
                 Id = x.Id,
                 Title = x.Title,
                 Description = x.Description,
-                HoursWorked = x.HoursWorked,
                 ProjectId = projectId,
                 IsCompleted = x.IsCompleted,
                 Materials = x.TaskMaterials.Select(t => new MaterialViewModel
@@ -242,7 +239,6 @@ public class TaskService(
             Description = task.Description,
             ProjectId = task.ProfProjectId,
             IsCompleted = task.IsCompleted,
-            HoursWorked = task.HoursWorked,
         };
     }
 
@@ -263,7 +259,6 @@ public class TaskService(
         task.Description = model.Description;
         task.ProfProjectId = model.ProjectId;
         task.IsCompleted = model.IsCompleted;
-        task.HoursWorked = model.HoursWorked;
 
         if (!await taskRepository.UpdateAsync(task))
         {

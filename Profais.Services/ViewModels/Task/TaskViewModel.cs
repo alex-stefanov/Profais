@@ -11,8 +11,6 @@ public class TaskViewModel
 
     public required string Description { get; set; }
 
-    public required int HoursWorked { get; set; }
-
     public required int ProjectId { get; set; }
 
     public required bool IsCompleted { get; set; }

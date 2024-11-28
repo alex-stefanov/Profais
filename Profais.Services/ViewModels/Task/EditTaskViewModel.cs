@@ -21,7 +21,4 @@ public class EditTaskViewModel
 
     [Required(ErrorMessage = "Completion status is required.")]
     public bool IsCompleted { get; set; }
-
-    [Required(ErrorMessage = "Hours worked is required.")]
-    public int HoursWorked { get; set; }
 }
