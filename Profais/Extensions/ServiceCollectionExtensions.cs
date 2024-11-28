@@ -29,7 +29,6 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection RegisterUserDefinedServices(
         this IServiceCollection services)
     {
-        services.AddScoped<ICommonService, CommonService>();
         services.AddScoped<IEmailSenderService, EmailSenderService>();
         services.AddScoped<IMaterialService, MaterialService>();
         services.AddScoped<IProjectRequestService, ProjectRequestService>();

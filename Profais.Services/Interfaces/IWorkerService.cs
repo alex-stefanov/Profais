@@ -4,7 +4,7 @@ namespace Profais.Services.Interfaces;
 
 public interface IWorkerService
 {
-    Task<IEnumerable<UserViewModel>> GetAvailableWorkersAsync(int page, int pageSize);
+    Task<WorkerPagedResult> GetPagedAvaliableWorkersAsync(int pageNumber, int pageSize, int taskId);
 
     Task AssignWorkersToTaskAsync(int taskId, List<string> workerIds);
 }

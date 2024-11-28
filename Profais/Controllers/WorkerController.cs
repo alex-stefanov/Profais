@@ -9,38 +9,40 @@ namespace Profais.Controllers;
 [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
 public class WorkerController(
     IWorkerService workerService,
-    ICommonService commonService,
     ILogger<WorkerController> logger)
     : Controller
 {
     [HttpGet]
     public async Task<IActionResult> AddWorkers(
         int taskId,
-        int page = 1)
+        int pageNumber = 1,
+        int pageSize = 12,
+        string? selectedWorkerIds = null)
     {
-        const int pageSize = 12;
-
-        var availableUsers = await workerService
-            .GetAvailableWorkersAsync(page, pageSize);
-
-        var totalPages = await commonService
-            .GetTotalPagesAsync(pageSize);
-
-        var viewModel = new AddWorkersViewModel
+        try
         {
-            TaskId = taskId,
-            Users = availableUsers,
-            CurrentPage = page,
-            TotalPages = totalPages
-        };
+            var selectedIds = string.IsNullOrEmpty(selectedWorkerIds)
+                ? []
+                : selectedWorkerIds.Split(',').ToList();
 
-        return View(viewModel);
+            WorkerPagedResult model = await workerService
+                .GetPagedAvaliableWorkersAsync(pageNumber, pageSize, taskId);
+
+            ViewData["SelectedWorkerIds"] = selectedIds;
+
+            return View(model);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError($"An error occurred while getting paged users: {ex.Message}");
+            return RedirectToAction("Error", "Home");
+        }
     }
 
     [HttpPost]
     public async Task<IActionResult> AssignWorkersToTask(
         int taskId,
-        List<string> workerIds)
+        string selectedWorkerIds)
     {
         if (!ModelState.IsValid)
         {
@@ -49,7 +51,12 @@ public class WorkerController(
 
         try
         {
+            List<string> workerIds = selectedWorkerIds
+                .Split(',')
+                .ToList();
+
             await workerService.AssignWorkersToTaskAsync(taskId, workerIds);
+
             return RedirectToAction("ViewTask", "Task", new { taskId });
         }
         catch (Exception ex)

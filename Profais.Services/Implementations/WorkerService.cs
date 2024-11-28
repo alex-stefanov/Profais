@@ -12,29 +12,6 @@ public class WorkerService(
     IRepository<ProfUserTask, object> userTaskRepository)
     : IWorkerService
 {
-    public async Task<IEnumerable<UserViewModel>> GetAvailableWorkersAsync(
-        int page,
-        int pageSize)
-    {
-        List<UserViewModel> availableUsers = await userRepository
-            .GetAllAttached()
-            .Include(u => u.UserTasks)
-                .ThenInclude(ut => ut.Task)
-            .Where(u => !u.UserTasks
-                .Any(ut => !ut.Task.IsCompleted))
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .Select(u => new UserViewModel
-            {
-                Id = u.Id,
-                UserFirstName = u.FirstName,
-                UserLastName = u.LastName
-            })
-            .ToListAsync();
-
-        return availableUsers;
-    }
-
     public async Task AssignWorkersToTaskAsync(
         int taskId,
         List<string> workerIds)
@@ -65,5 +42,40 @@ public class WorkerService(
             };
             await userTaskRepository.AddAsync(userTask);
         }
+    }
+
+    public async Task<WorkerPagedResult> GetPagedAvaliableWorkersAsync(
+        int pageNumber,
+        int pageSize,
+        int taskId)
+    {
+        IQueryable<ProfUser> query = userRepository
+            .GetAllAttached()
+            .Include(u => u.UserTasks)
+                .ThenInclude(ut => ut.Task)
+            .Where(u => !u.UserTasks
+                .Any(ut => !ut.Task.IsCompleted));
+
+        int totalCount = await query.CountAsync();
+
+        List<UserViewModel> items = await query
+            .OrderBy(x => x.FirstName)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .Select(u => new UserViewModel
+            {
+                Id = u.Id,
+                UserFirstName = u.FirstName,
+                UserLastName = u.LastName,
+            })
+            .ToListAsync();
+
+        return new WorkerPagedResult
+        {
+            Users = items,
+            TaskId = taskId,
+            CurrentPage = pageNumber,
+            TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
+        };
     }
 }

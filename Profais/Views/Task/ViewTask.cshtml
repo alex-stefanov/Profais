@@ -90,25 +90,29 @@
             @if (!Model.IsCompleted)
             {
                 <div class="mt-4">
-                    <form asp-action="AddWorkers" asp-controller="Worker" asp-route-taskId="@Model.Id" method="get">
+                    <form asp-action="AddWorkers" asp-controller="Worker" method="get" class="mt-2">
+                        <input type="hidden" name="taskId" value="@Model.Id" />
                         <button type="submit" class="btn btn-primary">
                             Add Workers
                         </button>
                     </form>
 
-                    <form asp-action="AddMaterialsToTask" asp-controller="Material" asp-route-taskId="@Model.Id" method="get" class="mt-2">
+                    <form asp-action="AddMaterialsToTask" asp-controller="Material" method="get" class="mt-2">
+                        <input type="hidden" name="taskId" value="@Model.Id" />
                         <button type="submit" class="btn btn-secondary">
                             Add Materials
                         </button>
                     </form>
 
-                    <form asp-action="CompleteTask" asp-route-taskId="@Model.Id" method="post" class="mt-2">
+                    <form asp-action="CompleteTask" method="post" class="mt-2">
+                        <input type="hidden" name="taskId" value="@Model.Id" />
                         <button type="submit" class="btn btn-success">
                             Complete Task
                         </button>
                     </form>
 
-                    <form asp-action="DeleteTask" asp-route-taskId="@Model.Id" method="post" class="mt-2">
+                    <form asp-action="DeleteTask" method="post" class="mt-2">
+                        <input type="hidden" name="taskId" value="@Model.Id" />
                         <button type="submit" class="btn btn-warning">
                             Delete Task
                         </button>
