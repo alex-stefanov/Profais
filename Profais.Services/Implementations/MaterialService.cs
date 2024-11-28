@@ -4,6 +4,9 @@ using Profais.Data.Models;
 using Profais.Data.Repositories;
 using Profais.Services.Interfaces;
 using Profais.Services.ViewModels.Material;
+using Profais.Services.ViewModels.Project;
+using Profais.Services.ViewModels.Shared;
+using Profais.Services.ViewModels.Task;
 
 namespace Profais.Services.Implementations;
 
@@ -47,6 +50,32 @@ public class MaterialService(
         }
     }
 
+    public async Task CreateMaterialAsync(
+        MaterialCreateViewModel model)
+    {
+        Material material = new Material
+        {
+            Name = model.Name,
+            UsedForId = model.UsedFor,
+        };
+
+        await materialRepository.AddAsync(material);
+    }
+
+    public async Task DeleteMaterialAsync(
+        int id)
+    {
+        Material? material = await materialRepository
+            .GetByIdAsync(id);
+
+        if (material is null)
+        {
+            throw new ArgumentException("Material not found");
+        }
+
+        await materialRepository.DeleteAsync(material);
+    }
+
     public async Task<PaginatedMaterialsViewModel> GetMaterialsWithPaginationAsync(
         int taskId,
         int page,
@@ -80,6 +109,35 @@ public class MaterialService(
             CurrentPage = page,
             UsedForEnumValues = Enum.GetValues(typeof(UsedFor)).Cast<UsedFor>().ToList(),
             TaskId = taskId,
+        };
+    }
+
+    public async Task<PagedResult<MaterialViewModel>> GetPagedMaterialsAsync(
+        int pageNumber,
+        int pageSize)
+    {
+        IQueryable<Material> query = materialRepository
+            .GetAllAttached();
+
+        int totalCount = await query.CountAsync();
+
+        List<MaterialViewModel> items = await query
+            .OrderBy(x => x.Name)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .Select(x => new MaterialViewModel
+            {
+                Id = x.Id,
+                Name= x.Name,
+                UsedFor = x.UsedForId,
+            })
+            .ToListAsync();
+
+        return new PagedResult<MaterialViewModel>
+        {
+            Items = items,
+            CurrentPage = pageNumber,
+            TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
         };
     }
 }
