@@ -165,10 +165,27 @@
                             }
                             @if (User.IsInRole(AdminRoleName))
                             {
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="Admin" asp-controller="UserPanel" asp-action="Index">
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle text-dark" id="projectsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                         Admin Panel
                                     </a>
+                                    <ul class="dropdown-menu" aria-labelledby="projectsDropdown">
+                                        <li>
+                                            <a class="nav-link text-dark" asp-area="Admin" asp-controller="UserPanel" asp-action="Index">
+                                                User Panel
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" asp-area="Admin" asp-controller="MaterialPanel" asp-action="Index">
+                                                Material Panel
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" asp-area="Admin" asp-controller="RecoveryPanel" asp-action="Index">
+                                                Recovery Panel
+                                            </a>
+                                        </li>
+                                    </ul>
                                 </li>
                             }
                         }

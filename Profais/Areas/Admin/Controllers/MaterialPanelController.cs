@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Profais.Services.Implementations;
 using Profais.Services.Interfaces;
 using Profais.Services.ViewModels.Material;
 using Profais.Services.ViewModels.Shared;
@@ -69,7 +68,6 @@ public class MaterialPanelController(
     }
 
     [HttpPost]
-    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(
         int id)
     {

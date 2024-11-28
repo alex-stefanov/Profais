@@ -292,4 +292,55 @@ public class TaskService(
 
         return task.ProfProjectId;
     }
+
+    public async Task<PagedResult<RecoverTaskViewModel>> GetPagedDeletedTasksAsync(
+        int pageNumber,
+        int pageSize)
+    {
+        IQueryable<ProfTask> query = taskRepository
+            .GetAllAttached()
+            .Where(x => x.IsDeleted == true);
+
+        int totalTasks = await query.CountAsync();
+
+        RecoverTaskViewModel[] tasks = await query
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .Select(x => new RecoverTaskViewModel
+            {
+                Id = x.Id,
+                Title = x.Title,
+                Description = x.Description,
+                ProjectId = x.ProfProjectId,
+            })
+            .ToArrayAsync();
+
+        int totalPages = (int)Math.Ceiling(totalTasks / (double)pageSize);
+
+        return new PagedResult<RecoverTaskViewModel>
+        {
+            Items = tasks,
+            CurrentPage = pageNumber,
+            TotalPages = totalPages
+        };
+    }
+
+    public async Task RecoverTaskByIdAsync(
+        int taskId)
+    {
+        ProfTask? task = await taskRepository
+            .GetByIdAsync(taskId);
+
+        if (task is null)
+        {
+            throw new Exception("Task not found.");
+        }
+
+        task.IsDeleted = false;
+
+        if (!await taskRepository.UpdateAsync(task))
+        {
+            throw new ArgumentException($"Task with id `{taskId}` couldn't be recovered");
+        }
+    }
 }

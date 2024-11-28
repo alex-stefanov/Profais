@@ -1,0 +1,21 @@
+﻿@{
+    ViewData["Title"] = "Recovery Panel - Index";
+}
+
+<div class="text-center">
+    <h2 class="mb-4">
+        @ViewData["Title"]
+    </h2>
+
+    <form method="get" action="ViewDeletedTasks" class="mb-3">
+        <button type="submit" class="btn btn-lg btn-primary" style="width: 250px; height: 80px; font-size: 20px;">
+            View Deleted Tasks
+        </button>
+    </form>
+
+    <form method="get" action="ViewDeletedProjects">
+        <button type="submit" class="btn btn-lg btn-success" style="width: 250px; height: 80px; font-size: 20px;">
+            View Deleted Projects
+        </button>
+    </form>
+</div>
