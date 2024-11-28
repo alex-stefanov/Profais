@@ -1,14 +1,18 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Profais.Data.Models;
 using Profais.Data.Repositories;
 using Profais.Services.Interfaces;
 using Profais.Services.ViewModels.Penalty;
 using Profais.Services.ViewModels.Shared;
+using static Profais.Common.Constants.UserConstants;
 
 namespace Profais.Services.Implementations;
 
 public class PenaltyService(
-    IRepository<ProfUser,string> userRepository, 
+    UserManager<ProfUser> userManager,
+    IRepository<ProfUser, string> userRepository,
     IRepository<ProfUserPenalty, object> userPenaltyRepository,
     IRepository<Penalty, int> penaltyRepository)
     : IPenaltyService
@@ -65,6 +69,18 @@ public class PenaltyService(
         IQueryable<Penalty> penaltyQuery = penaltyRepository
              .GetAllAttached();
 
+        IEnumerable<ProfUser> adminUsers = await userManager.GetUsersInRoleAsync(AdminRoleName);
+
+        IEnumerable<ProfUser> managerUsers = await userManager.GetUsersInRoleAsync(ManagerRoleName);
+
+        List<string> idsNotToSelect = [];
+
+        idsNotToSelect
+            .AddRange(adminUsers.Select(x => x.Id));
+
+        idsNotToSelect
+            .AddRange(managerUsers.Select(x => x.Id));
+
         return new UserPenaltyViewModel
         {
             Penalties = await penaltyQuery
@@ -75,6 +91,7 @@ public class PenaltyService(
                 Description = x.Description,
             }).ToListAsync(),
             Users = await userQuery
+            .Where(x => !idsNotToSelect.Contains(x.Id))
             .Select(x => new UserForPenaltyViewModel
             {
                 Id = x.Id,
