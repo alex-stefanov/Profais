@@ -62,5 +62,5 @@ public class ProfProject
     /// Navigation property for the collection of tasks associated with the project.
     /// </summary>
     public virtual ICollection<ProfTask> Tasks { get; set; }
-        = new HashSet<ProfTask>();
+        = new HashSet<ProfTask>(); 
 }
