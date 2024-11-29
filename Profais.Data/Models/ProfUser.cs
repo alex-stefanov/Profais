@@ -14,6 +14,7 @@ public class ProfUser
     /// Gets or sets the first name of the user.
     /// </summary>
     [Required]
+    [PersonalData]
     [MaxLength(FirstNameMaxLength)]
     public string FirstName { get; set; } = null!;
 
@@ -21,6 +22,7 @@ public class ProfUser
     /// Gets or sets the last name of the user.
     /// </summary>
     [Required]
+    [PersonalData]
     [MaxLength(LastNameMaxLength)]
     public string LastName { get; set; } = null!;
 

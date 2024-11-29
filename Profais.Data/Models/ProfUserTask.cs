@@ -31,4 +31,10 @@ public class ProfUserTask
     /// </summary>
     [ForeignKey(nameof(TaskId))]
     public virtual ProfTask Task { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the user has voted or not.
+    /// </summary>
+    [Required]
+    public bool IsVoted { get; set; } = false;
 }
