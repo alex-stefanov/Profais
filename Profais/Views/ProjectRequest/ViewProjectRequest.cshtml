@@ -1,4 +1,5 @@
 ﻿@using Profais.Services.ViewModels.ProjectRequest;
+@using static Profais.Common.Enums.RequestStatus;
 @model ProjectRequestViewModel
 
 @{
@@ -45,16 +46,22 @@
 
         <input type="hidden" name="projectRequestId" value="@Model.Id" />
 
-        <button type="submit" class="btn btn-success">
-            Approve
-        </button>
+        @if(Model.Status == Pending)
+        {
+            <button type="submit" class="btn btn-success">
+                Approve
+            </button>
+        }
     </form>
 
     <form method="post" asp-action="DeclineProject" id="declineForm">
         <input type="hidden" name="projectRequestId" value="@Model.Id" />
 
-        <button type="submit" class="btn btn-danger">
-            Decline
-        </button>
+        @if(Model.Status == Pending)
+        {
+            <button type="submit" class="btn btn-danger">
+                Decline
+            </button>
+        }
     </form>
 </div>

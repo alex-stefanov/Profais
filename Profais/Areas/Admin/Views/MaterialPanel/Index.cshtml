@@ -7,13 +7,13 @@
         @ViewData["Title"]
     </h2>
 
-    <form method="get" action="ViewAll" class="mb-3">
+    <form method="get" asp-area="Admin" asp-controller="MaterialPanel" asp-action="ViewAll" class="mb-3">
         <button type="submit" class="btn btn-lg btn-primary" style="width: 250px; height: 80px; font-size: 20px;">
             View All Materials
         </button>
     </form>
 
-    <form method="get" action="Register">
+    <form method="get" asp-area="Admin" asp-controller="MaterialPanel" asp-action="Register">
         <button type="submit" class="btn btn-lg btn-success" style="width: 250px; height: 80px; font-size: 20px;">
             Register New Material
         </button>

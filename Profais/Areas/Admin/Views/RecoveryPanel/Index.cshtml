@@ -7,13 +7,13 @@
         @ViewData["Title"]
     </h2>
 
-    <form method="get" action="ViewDeletedTasks" class="mb-3">
+    <form method="get" asp-area="Admin" asp-controller="RecoveryPanel" asp-action="ViewDeletedTasks" class="mb-3">
         <button type="submit" class="btn btn-lg btn-primary" style="width: 250px; height: 80px; font-size: 20px;">
             View Deleted Tasks
         </button>
     </form>
 
-    <form method="get" action="ViewDeletedProjects">
+    <form method="get" asp-area="Admin" asp-controller="RecoveryPanel" asp-action="ViewDeletedProjects">
         <button type="submit" class="btn btn-lg btn-success" style="width: 250px; height: 80px; font-size: 20px;">
             View Deleted Projects
         </button>

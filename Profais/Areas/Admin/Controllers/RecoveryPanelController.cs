@@ -3,9 +3,13 @@ using Profais.Services.Interfaces;
 using Profais.Services.ViewModels.Task;
 using Profais.Services.ViewModels.Shared;
 using Profais.Services.ViewModels.Project;
+using Microsoft.AspNetCore.Authorization;
+using static Profais.Common.Constants.UserConstants;
 
 namespace Profais.Areas.Admin.Controllers;
 
+[Area(AdminRoleName)]
+[Authorize(Roles = AdminRoleName)]
 public class RecoveryPanelController(
     ITaskService taskService,
     IProjectService projectService,

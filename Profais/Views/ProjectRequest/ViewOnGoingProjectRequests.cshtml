@@ -23,7 +23,7 @@
                         <p class="card-text">
                             @project.ClientName
                         </p>
-                        <form asp-action="ViewProject" method="get">
+                        <form asp-action="ViewProjectRequest" method="get">
                             <input type="hidden" name="projectRequestId" value="@project.Id" />
                             <button type="submit" class="btn btn-primary">
                                 View Project

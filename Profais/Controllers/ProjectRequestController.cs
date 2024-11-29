@@ -31,7 +31,10 @@ public class ProjectRequestController(
 
         try
         {
-            return View(projectRequestService.CreateEmptyProjectRequestViewModel(userId));
+            AddProjectRequestViewModel model = projectRequestService
+                .CreateEmptyProjectRequestViewModel(userId);
+
+            return View(model);
         }
         catch (Exception ex)
         {
@@ -150,7 +153,7 @@ public class ProjectRequestController(
         try
         {
             await projectRequestService.ApproveProjectRequestById(projectRequestId);
-            return RedirectToAction(nameof(ViewProjectRequest), new { projectRequestId = projectRequestId });
+            return RedirectToAction(nameof(ViewApprovedProjectRequests));
         }
         catch (Exception ex)
         {
@@ -167,7 +170,7 @@ public class ProjectRequestController(
         try
         {
             await projectRequestService.DeclineProjectRequestById(projectRequestId);
-            return RedirectToAction(nameof(ViewProjectRequest), new { projectRequestId = projectRequestId });
+            return RedirectToAction(nameof(ViewDeclinedProjectRequests));
         }
         catch (Exception ex)
         {
