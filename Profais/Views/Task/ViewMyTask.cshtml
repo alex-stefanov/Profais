@@ -1,0 +1,102 @@
+﻿@using Profais.Services.ViewModels.Task;
+@using Profais.Services.ViewModels.Material;
+@using Profais.Services.ViewModels.Worker
+@using static Profais.Common.Constants.UserConstants;
+@model MyTaskViewModel
+
+@{
+    ViewData["Title"] = "Task - Mine";
+}
+
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header">
+            <h2>
+                @ViewData["Title"]
+            </h2>
+        </div>
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <strong>
+                        Title:
+                    </strong>
+                    <span>
+                        @Model.Title
+                    </span>
+                </div>
+                <div class="col-md-6">
+                    <strong>
+                        Description:
+                    </strong>
+                    <span>
+                        @Model.Description
+                    </span>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <strong>
+                        Voted:
+                    </strong>
+                    <span>
+                        @if (Model.IsVoted)
+                        {
+                            <span class="badge bg-success">
+                                Yes
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-warning">
+                                No
+                                <form asp-action="Vote" asp-controller="Task" method="get" class="mt-2">
+                                    <input type="hidden" name="userId" value="@Model.UserId" />
+                                    <input type="hidden" name="taskId" value="@Model.Id" />
+                                    <button type="submit" class="btn btn-primary">
+                                        Vote
+                                    </button>
+                                </form>
+                            </span>
+                        }
+                    </span>
+
+                </div>
+            </div>
+
+            <h5>
+                Materials
+            </h5>
+            <ul class="list-group mb-3">
+                @foreach (MaterialViewModel material in Model.Materials)
+                {
+                    <li class="list-group-item">
+                        @material.Name (Used for: @material.UsedFor)
+                    </li>
+                }
+            </ul>
+
+            <h5>Assigned Workers</h5>
+            <ul class="list-group mb-3">
+                @foreach (UserViewModel user in Model.Users)
+                {
+                    <li class="list-group-item">
+                        @user.UserFirstName @user.UserLastName
+                    </li>
+                }
+            </ul>
+
+            @if (User.IsInRole(SpecialistRoleName))
+            {
+                <div class="mt-4">
+                    <form asp-action="ViewProject" asp-controller="Project" method="get" class="mt-2">
+                        <input type="hidden" name="projectId" value="@Model.ProjectId" />
+                        <button type="submit" class="btn btn-primary">
+                            View Project
+                        </button>
+                    </form>
+                </div>
+            }
+        </div>
+    </div>
+</div>

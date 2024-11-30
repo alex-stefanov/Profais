@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Profais.Data.Migrations;
 using Profais.Data.Models;
 using Profais.Services.Interfaces;
 using Profais.Services.ViewModels.Shared;
@@ -29,10 +28,10 @@ public class TaskController(
             return RedirectToAction("Error", "Home");
         }
 
-        int taskId = await taskService
-            .GetTaskIdByUserId(userId);
+        MyTaskViewModel model = await taskService
+            .GetMyTaskByIdAsync(userId);
 
-        return RedirectToAction(nameof(ViewTask), new { taskId });
+        return View(model);
     }
 
     [HttpGet]
@@ -188,6 +187,25 @@ public class TaskController(
         catch (Exception ex)
         {
             logger.LogError($"An error occurred while updating the task: {ex.Message}");
+            return RedirectToAction("Error", "Home");
+        }
+    }
+
+    [HttpPost]
+    [Authorize(Roles = $"{WorkerRoleName},{SpecialistRoleName}")]
+    public async Task<IActionResult> Vote(
+        int taskId,
+        string userId)
+    {
+        try
+        {
+            await taskService.VoteAsync(userId, taskId);
+
+            return RedirectToAction(nameof(ViewMyTask));
+        }
+        catch (Exception ex)
+        {
+            logger.LogError($"An error occurred while votting task with id `{taskId}` by user with id `{userId}`. {ex.Message}");
             return RedirectToAction("Error", "Home");
         }
     }

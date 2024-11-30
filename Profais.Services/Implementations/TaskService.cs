@@ -14,7 +14,8 @@ public class TaskService(
     IRepository<ProfTask, int> taskRepository,
     IRepository<ProfUserTask, object> userTasksRepository,
     IRepository<TaskMaterial, object> taskMaterialRepository,
-    IRepository<Material, int> materialRepository)
+    IRepository<Material, int> materialRepository,
+    IRepository<UserProject, object> userProjectRepository)
     : ITaskService
 {
     public AddTaskViewModel GetAddTaskViewModelAsync(
@@ -340,12 +341,13 @@ public class TaskService(
         }
     }
 
-    public async Task<int> GetTaskIdByUserId(
+    public async Task<MyTaskViewModel> GetMyTaskByIdAsync(
         string userId)
     {
         ProfUserTask? userTask = await userTasksRepository
             .GetAllAttached()
             .Include(x => x.Task)
+            .ThenInclude(x => x.ProfProject)
             .FirstOrDefaultAsync(x => x.WorkerId == userId && x.Task.IsDeleted == false);
 
         if (userTask is null)
@@ -353,6 +355,115 @@ public class TaskService(
             throw new ArgumentException("No user task found");
         }
 
-        return userTask.TaskId;
+        ProfTask? task = await taskRepository
+            .GetAllAttached()
+            .Where(x => x.Id == userTask.TaskId && x.IsDeleted == false)
+            .Include(x => x.TaskMaterials)
+                .ThenInclude(t => t.Material)
+            .Include(x => x.UserTasks)
+                .ThenInclude(u => u.Worker)
+            .FirstOrDefaultAsync();
+
+        if (task is null)
+        {
+            throw new ArgumentNullException(nameof(task), "Task not found");
+        }
+
+        return new MyTaskViewModel
+        {
+            Id = userTask.TaskId,
+            UserId = userId,
+            Title = task.Title,
+            Description = task.Description,
+            ProjectId = task.ProfProjectId,
+            IsVoted = userTask.IsVoted,
+            Materials = task.TaskMaterials.Select(x => new MaterialViewModel
+            {
+                Id = x.MaterialId,
+                Name = x.Material.Name,
+                UsedFor = x.Material.UsedForId,
+            }),
+            Users = task.UserTasks
+            .Where(x => x.WorkerId != userId)
+            .Select(x => new UserViewModel
+            {
+                Id = x.WorkerId,
+                UserFirstName = x.Worker.FirstName,
+                UserLastName = x.Worker.LastName,
+            }),
+        };
+    }
+
+    public async Task VoteAsync(
+        string userId,
+        int taskId)
+    {
+        ProfUserTask? userTask = await userTasksRepository
+           .GetAllAttached()
+           .Include(x => x.Task)
+           .FirstOrDefaultAsync(x => x.WorkerId == userId && x.Task.IsDeleted == false);
+
+        if (userTask is null)
+        {
+            throw new ArgumentException("No user task found");
+        }
+
+        userTask.IsVoted = true;
+
+        if (!await userTasksRepository.UpdateAsync(userTask))
+        {
+            throw new ArgumentException($"User task with ids: user `{userId}`, task `{taskId}` wasn't updated");
+        }
+
+        await CheckFinalVote(taskId);
+
+        await AddToAllTimeContributers(userId, userTask.Task.ProfProjectId);
+    }
+
+    private async Task CheckFinalVote(
+        int taskId)
+    {
+        ProfTask? task = await taskRepository
+          .GetAllAttached()
+          .Include(x => x.UserTasks)
+          .Where(x => x.IsDeleted == false && x.IsCompleted == false)
+          .FirstOrDefaultAsync(x => x.Id == taskId);
+
+        if (task is null)
+        {
+            throw new ArgumentException("Task for voting not found");
+        }
+
+        bool areAllCompleted = !(task.UserTasks
+            .Any(x => x.IsVoted == false));
+
+        if (areAllCompleted && task.IsCompleted == false)
+        {
+            task.IsCompleted = true;
+
+            if (!await taskRepository.UpdateAsync(task))
+            {
+                throw new ArgumentException($"Task task with id `{taskId}` couldn't be completed");
+            }
+        }
+    }
+
+    private async Task AddToAllTimeContributers(
+        string userId,
+        int projectId)
+    {
+        UserProject? userProject = await userProjectRepository
+            .FirstOrDefaultAsync(x => x.ProfProjectId == projectId && x.ContributerId == userId);
+
+        if (userProject is null)
+        {
+            userProject = new UserProject()
+            {
+                ContributerId = userId,
+                ProfProjectId = projectId,
+            };
+
+            await userProjectRepository.AddAsync(userProject);
+        }
     }
 }

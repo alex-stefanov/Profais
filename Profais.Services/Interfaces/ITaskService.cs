@@ -31,5 +31,7 @@ public interface ITaskService
 
     Task RecoverTaskByIdAsync(int taskId);
 
-    Task<int> GetTaskIdByUserId(string userId);
+    Task<MyTaskViewModel> GetMyTaskByIdAsync(string userId);
+
+    Task VoteAsync(string userId, int taskId);
 }
