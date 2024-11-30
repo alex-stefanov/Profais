@@ -1,9 +1,12 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis;
+using Profais.Services.Implementations;
 using Profais.Services.Interfaces;
 using Profais.Services.ViewModels.Project;
 using Profais.Services.ViewModels.Shared;
+using Profais.Services.ViewModels.Task;
 using static Profais.Common.Constants.UserConstants;
 
 namespace Profais.Controllers;
@@ -57,12 +60,40 @@ public class ProjectController(
     [HttpGet]
     public async Task<IActionResult> ViewProject(
         int projectId)
-        => View(await projectService.GetProjectByIdAsync(projectId));
+    {
+        try
+        {
+            ProjectViewModel model = await projectService
+                .GetProjectByIdAsync(projectId);
+
+            return View(model);
+
+        }
+        catch (Exception ex)
+        {
+            logger.LogError($"An error occured while finding a project with id `{projectId}`. {ex.Message}");
+            return RedirectToAction("Error", "Home");
+        }
+    }
 
     [HttpGet]
     [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
     public IActionResult AddProject()
-        => View(projectService.GetAddProjectViewModelAsync());
+    {
+        try
+        {
+            AddProjectViewModel model = projectService
+                .GetAddProjectViewModel();
+
+            return View(model);
+
+        }
+        catch (Exception ex)
+        {
+            logger.LogError($"An error occured while creating a project model. {ex.Message}");
+            return RedirectToAction("Error", "Home");
+        }
+    }
 
     [HttpPost]
     [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]

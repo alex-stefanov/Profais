@@ -30,4 +30,6 @@ public interface ITaskService
     Task<PagedResult<RecoverTaskViewModel>> GetPagedDeletedTasksAsync(int pageNumber, int pageSize);
 
     Task RecoverTaskByIdAsync(int taskId);
+
+    Task<int> GetTaskIdByUserId(string userId);
 }

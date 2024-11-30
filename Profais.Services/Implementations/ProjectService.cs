@@ -78,7 +78,7 @@ public class ProjectService(
         };
     }
 
-    public AddProjectViewModel GetAddProjectViewModelAsync()
+    public AddProjectViewModel GetAddProjectViewModel()
         => new AddProjectViewModel
         {
             Title = string.Empty,

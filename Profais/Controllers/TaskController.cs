@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Profais.Data.Migrations;
 using Profais.Data.Models;
 using Profais.Services.Interfaces;
 using Profais.Services.ViewModels.Shared;
@@ -18,7 +19,7 @@ public class TaskController(
 {
     [HttpGet]
     [Authorize(Roles = $"{WorkerRoleName},{SpecialistRoleName}")]
-    public IActionResult ViewMyTask()
+    public async Task<IActionResult> ViewMyTask()
     {
         string userId = userManager.GetUserId(User)!;
 
@@ -28,7 +29,8 @@ public class TaskController(
             return RedirectToAction("Error", "Home");
         }
 
-        int taskId = 0;
+        int taskId = await taskService
+            .GetTaskIdByUserId(userId);
 
         return RedirectToAction(nameof(ViewTask), new { taskId });
     }
@@ -57,7 +59,21 @@ public class TaskController(
     [HttpGet]
     public async Task<IActionResult> ViewTask(
         int taskId)
-        => View(await taskService.GetTaskByIdAsync(taskId));
+    {
+        try
+        {
+            TaskViewModel model = await taskService
+                .GetTaskByIdAsync(taskId);
+
+            return View(model);
+
+        }
+        catch (Exception ex)
+        {
+            logger.LogError($"An error occured while finding a task with id `{taskId}`. {ex.Message}");
+            return RedirectToAction("Error", "Home");
+        }
+    }
 
     [HttpPost]
     public async Task<IActionResult> CompleteTask(

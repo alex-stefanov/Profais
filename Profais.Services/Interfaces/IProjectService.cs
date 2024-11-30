@@ -17,7 +17,7 @@ public interface IProjectService
 
     Task UpdateProjectAsync(EditProjectViewModel model);
 
-    AddProjectViewModel GetAddProjectViewModelAsync();
+    AddProjectViewModel GetAddProjectViewModel();
 
     Task RemoveProjectByIdAsync(int projectId);
 

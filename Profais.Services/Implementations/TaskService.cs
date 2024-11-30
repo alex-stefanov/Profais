@@ -12,6 +12,7 @@ namespace Profais.Services.Implementations;
 
 public class TaskService(
     IRepository<ProfTask, int> taskRepository,
+    IRepository<ProfUserTask, object> userTasksRepository,
     IRepository<TaskMaterial, object> taskMaterialRepository,
     IRepository<Material, int> materialRepository)
     : ITaskService
@@ -337,5 +338,21 @@ public class TaskService(
         {
             throw new ArgumentException($"Task with id `{taskId}` couldn't be recovered");
         }
+    }
+
+    public async Task<int> GetTaskIdByUserId(
+        string userId)
+    {
+        ProfUserTask? userTask = await userTasksRepository
+            .GetAllAttached()
+            .Include(x => x.Task)
+            .FirstOrDefaultAsync(x => x.WorkerId == userId && x.Task.IsDeleted == false);
+
+        if (userTask is null)
+        {
+            throw new ArgumentException("No user task found");
+        }
+
+        return userTask.TaskId;
     }
 }

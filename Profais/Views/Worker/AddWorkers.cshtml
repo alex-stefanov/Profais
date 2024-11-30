@@ -5,13 +5,11 @@
     ViewData["Title"] = "Add Workers";
 }
 
-<h2>
-    @ViewData["Title"]
-</h2>
+<h2>@ViewData["Title"]</h2>
 
 <form method="post" action="AssignWorkersToTask">
     <input type="hidden" name="taskId" value="@Model.TaskId" />
-    <input type="hidden" id="selectedUserIds" name="selectedUserIds" value="@string.Join(",", Model.SelectedUserIds)" />
+    <input type="hidden" id="selectedUserIds" name="selectedUserIds" value="" />
 
     <div class="row">
         @foreach (var user in Model.Users)
@@ -25,7 +23,7 @@
                                    type="checkbox"
                                    value="@user.Id"
                                    id="worker-@user.Id"
-                            @(Model.SelectedUserIds.Contains(user.Id) ? "checked" : "") />
+                            />
                             <label class="form-check-label" for="worker-@user.Id">Select</label>
                         </div>
                     </div>
@@ -66,20 +64,17 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const selectedUserIdsField = document.getElementById('selectedUserIds');
-        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        const selectedUserIds = JSON.parse(localStorage.getItem('selectedUserIds')) || [];
 
-        const selectedIds = selectedUserIdsField.value.split(',').filter(id => id);
-
-        checkboxes.forEach(checkbox => {
-            if (selectedIds.includes(checkbox.value)) {
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            if (selectedUserIds.includes(checkbox.value)) {
                 checkbox.checked = true;
             }
         });
 
-        checkboxes.forEach(checkbox => {
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
             checkbox.addEventListener('change', () => {
-                let selectedIds = selectedUserIdsField.value ? selectedUserIdsField.value.split(',') : [];
+                let selectedIds = JSON.parse(localStorage.getItem('selectedUserIds')) || [];
 
                 if (checkbox.checked) {
                     if (!selectedIds.includes(checkbox.value)) {
@@ -89,20 +84,13 @@
                     selectedIds = selectedIds.filter(id => id !== checkbox.value);
                 }
 
-                selectedUserIdsField.value = selectedIds.join(',');
+                localStorage.setItem('selectedUserIds', JSON.stringify(selectedIds));
             });
         });
     });
 
-    function navigateToPage(pageNumber) {
-        const selectedUserIds = document.getElementById('selectedUserIds').value;
-        const taskId = document.getElementsByName('taskId')[0].value;
-
-        const url = new URL(window.location.href);
-        url.searchParams.set('pageNumber', pageNumber);
-        url.searchParams.set('taskId', taskId);
-        url.searchParams.set('selectedUserIds', selectedUserIds);
-
-        window.location.href = url.toString();
-    }
+    document.querySelector('form').addEventListener('submit', function () {
+        const selectedUserIds = JSON.parse(localStorage.getItem('selectedUserIds')) || [];
+        document.getElementById('selectedUserIds').value = selectedUserIds.join(',');
+    });
 </script>

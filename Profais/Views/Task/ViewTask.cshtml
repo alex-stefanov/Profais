@@ -1,6 +1,7 @@
 ﻿@using Profais.Services.ViewModels.Task;
 @using Profais.Services.ViewModels.Material;
 @using Profais.Services.ViewModels.Worker
+@using static Profais.Common.Constants.UserConstants;
 @model TaskViewModel
 
 @{
@@ -79,7 +80,9 @@
                 }
             </ul>
 
-            @if (!Model.IsCompleted)
+            @if (!Model.IsCompleted
+                && (User.IsInRole(AdminRoleName)
+                || User.IsInRole(ManagerRoleName)))
             {
                 <div class="mt-4">
                     <form asp-action="AddWorkers" asp-controller="Worker" method="get" class="mt-2">
@@ -107,6 +110,20 @@
                         <input type="hidden" name="taskId" value="@Model.Id" />
                         <button type="submit" class="btn btn-warning">
                             Delete Task
+                        </button>
+                    </form>
+                </div>
+            }
+
+            @if(User.IsInRole(ManagerRoleName)
+                || User.IsInRole(AdminRoleName)
+                || User.IsInRole(SpecialistRoleName))
+            {
+                <div class="mt-4">
+                    <form asp-action="ViewProject" asp-controller="Project" method="get" class="mt-2">
+                        <input type="hidden" name="projectId" value="@Model.ProjectId" />
+                        <button type="submit" class="btn btn-primary">
+                            View Project
                         </button>
                     </form>
                 </div>
