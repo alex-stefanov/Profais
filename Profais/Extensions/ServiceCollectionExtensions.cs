@@ -21,6 +21,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IRepository<ProfUserTask, object>, ProfRepository<ProfUserTask, object>>();
         services.AddScoped<IRepository<ProfWorkerRequest, int>, ProfRepository<ProfWorkerRequest, int>>();
         services.AddScoped<IRepository<TaskMaterial, object>, ProfRepository<TaskMaterial, object>>();
+        services.AddScoped<IRepository<UserProject, object>, ProfRepository<UserProject, object>>();
 
         return services;
     }

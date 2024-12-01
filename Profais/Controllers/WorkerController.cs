@@ -28,8 +28,6 @@ public class WorkerController(
             WorkerPagedResult model = await workerService
                 .GetPagedAvaliableWorkersAsync(pageNumber, pageSize, taskId);
 
-            ViewData["SelectedWorkerIds"] = selectedIds;
-
             return View(model);
         }
         catch (Exception ex)
