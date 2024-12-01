@@ -80,33 +80,36 @@
                 }
             </ul>
 
-            @if (!Model.IsCompleted
-                && (User.IsInRole(AdminRoleName)
-                || User.IsInRole(ManagerRoleName)))
+            @if (User.IsInRole(ManagerRoleName)
+                || User.IsInRole(AdminRoleName)
+                || User.IsInRole(SpecialistRoleName))
             {
-                <div class="mt-4">
-                    <form asp-action="AddWorkers" asp-controller="Worker" method="get" class="mt-2">
+                <div class="mt-4 d-flex flex-wrap gap-2">
+                    <form asp-action="AddWorkers" asp-controller="Worker" method="get">
                         <input type="hidden" name="taskId" value="@Model.Id" />
                         <button type="submit" class="btn btn-primary">
                             Add Workers
                         </button>
                     </form>
-
-                    <form asp-action="AddMaterialsToTask" asp-controller="Material" method="get" class="mt-2">
+                    <form asp-action="RemoveWorkers" asp-controller="Worker" method="get">
+                        <input type="hidden" name="taskId" value="@Model.Id" />
+                        <button type="submit" class="btn btn-danger">
+                            Remove Workers
+                        </button>
+                    </form>
+                    <form asp-action="AddMaterialsToTask" asp-controller="Material" method="get">
                         <input type="hidden" name="taskId" value="@Model.Id" />
                         <button type="submit" class="btn btn-secondary">
                             Add Materials
                         </button>
                     </form>
-
-                    <form asp-action="CompleteTask" method="post" class="mt-2">
+                    <form asp-action="CompleteTask" method="post">
                         <input type="hidden" name="taskId" value="@Model.Id" />
                         <button type="submit" class="btn btn-success">
                             Complete Task
                         </button>
                     </form>
-
-                    <form asp-action="DeleteTask" method="post" class="mt-2">
+                    <form asp-action="DeleteTask" method="post">
                         <input type="hidden" name="taskId" value="@Model.Id" />
                         <button type="submit" class="btn btn-warning">
                             Delete Task

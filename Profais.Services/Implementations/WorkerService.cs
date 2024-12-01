@@ -78,4 +78,62 @@ public class WorkerService(
             TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
         };
     }
+
+    public async Task<WorkerPagedResult> GetPagedWorkersFromTaskAsync(
+        int pageNumber,
+        int pageSize,
+        int taskId)
+    {
+        IQueryable<ProfUser> query = userRepository
+            .GetAllAttached()
+            .Include(u => u.UserTasks)
+                .ThenInclude(ut => ut.Task)
+            .Where(u => u.UserTasks
+                .Any(ut => ut.TaskId == taskId && !ut.Task.IsCompleted));
+
+        int totalCount = await query.CountAsync();
+
+        List<UserViewModel> items = await query
+            .OrderBy(x => x.FirstName)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .Select(u => new UserViewModel
+            {
+                Id = u.Id,
+                UserFirstName = u.FirstName,
+                UserLastName = u.LastName,
+            })
+            .ToListAsync();
+
+        return new WorkerPagedResult
+        {
+            Users = items,
+            TaskId = taskId,
+            CurrentPage = pageNumber,
+            TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
+        };
+    }
+
+    public async Task RemoveWorkersFromTaskAsync(
+        int taskId,
+        List<string> workerIds)
+    {
+        ProfTask? task = await taskRepository.
+             GetByIdAsync(taskId);
+
+        if (task is null)
+        {
+            throw new ArgumentException(nameof(taskId), "Task not found");
+        }
+
+        List<ProfUserTask> existingAssignments = await userTaskRepository
+            .GetAllAttached()
+            .Where(ut => ut.TaskId == taskId && workerIds.Contains(ut.WorkerId))
+            .ToListAsync();
+
+        foreach (ProfUserTask assignment in existingAssignments)
+        {
+            await userTaskRepository.DeleteAsync(assignment);
+        }
+    }
 }

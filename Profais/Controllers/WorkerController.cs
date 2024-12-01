@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Profais.Services.Interfaces;
 using Profais.Services.ViewModels.Worker;
 using static Profais.Common.Constants.UserConstants;
@@ -54,6 +55,58 @@ public class WorkerController(
                 .ToList();
 
             await workerService.AssignWorkersToTaskAsync(taskId, workerIds);
+
+            return RedirectToAction("ViewTask", "Task", new { taskId });
+        }
+        catch (Exception ex)
+        {
+            logger.LogError($"Error assigning workers: {ex.Message}");
+            return RedirectToAction("Error", "Home");
+        }
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> RemoveWorkers(
+        int taskId,
+        int pageNumber = 1,
+        int pageSize = 12,
+        string? selectedWorkerIds = null)
+    {
+        try
+        {
+            var selectedIds = string.IsNullOrEmpty(selectedWorkerIds)
+                ? []
+                : selectedWorkerIds.Split(',').ToList();
+
+            WorkerPagedResult model = await workerService
+                .GetPagedWorkersFromTaskAsync(pageNumber, pageSize, taskId);
+
+            return View(model);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError($"An error occurred while getting paged users: {ex.Message}");
+            return RedirectToAction("Error", "Home");
+        }
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> RemoveWorkersFromTask(
+        int taskId,
+        string selectedWorkerIds)
+    {
+        if (!ModelState.IsValid)
+        {
+            return RedirectToAction("ViewTask", "Task", new { taskId });
+        }
+
+        try
+        {
+            List<string> workerIds = selectedWorkerIds
+                .Split(',')
+                .ToList();
+
+            await workerService.RemoveWorkersFromTaskAsync(taskId, workerIds);
 
             return RedirectToAction("ViewTask", "Task", new { taskId });
         }
