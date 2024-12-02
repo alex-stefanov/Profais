@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis;
 using Profais.Data.Models;
 using Profais.Services.Interfaces;
 using Profais.Services.ViewModels.Shared;
 using Profais.Services.ViewModels.Task;
+using System.Threading.Tasks;
 using static Profais.Common.Constants.UserConstants;
 
 namespace Profais.Controllers;
@@ -206,6 +208,43 @@ public class TaskController(
         catch (Exception ex)
         {
             logger.LogError($"An error occurred while votting task with id `{taskId}` by user with id `{userId}`. {ex.Message}");
+            return RedirectToAction("Error", "Home");
+        }
+    }
+
+    [HttpGet]
+    [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
+    public async Task<IActionResult> DailyTasks(
+        int page = 1,
+        int pageSize = 6)
+    {
+        try
+        {
+            PagedResult<DailyTaskViewModel> model = await taskService
+                .GetPagedDailyTasksAsync(page, pageSize);
+
+            return View(model);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError($"An error occurred while getting daily tasks. {ex.Message}");
+            return RedirectToAction("Error", "Home");
+        }
+    }
+
+    [HttpPost]
+    [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
+    public async Task<IActionResult> ResetCompletedTasks()
+    {
+        try
+        {
+            await taskService.ResetTasksAsync();
+
+            return RedirectToAction(nameof(DailyTasks));
+        }
+        catch (Exception ex)
+        {
+            logger.LogError($"An error occurred while resetting completed tasks. {ex.Message}");
             return RedirectToAction("Error", "Home");
         }
     }

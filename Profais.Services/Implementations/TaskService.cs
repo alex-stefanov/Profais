@@ -466,4 +466,66 @@ public class TaskService(
             await userProjectRepository.AddAsync(userProject);
         }
     }
+
+    public async Task ResetTasksAsync()
+    {
+        IEnumerable<int> completedTasksIds = await taskRepository
+            .GetAllAttached()
+            .Where(x => x.IsCompleted == true)
+            .Select(x => x.Id)
+            .ToListAsync();
+
+        if (!completedTasksIds.Any())
+        {
+            return;
+        }
+
+        IEnumerable<ProfUserTask> userTasksToDelete = await userTasksRepository
+            .GetAllAttached()
+            .Where(x => completedTasksIds.Contains(x.TaskId))
+            .ToListAsync();
+
+        if (userTasksToDelete.Any())
+        {
+            foreach (ProfUserTask userTask in userTasksToDelete)
+            {
+                await userTasksRepository.DeleteAsync(userTask);
+            }
+        }
+    }
+
+    public async Task<PagedResult<DailyTaskViewModel>> GetPagedDailyTasksAsync(
+        int pageNumber,
+        int pageSize)
+    {
+        IQueryable<ProfTask> query = taskRepository
+            .GetAllAttached()
+            .Include(x => x.ProfProject)
+            .Where(x => x.IsDeleted == false)
+            .OrderBy(x => x.IsCompleted);
+
+        int totalTasks = await query.CountAsync();
+
+        DailyTaskViewModel[] tasks = await query
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .Select(x => new DailyTaskViewModel
+            {
+                TaskId = x.Id,
+                Title = x.Title,
+                Description = x.Description,
+                ProjectTitle = x.ProfProject.Title,
+                IsCompleted = x.IsCompleted,
+            })
+            .ToArrayAsync();
+
+        int totalPages = (int)Math.Ceiling(totalTasks / (double)pageSize);
+
+        return new PagedResult<DailyTaskViewModel>
+        {
+            Items = tasks,
+            CurrentPage = pageNumber,
+            TotalPages = totalPages
+        };
+    }
 }
