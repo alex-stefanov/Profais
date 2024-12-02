@@ -7,6 +7,7 @@ using Profais.Services.ViewModels.Task;
 using Profais.Services.ViewModels.Material;
 using Profais.Services.ViewModels.Worker;
 using Profais.Services.ViewModels.Shared;
+using Profais.Common.Exceptions;
 
 namespace Profais.Services.Implementations;
 
@@ -18,7 +19,7 @@ public class TaskService(
     IRepository<UserProject, object> userProjectRepository)
     : ITaskService
 {
-    public AddTaskViewModel GetAddTaskViewModelAsync(
+    public AddTaskViewModel GetAddTaskViewModel(
       int projectId)
       => new AddTaskViewModel
       {
@@ -54,9 +55,9 @@ public class TaskService(
             .Include(x => x.UserTasks)
                 .ThenInclude(u => u.Worker)
             .FirstOrDefaultAsync()
-            ?? throw new ArgumentNullException(nameof(task), "Task not found");
+            ?? throw new ItemNotFoundException($"Task with id `{taskId}` not found");
 
-        TaskViewModel model = new TaskViewModel
+        var model = new TaskViewModel
         {
             Id = taskId,
             Title = task.Title,
@@ -87,13 +88,13 @@ public class TaskService(
     {
         ProfTask task = await taskRepository
             .GetByIdAsync(taskId)
-            ?? throw new ArgumentNullException(nameof(task), "Task not found"); ;
+            ?? throw new ItemNotFoundException($"Task with id `{taskId}` not found"); ;
 
         task.IsCompleted = true;
 
         if (!await taskRepository.UpdateAsync(task))
         {
-            throw new ArgumentException($"Task with id `{task.Id}` wasn't updated");
+            throw new ItemNotUpdatedException($"Task with id `{task.Id}` couldn't be updated");
         }
     }
 
@@ -160,7 +161,7 @@ public class TaskService(
         if (task is null
             || task.IsDeleted == true)
         {
-            throw new ArgumentException(nameof(task), "Task not found");
+            throw new ItemNotFoundException($"Task with id `{taskId}` not found or deleted");
         }
 
         List<int> existingMaterials = await taskMaterialRepository
@@ -212,19 +213,23 @@ public class TaskService(
             .Take(pageSize)
             .ToListAsync();
 
-        return new PaginatedMaterialsViewModel
+        var model = new PaginatedMaterialsViewModel
         {
-            Materials = materials.Select(x => new MaterialViewModel
+            Materials = materials
+            .Select(x => new MaterialViewModel
             {
                 Id = x.Id,
                 Name = x.Name,
                 UsedFor = x.UsedForId,
-            }).ToList(),
+            })
+            .ToList(),
             TotalPages = totalPages,
             CurrentPage = page,
             UsedForEnumValues = Enum.GetValues(typeof(UsedFor)).Cast<UsedFor>().ToList(),
             TaskId = taskId,
         };
+
+        return model;
     }
 
     public async Task<EditTaskViewModel> GetEditTaskByIdAsync(
@@ -236,7 +241,7 @@ public class TaskService(
         if (task is null
             || task.IsDeleted == true)
         {
-            throw new ArgumentNullException(nameof(task), "Task is not specified");
+            throw new ItemNotFoundException($"Task with id `{taskId}` not found");
         }
 
         return new EditTaskViewModel
@@ -258,7 +263,7 @@ public class TaskService(
         if (task is null
             || task.IsDeleted)
         {
-            throw new Exception("Task not found.");
+            throw new ItemNotFoundException($"Task with id `{model.Id}` not found.");
         }
 
         task.Id = model.Id;
@@ -269,7 +274,7 @@ public class TaskService(
 
         if (!await taskRepository.UpdateAsync(task))
         {
-            throw new ArgumentException($"Task with id `{model.Id}` wasn't updated");
+            throw new ItemNotUpdatedException($"Task with id `{model.Id}` couldn't be updated");
         }
     }
 
@@ -282,14 +287,14 @@ public class TaskService(
         if (task is null
             || task.IsDeleted)
         {
-            throw new Exception("Task not found.");
+            throw new ItemNotFoundException($"Task with id `{taskId}` not found.");
         }
 
         task.IsDeleted = true;
 
         if (!await taskRepository.UpdateAsync(task))
         {
-            throw new ArgumentException($"Task with id `{task.Id}` wasn't updated");
+            throw new ItemNotUpdatedException($"Task with id `{task.Id}` couldn't be updated");
         }
 
         return task.ProfProjectId;
@@ -301,7 +306,7 @@ public class TaskService(
     {
         IQueryable<ProfTask> query = taskRepository
             .GetAllAttached()
-            .Where(x => x.IsDeleted == true);
+            .Where(x => x.IsDeleted);
 
         int totalCount = await query
             .CountAsync();
@@ -329,19 +334,15 @@ public class TaskService(
     public async Task RecoverTaskByIdAsync(
         int taskId)
     {
-        ProfTask? task = await taskRepository
-            .GetByIdAsync(taskId);
-
-        if (task is null)
-        {
-            throw new Exception("Task not found.");
-        }
+        ProfTask task = await taskRepository
+            .GetByIdAsync(taskId) 
+            ?? throw new ItemNotFoundException($"Task with id `{taskId}` not found");
 
         task.IsDeleted = false;
 
         if (!await taskRepository.UpdateAsync(task))
         {
-            throw new ArgumentException($"Task with id `{taskId}` couldn't be recovered");
+            throw new ItemNotUpdatedException($"Task with id `{taskId}` couldn't be recovered");
         }
     }
 
@@ -353,7 +354,7 @@ public class TaskService(
             .Include(x => x.Task)
             .ThenInclude(x => x.ProfProject)
             .FirstOrDefaultAsync(x => x.WorkerId == userId && x.Task.IsDeleted == false) 
-            ?? throw new ArgumentException("No user task found");
+            ?? throw new ItemNotFoundException($"UserTask for user with id `{userId}` not found");
 
         ProfTask task = await taskRepository
             .GetAllAttached()
@@ -363,7 +364,7 @@ public class TaskService(
             .Include(x => x.UserTasks)
                 .ThenInclude(u => u.Worker)
             .FirstOrDefaultAsync()
-            ?? throw new ArgumentNullException(nameof(task), "Task not found"); ;
+            ?? throw new ItemNotFoundException($"Task with id `{userTask.TaskId}` not found");
 
         var model = new MyTaskViewModel
         {
@@ -401,13 +402,13 @@ public class TaskService(
            .GetAllAttached()
            .Include(x => x.Task)
            .FirstOrDefaultAsync(x => x.WorkerId == userId && x.Task.IsDeleted == false) 
-           ?? throw new ArgumentException("No user task found");
+           ?? throw new ItemNotFoundException($"User task with ids: user `{userId}`, task `{taskId}` not found");
 
         userTask.IsVoted = true;
 
         if (!await userTasksRepository.UpdateAsync(userTask))
         {
-            throw new ArgumentException($"User task with ids: user `{userId}`, task `{taskId}` wasn't updated");
+            throw new ItemNotUpdatedException($"User task with ids: user `{userId}`, task `{taskId}` couldn't be updated");
         }
 
         await CheckFinalVote(taskId);
@@ -486,18 +487,19 @@ public class TaskService(
           .Include(x => x.UserTasks)
           .Where(x => !x.IsDeleted && !x.IsCompleted)
           .FirstOrDefaultAsync(x => x.Id == taskId)
-          ?? throw new ArgumentException("Task for voting not found");
+          ?? throw new ItemNotFoundException($"Task with id `{taskId}` not found");
 
         bool areAllCompleted = !(task.UserTasks
             .Any(x => !x.IsVoted));
 
-        if (areAllCompleted && !task.IsCompleted)
+        if (areAllCompleted 
+            && !task.IsCompleted)
         {
             task.IsCompleted = true;
 
             if (!await taskRepository.UpdateAsync(task))
             {
-                throw new ArgumentException($"Task task with id `{taskId}` couldn't be completed");
+                throw new ItemNotUpdatedException($"Task with id `{taskId}` couldn't be completed");
             }
         }
     }
@@ -507,7 +509,8 @@ public class TaskService(
         int projectId)
     {
         UserProject? userProject = await userProjectRepository
-            .FirstOrDefaultAsync(x => x.ProfProjectId == projectId && x.ContributerId == userId);
+            .FirstOrDefaultAsync(x => x.ProfProjectId == projectId 
+                && x.ContributerId == userId);
 
         if (userProject is null)
         {

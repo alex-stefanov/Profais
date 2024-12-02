@@ -96,10 +96,15 @@ public class Program
 
         var app = builder.Build();
 
-        if (!app.Environment.IsDevelopment())
+        if (app.Environment.IsDevelopment())
         {
-            app.UseExceptionHandler("/Home/Error");
-            app.UseHsts();
+            app.UseDeveloperExceptionPage();
+        }
+        else
+        {
+            app.UseExceptionHandler("/Home/Error500");
+
+            app.UseStatusCodePagesWithReExecute("/Home/Error404");
         }
 
         app.UseHttpsRedirection();

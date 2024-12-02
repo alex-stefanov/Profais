@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Profais.Common.Exceptions;
 using Profais.Data.Models;
 using Profais.Services.Interfaces;
 using Profais.Services.ViewModels.SpecialistRequest;
@@ -24,8 +25,9 @@ public class SpecialistRequestController(
 
         if (string.IsNullOrEmpty(userId))
         {
-            logger.LogError("No user found");
-            return RedirectToAction("Error", "Home");
+            logger.LogError("User not found");
+            ViewData["ErrorMessage"] = "User not found.";
+            return NotFound();
         }
 
         try
@@ -35,10 +37,17 @@ public class SpecialistRequestController(
 
             return View(model);
         }
+        catch (ItemNotFoundException ex)
+        {
+            logger.LogError($"No data found while creating empty specialist request for user {userId}. Exception: {ex.Message}");
+            ViewData["ErrorMessage"] = $"Specialist request data not found for user {userId}. {ex.Message}";
+            return NotFound();
+        }
         catch (Exception ex)
         {
-            logger.LogError($"An error occured while creating empty specialist request. {ex.Message}");
-            return RedirectToAction("Error", "Home");
+            logger.LogError($"An unexpected error occurred while creating an empty specialist request for user {userId}. Exception: {ex.Message}");
+            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            return StatusCode(500);
         }
     }
 
@@ -61,8 +70,9 @@ public class SpecialistRequestController(
         }
         catch (Exception ex)
         {
-            logger.LogError($"An error occured while creating specialist request. {ex.Message}");
-            return RedirectToAction("Error", "Home");
+            logger.LogError($"An unexpected error occurred while creating the specialist request. Exception: {ex.Message}");
+            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            return StatusCode(500);
         }
     }
 
@@ -79,8 +89,9 @@ public class SpecialistRequestController(
         }
         catch (Exception ex)
         {
-            logger.LogError($"An error occured while getting all specialist requests. {ex.Message}");
-            return RedirectToAction("Error", "Home");
+            logger.LogError($"An unexpected error occurred while getting all specialist requests. Exception: {ex.Message}");
+            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            return StatusCode(500);
         }
     }
 
@@ -89,11 +100,12 @@ public class SpecialistRequestController(
     public async Task<IActionResult> ApproveSpecialistRequest(
         ActionSpecialistRequestViewModel model)
     {
-        if (!ModelState.IsValid
+        if (!ModelState.IsValid 
             || model is null)
         {
-            logger.LogError("No request found");
-            return RedirectToAction("Error", "Home");
+            logger.LogError("No request found or invalid model state.");
+            ViewData["ErrorMessage"] = "Specialist request not found or invalid request data.";
+            return NotFound();
         }
 
         try
@@ -103,10 +115,23 @@ public class SpecialistRequestController(
 
             return RedirectToAction(nameof(PreviewSpecialistRequests));
         }
+        catch (ItemNotFoundException ex)
+        {
+            logger.LogError($"No specialist request found to approve. Exception: {ex.Message}");
+            ViewData["ErrorMessage"] = $"Specialist request not found. {ex.Message}";
+            return NotFound();
+        }
+        catch (ItemNotUpdatedException ex)
+        {
+            logger.LogError($"Failed to update specialist request while approving. Exception: {ex.Message}");
+            ViewData["ErrorMessage"] = $"Unable to update specialist request. {ex.Message}";
+            return StatusCode(500);
+        }
         catch (Exception ex)
         {
-            logger.LogError($"An error occured while approving specialist request. {ex.Message}");
-            return RedirectToAction("Error", "Home");
+            logger.LogError($"An unexpected error occurred while approving specialist request. Exception: {ex.Message}");
+            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            return StatusCode(500);
         }
     }
 
@@ -115,11 +140,12 @@ public class SpecialistRequestController(
     public async Task<IActionResult> DeclineSpecialistRequest(
         ActionSpecialistRequestViewModel model)
     {
-        if (!ModelState.IsValid
+        if (!ModelState.IsValid 
             || model is null)
         {
-            logger.LogError("No request found");
-            return RedirectToAction("Error", "Home");
+            logger.LogError("No request found or invalid model state.");
+            ViewData["ErrorMessage"] = "Specialist request not found or invalid request data.";
+            return NotFound();
         }
 
         try
@@ -129,10 +155,23 @@ public class SpecialistRequestController(
 
             return RedirectToAction(nameof(PreviewSpecialistRequests));
         }
+        catch (ItemNotFoundException ex)
+        {
+            logger.LogError($"No specialist request found to decline. Exception: {ex.Message}");
+            ViewData["ErrorMessage"] = $"Specialist request not found. {ex.Message}";
+            return NotFound();
+        }
+        catch (ItemNotUpdatedException ex)
+        {
+            logger.LogError($"Failed to update specialist request while declining. Exception: {ex.Message}");
+            ViewData["ErrorMessage"] = $"Unable to update specialist request. {ex.Message}";
+            return StatusCode(500);
+        }
         catch (Exception ex)
         {
-            logger.LogError($"An error occured while declining specialist request. {ex.Message}");
-            return RedirectToAction("Error", "Home");
+            logger.LogError($"An unexpected error occurred while declining specialist request. Exception: {ex.Message}");
+            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            return StatusCode(500);
         }
     }
 }

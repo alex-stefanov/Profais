@@ -7,7 +7,7 @@ namespace Profais.Services.Interfaces;
 
 public interface ITaskService
 {
-    AddTaskViewModel GetAddTaskViewModelAsync(int projectId);
+    AddTaskViewModel GetAddTaskViewModel(int projectId);
 
     Task CreateTaskAsync(AddTaskViewModel taskViewModel);
 

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Profais.Common.Enums;
+using Profais.Common.Exceptions;
 using Profais.Data.Models;
 using Profais.Data.Repositories;
 using Profais.Services.Interfaces;
@@ -32,7 +33,7 @@ public class MaterialService(
     {
         Material material = await materialRepository
             .GetByIdAsync(id) 
-            ?? throw new ArgumentException("Material not found");
+            ?? throw new ItemNotFoundException($"Material with id `{id}` not found");
 
         await materialRepository
             .DeleteAsync(material);
@@ -116,7 +117,7 @@ public class MaterialService(
     {
         ProfTask task = await taskRepository
             .GetByIdAsync(taskId)
-            ?? throw new ArgumentException(nameof(task), "Task not found");
+            ?? throw new ItemNotFoundException($"Task with id `{taskId}` not found");
 
         List<int> existingMaterials = await taskMaterialRepository
             .GetAllAttached()

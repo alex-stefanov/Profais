@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Profais.Common.Exceptions;
 using Profais.Data.Models;
 using Profais.Data.Repositories;
 using Profais.Services.Interfaces;
@@ -21,7 +22,7 @@ public class PenaltyService(
     {
         Penalty penalty = await penaltyRepository
             .GetByIdAsync(penaltyId)
-            ?? throw new ArgumentException("Penalty is not found!");
+            ?? throw new ItemNotFoundException($"Penalty with id `{penaltyId}` not found");
 
         return new PenaltyViewModel
         {
@@ -37,11 +38,11 @@ public class PenaltyService(
     {
         ProfUserPenalty profUserPenalty = await userPenaltyRepository
             .FirstOrDefaultAsync(x => x.PenaltyId == penaltyId && x.UserId == userId)
-            ?? throw new ArgumentException("UserPenalty not found");
+            ?? throw new ItemNotFoundException($"UserPenalty with ids: userId `{userId}`, penaltyId `{penaltyId}` not found");
 
         if (!await userPenaltyRepository.DeleteAsync(profUserPenalty))
         {
-            throw new ArgumentException($"UserProject with ids: userId `{userId}`, penaltyId `{penaltyId}` wasn't removed");
+            throw new ItemNotDeletedException($"UserProject with ids: userId `{userId}`, penaltyId `{penaltyId}` couldn't be removed");
         }
     }
 
@@ -114,8 +115,8 @@ public class PenaltyService(
         idsNotToSelect
             .AddRange(managerUsers
                 .Select(x => x.Id));
-
-        return new UserPenaltyViewModel
+        
+        var model = new UserPenaltyViewModel
         {
             Penalties = await penaltyQuery
             .Select(x => new PenaltyViewModel
@@ -135,6 +136,8 @@ public class PenaltyService(
             })
             .ToListAsync(),
         };
+
+        return model;
     }
 
     public async Task<PagedResult<CollectionPenaltyViewModel>> GetPagedPenaltiesByUserIdAsync(

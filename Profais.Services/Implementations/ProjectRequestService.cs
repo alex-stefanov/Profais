@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Profais.Common.Enums;
+using Profais.Common.Exceptions;
 using Profais.Data.Models;
 using Profais.Data.Repositories;
 using Profais.Services.Interfaces;
@@ -61,7 +62,7 @@ public class ProjectRequestService(
                 Title = x.Title,
             })
             .FirstOrDefaultAsync()
-            ?? throw new ArgumentException("Project Request not found");
+            ?? throw new ItemNotFoundException($"ProjectRequest with id `{projectRequestId}` not found");
 
         return model;
     }
@@ -104,13 +105,13 @@ public class ProjectRequestService(
     {
         ProfProjectRequest profProjectRequest = projectRequestRepository
             .GetById(projectRequestId) 
-            ?? throw new ArgumentException("Project request not found!");
+            ?? throw new ItemNotFoundException($"ProjectRequest with id `{projectRequestId}` not found");
 
         profProjectRequest.Status = Approved;
 
         if (!await projectRequestRepository.UpdateAsync(profProjectRequest))
         {
-            throw new ArgumentException($"Project request with id `{projectRequestId}` wasn't updated");
+            throw new ItemNotUpdatedException($"Project request with id `{projectRequestId}` couldn't be updated");
         }
     }
 
@@ -119,13 +120,13 @@ public class ProjectRequestService(
     {
         ProfProjectRequest profProjectRequest = projectRequestRepository
             .GetById(projectRequestId) 
-            ?? throw new ArgumentException("Project request not found!");
+            ?? throw new ItemNotFoundException($"ProjectRequest with id `{projectRequestId}` not found");
 
         profProjectRequest.Status = Declined;
 
         if (!await projectRequestRepository.UpdateAsync(profProjectRequest))
         {
-            throw new ArgumentException($"Project request with id `{projectRequestId}` wasn't updated");
+            throw new ItemNotUpdatedException($"Project request with id `{projectRequestId}` couldn't be updated");
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Profais.Common.Exceptions;
 using Profais.Data.Models;
 using Profais.Services.Interfaces;
 using Profais.Services.ViewModels.WorkerRequest;
@@ -19,13 +20,13 @@ public class WorkerRequestController(
     [Authorize(Roles = ClientRoleName)]
     public async Task<IActionResult> MakeWorkerRequest()
     {
-        string userId = userManager
-            .GetUserId(User)!;
+        string userId = userManager.GetUserId(User)!;
 
         if (string.IsNullOrEmpty(userId))
         {
             logger.LogError("No user found");
-            return RedirectToAction("Error", "Home");
+            ViewData["ErrorMessage"] = "User not found.";
+            return NotFound();
         }
 
         try
@@ -35,10 +36,17 @@ public class WorkerRequestController(
 
             return View(model);
         }
+        catch (ItemNotFoundException ex)
+        {
+            logger.LogError($"No worker request found for user {userId}. Exception: {ex.Message}");
+            ViewData["ErrorMessage"] = $"No worker request found for user {userId}. {ex.Message}";
+            return NotFound();
+        }
         catch (Exception ex)
         {
-            logger.LogError($"An error occured while creating empty worker request. {ex.Message}");
-            return RedirectToAction("Error", "Home");
+            logger.LogError($"An error occurred while creating an empty worker request for user {userId}. Exception: {ex.Message}");
+            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            return StatusCode(500);
         }
     }
 
@@ -61,8 +69,9 @@ public class WorkerRequestController(
         }
         catch (Exception ex)
         {
-            logger.LogError($"An error occured while creating worker request. {ex.Message}");
-            return RedirectToAction("Error", "Home");
+            logger.LogError($"An error occurred while creating worker request. Exception: {ex.Message}");
+            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            return StatusCode(500);
         }
     }
 
@@ -79,8 +88,9 @@ public class WorkerRequestController(
         }
         catch (Exception ex)
         {
-            logger.LogError($"An error occured while creating worker request view models. {ex.Message}");
-            return RedirectToAction("Error", "Home");
+            logger.LogError($"An error occurred while retrieving worker request view models. Exception: {ex.Message}");
+            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            return StatusCode(500);
         }
     }
 
@@ -92,8 +102,9 @@ public class WorkerRequestController(
         if (!ModelState.IsValid
             || model is null)
         {
-            logger.LogError("No request found");
-            return RedirectToAction("Error", "Home");
+            logger.LogError("Invalid model state or no request found.");
+            ViewData["ErrorMessage"] = "Invalid model state or no request found.";
+            return NotFound();
         }
 
         try
@@ -103,10 +114,23 @@ public class WorkerRequestController(
 
             return RedirectToAction(nameof(PreviewWorkerRequests));
         }
+        catch (ItemNotFoundException ex)
+        {
+            logger.LogError($"No worker request found with ID {model.Id}. Exception: {ex.Message}");
+            ViewData["ErrorMessage"] = $"Worker request with ID {model.Id} not found. {ex.Message}";
+            return NotFound();
+        }
+        catch (ItemNotUpdatedException ex)
+        {
+            logger.LogError($"Failed to approve worker request with ID {model.Id}. Exception: {ex.Message}");
+            ViewData["ErrorMessage"] = $"Unable to approve worker request with ID {model.Id}. {ex.Message}";
+            return StatusCode(500);
+        }
         catch (Exception ex)
         {
-            logger.LogError($"An error occured while approving worker request. {ex.Message}");
-            return RedirectToAction("Error", "Home");
+            logger.LogError($"An error occurred while approving worker request. Exception: {ex.Message}");
+            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            return StatusCode(500);
         }
     }
 
@@ -118,8 +142,9 @@ public class WorkerRequestController(
         if (!ModelState.IsValid
             || model is null)
         {
-            logger.LogError("No request found");
-            return RedirectToAction("Error", "Home");
+            logger.LogError("Invalid model state or no request found.");
+            ViewData["ErrorMessage"] = "Invalid model state or no request found.";
+            return NotFound();
         }
 
         try
@@ -129,10 +154,23 @@ public class WorkerRequestController(
 
             return RedirectToAction(nameof(PreviewWorkerRequests));
         }
+        catch (ItemNotFoundException ex)
+        {
+            logger.LogError($"No worker request found with ID {model.Id}. Exception: {ex.Message}");
+            ViewData["ErrorMessage"] = $"Worker request with ID {model.Id} not found. {ex.Message}";
+            return NotFound();
+        }
+        catch (ItemNotUpdatedException ex)
+        {
+            logger.LogError($"Failed to decline worker request with ID {model.Id}. Exception: {ex.Message}");
+            ViewData["ErrorMessage"] = $"Unable to decline worker request with ID {model.Id}. {ex.Message}";
+            return StatusCode(500);
+        }
         catch (Exception ex)
         {
-            logger.LogError($"An error occured while declining worker request. {ex.Message}");
-            return RedirectToAction("Error", "Home");
+            logger.LogError($"An error occurred while declining worker request. Exception: {ex.Message}");
+            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            return StatusCode(500);
         }
     }
 }

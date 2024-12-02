@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Profais.Common.Exceptions;
 using Profais.Data.Models;
 using Profais.Services.Interfaces;
 using Profais.Services.ViewModels.Penalty;
@@ -28,7 +29,8 @@ public class PenaltyController(
         if (string.IsNullOrEmpty(userId))
         {
             logger.LogError("No user found");
-            return RedirectToAction("Error", "Home");
+            ViewData["ErrorMessage"] = $"User not found";
+            return NotFound();
         }
 
         try
@@ -40,8 +42,9 @@ public class PenaltyController(
         }
         catch (Exception ex)
         {
-            logger.LogError($"An error occurred while getting penalties for user {userId}. {ex.Message}");
-            return RedirectToAction("Error", "Home");
+            logger.LogError($"An unexpected error occurred while getting penalties for user {userId}. Exception: {ex.Message}");
+            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            return StatusCode(500);
         }
     }
 
@@ -52,15 +55,22 @@ public class PenaltyController(
     {
         try
         {
-            PenaltyViewModel model =await  penaltyService
+            PenaltyViewModel model = await penaltyService
                 .GetPenaltyById(penaltyId);
 
             return View(model);
         }
-        catch(Exception ex)
+        catch (ItemNotFoundException ex)
         {
-            logger.LogError($"An error occurred while getting penalty with id {penaltyId}. {ex.Message}");
-            return RedirectToAction("Error", "Home");
+            logger.LogError($"No penalty found with id {penaltyId}. Exception: {ex.Message}");
+            ViewData["ErrorMessage"] = $"Penalty with id {penaltyId} not found. {ex.Message}";
+            return NotFound();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError($"An unexpected error occurred while getting penalty with id {penaltyId}. Exception: {ex.Message}");
+            ViewData["ErrorMessage"] = $"An unexpected error occurred while getting penalty with id {penaltyId}. {ex.Message}";
+            return StatusCode(500);
         }
     }
 
@@ -70,19 +80,20 @@ public class PenaltyController(
         int pageNumber = 1,
         int pageSize = 8)
     {
-		try
-		{
-			PagedResult<FullCollectionPenaltyViewModel> model = await penaltyService
-				.GetAllPagedPenaltiesAsync(pageNumber, pageSize);
+        try
+        {
+            PagedResult<FullCollectionPenaltyViewModel> model = await penaltyService
+                .GetAllPagedPenaltiesAsync(pageNumber, pageSize);
 
-			return View(model);
-		}
-		catch (Exception ex)
-		{
-			logger.LogError($"An error occurred while getting penalties with users. {ex.Message}");
-			return RedirectToAction("Error", "Home");
-		}
-	}
+            return View(model);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError($"An unexpected error occurred while getting penalties with users. Exception: {ex.Message}");
+            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            return StatusCode(500);
+        }
+    }
 
     [HttpGet]
     [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
@@ -97,8 +108,9 @@ public class PenaltyController(
         }
         catch (Exception ex)
         {
-            logger.LogError($"An error occurred while getting userPenalties. {ex.Message}");
-            return RedirectToAction("Error", "Home");
+            logger.LogError($"An unexpected error occurred while getting user penalties. Exception: {ex.Message}");
+            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            return StatusCode(500);
         }
     }
 
@@ -120,18 +132,19 @@ public class PenaltyController(
         }
 
         try
-		{
-			await penaltyService
+        {
+            await penaltyService
                 .AddUserPenaltyByIds(model.SelectedUserId!, (int)model.SelectedPenaltyId!);
 
-			return RedirectToAction(nameof(GetAllPenalties));
-		}
-		catch (Exception ex)
-		{
-			logger.LogError($"An error occurred while adding a penalty to a user. {ex.Message}");
-			return RedirectToAction("Error", "Home");
-		}
-	}
+            return RedirectToAction(nameof(GetAllPenalties));
+        }
+        catch (Exception ex)
+        {
+            logger.LogError($"An unexpected error occurred while adding a penalty to a user. Exception: {ex.Message}");
+            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            return StatusCode(500);
+        }
+    }
 
     [HttpPost]
 	[Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
@@ -139,17 +152,30 @@ public class PenaltyController(
         string userId,
         int penaltyId)
     {
-		try
-		{
+        try
+        {
             await penaltyService
                 .RemoveUserPenaltyByIds(userId, penaltyId);
 
             return RedirectToAction(nameof(GetAllPenalties));
-		}
-		catch (Exception ex)
-		{
-			logger.LogError($"An error occurred while removing penalty from a user. {ex.Message}");
-			return RedirectToAction("Error", "Home");
-		}
-	}
+        }
+        catch (ItemNotFoundException ex)
+        {
+            logger.LogError($"No penalty or user found while removing penalty. Exception: {ex.Message}");
+            ViewData["ErrorMessage"] = $"Penalty or user not found. {ex.Message}";
+            return NotFound();
+        }
+        catch (ItemNotDeletedException ex)
+        {
+            logger.LogError($"Attempt to delete penalty while removing failed. Exception: {ex.Message}");
+            ViewData["ErrorMessage"] = $"Unable to delete penalty while removing. {ex.Message}";
+            return StatusCode(500);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError($"An unexpected error occurred while removing penalty from a user. Exception: {ex.Message}");
+            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            return StatusCode(500);
+        }
+    }
 }

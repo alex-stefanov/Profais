@@ -17,4 +17,22 @@ public class HomeController()
     {
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
+
+    public IActionResult Error404()
+    {
+        string errorMessage = ViewData["ErrorMessage"]?.ToString() ?? "An unexpected error occurred.";
+
+        ViewData["ErrorMessage"] = errorMessage;
+
+        return View();
+    }
+
+    public IActionResult Error500()
+    {
+        string errorMessage = ViewData["ErrorMessage"]?.ToString() ?? "An unexpected error occurred.";
+
+        ViewData["ErrorMessage"] = errorMessage;
+
+        return View();
+    }
 }

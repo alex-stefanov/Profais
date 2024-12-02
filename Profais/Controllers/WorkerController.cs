@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Profais.Common.Exceptions;
 using Profais.Services.Interfaces;
 using Profais.Services.ViewModels.Worker;
 using static Profais.Common.Constants.UserConstants;
@@ -23,7 +24,7 @@ public class WorkerController(
         try
         {
             IEnumerable<string> selectedIds = string.IsNullOrEmpty(selectedWorkerIds)
-                ? []
+                ? Array.Empty<string>()
                 : selectedWorkerIds.Split(',');
 
             WorkerPagedResult model = await workerService
@@ -33,8 +34,9 @@ public class WorkerController(
         }
         catch (Exception ex)
         {
-            logger.LogError($"An error occurred while getting paged users: {ex.Message}");
-            return RedirectToAction("Error", "Home");
+            logger.LogError($"An error occurred while getting paged users for task {taskId}. Exception: {ex.Message}");
+            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            return StatusCode(500);
         }
     }
 
@@ -58,10 +60,17 @@ public class WorkerController(
 
             return RedirectToAction("ViewTask", "Task", new { taskId });
         }
+        catch (ItemNotFoundException ex)
+        {
+            logger.LogError($"No workers or task found for task {taskId}. Exception: {ex.Message}");
+            ViewData["ErrorMessage"] = $"No workers or task found for task {taskId}. {ex.Message}";
+            return NotFound();
+        }
         catch (Exception ex)
         {
-            logger.LogError($"Error assigning workers: {ex.Message}");
-            return RedirectToAction("Error", "Home");
+            logger.LogError($"Error assigning workers to task {taskId}. Exception: {ex.Message}");
+            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            return StatusCode(500);
         }
     }
 
@@ -85,8 +94,9 @@ public class WorkerController(
         }
         catch (Exception ex)
         {
-            logger.LogError($"An error occurred while getting paged users: {ex.Message}");
-            return RedirectToAction("Error", "Home");
+            logger.LogError($"An error occurred while getting paged users for task {taskId}. Exception: {ex.Message}");
+            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            return StatusCode(500);
         }
     }
 
@@ -110,10 +120,17 @@ public class WorkerController(
 
             return RedirectToAction("ViewTask", "Task", new { taskId });
         }
+        catch (ItemNotFoundException ex)
+        {
+            logger.LogError($"No workers found to remove from task {taskId}. Exception: {ex.Message}");
+            ViewData["ErrorMessage"] = $"No workers found to remove from task {taskId}. {ex.Message}";
+            return NotFound();
+        }
         catch (Exception ex)
         {
-            logger.LogError($"Error assigning workers: {ex.Message}");
-            return RedirectToAction("Error", "Home");
+            logger.LogError($"An error occurred while removing workers from task {taskId}. Exception: {ex.Message}");
+            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            return StatusCode(500);
         }
     }
 }

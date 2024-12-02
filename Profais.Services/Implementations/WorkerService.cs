@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Profais.Common.Exceptions;
 using Profais.Data.Models;
 using Profais.Data.Repositories;
 using Profais.Services.Interfaces;
@@ -90,7 +91,7 @@ public class WorkerService(
     {
         ProfTask task = await taskRepository.
             GetByIdAsync(taskId)
-            ?? throw new ArgumentException(nameof(taskId), "Task not found");
+            ?? throw new ItemNotFoundException($"Task with id `{taskId}` not found");
 
         List<ProfUserTask> existingAssignments = await userTaskRepository
             .GetAllAttached()
@@ -122,7 +123,7 @@ public class WorkerService(
     {
         ProfTask task = await taskRepository.
              GetByIdAsync(taskId)
-             ?? throw new ArgumentException(nameof(taskId), "Task not found");
+             ?? throw new ItemNotFoundException($"Task with id `{taskId}` not found");
 
         List<ProfUserTask> existingAssignments = await userTaskRepository
             .GetAllAttached()

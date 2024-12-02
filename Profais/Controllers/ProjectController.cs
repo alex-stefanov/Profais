@@ -1,12 +1,9 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis;
-using Profais.Services.Implementations;
+using Profais.Common.Exceptions;
 using Profais.Services.Interfaces;
 using Profais.Services.ViewModels.Project;
 using Profais.Services.ViewModels.Shared;
-using Profais.Services.ViewModels.Task;
 using static Profais.Common.Constants.UserConstants;
 
 namespace Profais.Controllers;
@@ -32,8 +29,9 @@ public class ProjectController(
         }
         catch (Exception ex)
         {
-            logger.LogError($"An error occurred while getting all the incompleted projects. {ex.Message}");
-            return RedirectToAction("Error", "Home");
+            logger.LogError($"An unexpected error occurred while getting all the incomplete projects. Exception: {ex.Message}");
+            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            return StatusCode(500);
         }
     }
 
@@ -46,14 +44,15 @@ public class ProjectController(
         try
         {
             PagedResult<ProjectViewModel> model = await projectService
-               .GetPagedCompletedProjectsAsync(pageNumber, pageSize);
+                .GetPagedCompletedProjectsAsync(pageNumber, pageSize);
 
             return View(model);
         }
         catch (Exception ex)
         {
-            logger.LogError($"An error occured while getting all the completed projects. {ex.Message}");
-            return RedirectToAction("Error", "Home");
+            logger.LogError($"An unexpected error occurred while getting all the completed projects. Exception: {ex.Message}");
+            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            return StatusCode(500);
         }
     }
 
@@ -67,12 +66,18 @@ public class ProjectController(
                 .GetProjectByIdAsync(projectId);
 
             return View(model);
-
+        }
+        catch (ItemNotFoundException ex)
+        {
+            logger.LogError($"No project found with id `{projectId}`. Exception: {ex.Message}");
+            ViewData["ErrorMessage"] = $"Project with id `{projectId}` not found. {ex.Message}";
+            return NotFound();
         }
         catch (Exception ex)
         {
-            logger.LogError($"An error occured while finding a project with id `{projectId}`. {ex.Message}");
-            return RedirectToAction("Error", "Home");
+            logger.LogError($"An unexpected error occurred while finding a project with id `{projectId}`. Exception: {ex.Message}");
+            ViewData["ErrorMessage"] = $"An unexpected error occurred while retrieving project with id `{projectId}`. {ex.Message}";
+            return StatusCode(500);
         }
     }
 
@@ -86,12 +91,12 @@ public class ProjectController(
                 .GetAddProjectViewModel();
 
             return View(model);
-
         }
         catch (Exception ex)
         {
-            logger.LogError($"An error occured while creating a project model. {ex.Message}");
-            return RedirectToAction("Error", "Home");
+            logger.LogError($"An unexpected error occurred while creating a project model. Exception: {ex.Message}");
+            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            return StatusCode(500);
         }
     }
 
@@ -114,8 +119,9 @@ public class ProjectController(
         }
         catch (Exception ex)
         {
-            logger.LogError($"An error occured while adding project. {ex.Message}");
-            return RedirectToAction("Error", "Home");
+            logger.LogError($"An unexpected error occurred while adding a project. Exception: {ex.Message}");
+            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            return StatusCode(500);
         }
     }
 
@@ -131,10 +137,17 @@ public class ProjectController(
 
             return View(model);
         }
+        catch (ItemNotFoundException ex)
+        {
+            logger.LogError($"No project found with id `{projectId}` for editing. Exception: {ex.Message}");
+            ViewData["ErrorMessage"] = $"Project with id `{projectId}` not found for editing. {ex.Message}";
+            return NotFound();
+        }
         catch (Exception ex)
         {
-            logger.LogError($"An error occurred while getting project details for editing. {ex.Message}");
-            return RedirectToAction("Error", "Home");
+            logger.LogError($"An unexpected error occurred while getting project details for editing. Exception: {ex.Message}");
+            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            return StatusCode(500);
         }
     }
 
@@ -155,10 +168,23 @@ public class ProjectController(
 
             return RedirectToAction(nameof(ViewProject), new { projectId = model.Id });
         }
+        catch (ItemNotFoundException ex)
+        {
+            logger.LogError($"No project found with id `{model.Id}` for updating. Exception: {ex.Message}");
+            ViewData["ErrorMessage"] = $"Project with id `{model.Id}` not found for updating. {ex.Message}";
+            return NotFound();
+        }
+        catch (ItemNotUpdatedException ex)
+        {
+            logger.LogError($"Failed to update project with id `{model.Id}`. Exception: {ex.Message}");
+            ViewData["ErrorMessage"] = $"Unable to update project with id `{model.Id}`. {ex.Message}";
+            return StatusCode(500);
+        }
         catch (Exception ex)
         {
-            logger.LogError($"An error occurred while editing the project: {ex.Message}");
-            return RedirectToAction("Error", "Home");
+            logger.LogError($"An unexpected error occurred while editing the project with id `{model.Id}`. Exception: {ex.Message}");
+            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            return StatusCode(500);
         }
     }
 
@@ -179,10 +205,23 @@ public class ProjectController(
 
             return RedirectToAction(nameof(IncompletedProjects));
         }
+        catch (ItemNotFoundException ex)
+        {
+            logger.LogError($"No project found with id `{projectId}` to remove. Exception: {ex.Message}");
+            ViewData["ErrorMessage"] = $"Project with id `{projectId}` not found for removal. {ex.Message}";
+            return NotFound();
+        }
+        catch (ItemNotUpdatedException ex)
+        {
+            logger.LogError($"Failed to update project with id `{projectId}` while removing. Exception: {ex.Message}");
+            ViewData["ErrorMessage"] = $"Unable to update project with id `{projectId}` while removing. {ex.Message}";
+            return StatusCode(500);
+        }
         catch (Exception ex)
         {
-            logger.LogError($"An error occurred while removing the project: {ex.Message}");
-            return RedirectToAction("Error", "Home");
+            logger.LogError($"An unexpected error occurred while removing the project with id `{projectId}`. Exception: {ex.Message}");
+            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            return StatusCode(500);
         }
     }
 }

@@ -7,6 +7,7 @@ using Profais.Services.ViewModels.Shared;
 using Profais.Services.ViewModels.Task;
 using Profais.Services.ViewModels.Material;
 using Profais.Services.ViewModels.Worker;
+using Profais.Common.Exceptions;
 
 namespace Profais.Services.Implementations;
 
@@ -54,7 +55,7 @@ public class ProjectService(
         if (project is null
             || project.IsDeleted == true)
         {
-            throw new ArgumentNullException(nameof(project), "Project is not specified");
+            throw new ItemNotFoundException($"Project with id `{projectId}` not found or deleted");
         }
 
         List<UserProject> userProjects = await userProjectRepository
@@ -63,7 +64,7 @@ public class ProjectService(
             .Where(x => x.ProfProjectId == projectId)
             .ToListAsync();
 
-        return new ProjectViewModel
+        var model = new ProjectViewModel
         {
             Id = projectId,
             Title = project.Title,
@@ -86,7 +87,7 @@ public class ProjectService(
                     UsedFor = t.Material.UsedForId,
                 })
                 .ToArray(),
-                }),
+            }),
             Contributers = userProjects
             .Select(x => new UserViewModel
             {
@@ -95,6 +96,8 @@ public class ProjectService(
                 UserLastName = x.Contributer.LastName,
             }),
         };
+
+        return model;
     }
 
     public async Task<EditProjectViewModel> GetEditProjectByIdAsync(
@@ -106,7 +109,7 @@ public class ProjectService(
         if (project is null
             || project.IsDeleted == true)
         {
-            throw new ArgumentNullException(nameof(project), "Project is not specified");
+            throw new ItemNotFoundException($"Project with id `{projectId}` not found or deleted");
         }
 
         return new EditProjectViewModel
@@ -128,7 +131,7 @@ public class ProjectService(
         if (project is null
             || project.IsDeleted == true)
         {
-            throw new Exception("Project not found.");
+            throw new ItemNotFoundException($"Project with id `{model.Id}` not found or deleted");
         }
 
         project.Title = model.Title;
@@ -138,7 +141,7 @@ public class ProjectService(
 
         if (!await projectRepository.UpdateAsync(project))
         {
-            throw new ArgumentException($"Project with id `{model.Id}` wasn't updated");
+            throw new ItemNotUpdatedException($"Project with id `{model.Id}` couldn't be updated");
         }
     }
 
@@ -159,14 +162,14 @@ public class ProjectService(
         if (project is null
             || project.IsDeleted)
         {
-            throw new Exception("Task not found.");
+            throw new ItemNotFoundException($"Project with id `{projectId}` not found or deleted");
         }
 
         project.IsDeleted = true;
 
         if (!await projectRepository.UpdateAsync(project))
         {
-            throw new ArgumentException($"Project with id `{project.Id}` wasn't updated");
+            throw new ItemNotUpdatedException($"Project with id `{project.Id}` couldn't be updated");
         }
     }
 
@@ -176,9 +179,10 @@ public class ProjectService(
     {
         IQueryable<ProfProject> query = projectRepository
              .GetAllAttached()
-             .Where(x => x.IsDeleted == true);
+             .Where(x => x.IsDeleted);
 
-        int totalCount = await query.CountAsync();
+        int totalCount = await query
+            .CountAsync();
 
         RecoverProjectViewModel[] tasks = await query
             .Skip((pageNumber - 1) * pageSize)
@@ -203,14 +207,14 @@ public class ProjectService(
         int projectId)
     {
         ProfProject project = await projectRepository
-            .GetByIdAsync(projectId) 
-            ?? throw new Exception("Project not found.");
+            .GetByIdAsync(projectId)
+            ?? throw new ItemNotFoundException($"Project with id `{projectId}` not found or deleted");
 
         project.IsDeleted = false;
 
         if (!await projectRepository.UpdateAsync(project))
         {
-            throw new ArgumentException($"Project with id `{projectId}` couldn't be recovered");
+            throw new ItemNotUpdatedException($"Project with id `{projectId}` couldn't be recovered");
         }
     }
 
@@ -224,7 +228,7 @@ public class ProjectService(
             .Include(x => x.Tasks)
                 .ThenInclude(x => x.TaskMaterials)
                 .ThenInclude(x => x.Material)
-            .Where(x => x.IsCompleted == isCompleted && x.IsDeleted == false);
+            .Where(x => x.IsCompleted == isCompleted && !x.IsDeleted);
 
         int totalCount = await query.CountAsync();
 
