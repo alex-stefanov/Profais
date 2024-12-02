@@ -213,7 +213,7 @@ public class TaskController(
     }
 
     [HttpGet]
-    [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
+    [Authorize(Roles = ManagerRoleName)]
     public async Task<IActionResult> DailyTasks(
         int page = 1,
         int pageSize = 6)
@@ -233,7 +233,7 @@ public class TaskController(
     }
 
     [HttpPost]
-    [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
+    [Authorize(Roles = ManagerRoleName)]
     public async Task<IActionResult> ResetCompletedTasks()
     {
         try
