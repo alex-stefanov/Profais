@@ -1,12 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis;
 using Profais.Data.Models;
 using Profais.Services.Interfaces;
 using Profais.Services.ViewModels.Shared;
 using Profais.Services.ViewModels.Task;
-using System.Threading.Tasks;
 using static Profais.Common.Constants.UserConstants;
 
 namespace Profais.Controllers;
@@ -22,7 +20,8 @@ public class TaskController(
     [Authorize(Roles = $"{WorkerRoleName},{SpecialistRoleName}")]
     public async Task<IActionResult> ViewMyTask()
     {
-        string userId = userManager.GetUserId(User)!;
+        string userId = userManager
+            .GetUserId(User)!;
 
         if (string.IsNullOrEmpty(userId))
         {
@@ -30,10 +29,18 @@ public class TaskController(
             return RedirectToAction("Error", "Home");
         }
 
-        MyTaskViewModel model = await taskService
-            .GetMyTaskByIdAsync(userId);
+        try
+        {
+            MyTaskViewModel model = await taskService
+                .GetMyTaskByIdAsync(userId);
 
-        return View(model);
+            return View(model);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError($"An error occured while grtting my task for user with id `{userId}`. {ex.Message}");
+            return RedirectToAction("Error", "Home");
+        }
     }
 
     [HttpGet]
@@ -67,7 +74,6 @@ public class TaskController(
                 .GetTaskByIdAsync(taskId);
 
             return View(model);
-
         }
         catch (Exception ex)
         {
@@ -84,12 +90,13 @@ public class TaskController(
         {
             return RedirectToAction(nameof(ViewTask), new { taskId });
         }
+
         try
         {
-            await taskService.CompleteTaskByIdAsync(taskId);
+            await taskService
+                .CompleteTaskByIdAsync(taskId);
 
             return RedirectToAction(nameof(ViewTask), new { taskId });
-
         }
         catch (Exception ex)
         {
@@ -110,10 +117,10 @@ public class TaskController(
 
         try
         {
-            int projectId = await taskService.DeleteTaskByIdAsync(taskId);
+            int projectId = await taskService
+                .DeleteTaskByIdAsync(taskId);
 
             return RedirectToAction(nameof(ViewTasks), new { projectId });
-
         }
         catch (Exception ex)
         {
@@ -126,7 +133,20 @@ public class TaskController(
     [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
     public IActionResult AddTask(
         int projectId)
-        => View(taskService.GetAddTaskViewModelAsync(projectId));
+    {
+        try
+        {
+            AddTaskViewModel model = taskService
+                .GetAddTaskViewModelAsync(projectId);
+
+            return View(model);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError($"An error occured while creating add task view model. {ex.Message}");
+            return RedirectToAction("Error", "Home");
+        }
+    }
 
     [HttpPost]
     [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
@@ -140,7 +160,8 @@ public class TaskController(
 
         try
         {
-            await taskService.CreateTaskAsync(model);
+            await taskService
+                .CreateTaskAsync(model);
 
             return RedirectToAction("IncompletedProjects", "Project");
         }
@@ -182,7 +203,8 @@ public class TaskController(
 
         try
         {
-            await taskService.UpdateTaskAsync(model);
+            await taskService
+                .UpdateTaskAsync(model);
 
             return RedirectToAction(nameof(ViewTask), new { taskId = model.Id });
         }
@@ -201,7 +223,8 @@ public class TaskController(
     {
         try
         {
-            await taskService.VoteAsync(userId, taskId);
+            await taskService
+                .VoteAsync(userId, taskId);
 
             return RedirectToAction(nameof(ViewMyTask));
         }
@@ -238,7 +261,8 @@ public class TaskController(
     {
         try
         {
-            await taskService.ResetTasksAsync();
+            await taskService
+                .ResetTasksAsync();
 
             return RedirectToAction(nameof(DailyTasks));
         }

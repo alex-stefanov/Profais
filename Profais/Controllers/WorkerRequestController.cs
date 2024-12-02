@@ -19,7 +19,8 @@ public class WorkerRequestController(
     [Authorize(Roles = ClientRoleName)]
     public async Task<IActionResult> MakeWorkerRequest()
     {
-        string userId = userManager.GetUserId(User)!;
+        string userId = userManager
+            .GetUserId(User)!;
 
         if (string.IsNullOrEmpty(userId))
         {
@@ -29,7 +30,10 @@ public class WorkerRequestController(
 
         try
         {
-            return View(await requestService.GetEmptyWorkerViewModelAsync(userId));
+            MakeWorkerRequestViewModel model = await requestService
+                .GetEmptyWorkerViewModelAsync(userId);
+
+            return View(model);
         }
         catch (Exception ex)
         {
@@ -50,21 +54,35 @@ public class WorkerRequestController(
 
         try
         {
-            await requestService.CreateWorkerRequestAsync(model);
+            await requestService
+                .CreateWorkerRequestAsync(model);
+
+            return RedirectToAction("Index", "Home");
         }
         catch (Exception ex)
         {
             logger.LogError($"An error occured while creating worker request. {ex.Message}");
             return RedirectToAction("Error", "Home");
         }
-
-        return RedirectToAction("Index", "Home");
     }
 
     [HttpGet]
     [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
     public async Task<IActionResult> PreviewWorkerRequests()
-        => View(await requestService.GetAllWorkersViewModelsAsync());
+    {
+        try
+        {
+            IEnumerable<WorkerRequestViewModel> model = await requestService
+                .GetAllWorkersViewModelsAsync();
+
+            return View(model);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError($"An error occured while creating worker request view models. {ex.Message}");
+            return RedirectToAction("Error", "Home");
+        }
+    }
 
     [HttpPost]
     [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
@@ -80,15 +98,16 @@ public class WorkerRequestController(
 
         try
         {
-            await requestService.ApproveWorkerRequestAsync(model);
+            await requestService
+                .ApproveWorkerRequestAsync(model.Id, model.UserId);
+
+            return RedirectToAction(nameof(PreviewWorkerRequests));
         }
         catch (Exception ex)
         {
             logger.LogError($"An error occured while approving worker request. {ex.Message}");
             return RedirectToAction("Error", "Home");
         }
-
-        return RedirectToAction(nameof(PreviewWorkerRequests));
     }
 
     [HttpPost]
@@ -105,14 +124,15 @@ public class WorkerRequestController(
 
         try
         {
-            await requestService.DeclineWorkerRequestAsync(model);
+            await requestService
+                .DeclineWorkerRequestAsync(model.Id);
+
+            return RedirectToAction(nameof(PreviewWorkerRequests));
         }
         catch (Exception ex)
         {
             logger.LogError($"An error occured while declining worker request. {ex.Message}");
             return RedirectToAction("Error", "Home");
         }
-
-        return RedirectToAction(nameof(PreviewWorkerRequests));
     }
 }

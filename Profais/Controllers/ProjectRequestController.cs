@@ -55,7 +55,8 @@ public class ProjectRequestController(
 
         try
         {
-            await projectRequestService.CreateAddProjectRequestAsync(model);
+            await projectRequestService
+                .CreateAddProjectRequestAsync(model);
 
             return RedirectToAction("Index", "Home");
         }
@@ -152,7 +153,9 @@ public class ProjectRequestController(
     {
         try
         {
-            await projectRequestService.ApproveProjectRequestById(projectRequestId);
+            await projectRequestService
+                .ApproveProjectRequestById(projectRequestId);
+
             return RedirectToAction(nameof(ViewApprovedProjectRequests));
         }
         catch (Exception ex)
@@ -169,7 +172,9 @@ public class ProjectRequestController(
     {
         try
         {
-            await projectRequestService.DeclineProjectRequestById(projectRequestId);
+            await projectRequestService
+                .DeclineProjectRequestById(projectRequestId);
+
             return RedirectToAction(nameof(ViewDeclinedProjectRequests));
         }
         catch (Exception ex)

@@ -30,7 +30,7 @@ public class TaskService(
     public async Task CreateTaskAsync(
         AddTaskViewModel taskViewModel)
     {
-        ProfTask profTask = new ProfTask
+        var profTask = new ProfTask
         {
             Title = taskViewModel.Title,
             Description = taskViewModel.Description,
@@ -39,58 +39,55 @@ public class TaskService(
             IsDeleted = false,
         };
 
-        await taskRepository.AddAsync(profTask);
+        await taskRepository
+            .AddAsync(profTask);
     }
 
     public async Task<TaskViewModel> GetTaskByIdAsync(
         int taskId)
     {
-        ProfTask? task = await taskRepository
+        ProfTask task = await taskRepository
             .GetAllAttached()
             .Where(x => x.Id == taskId && x.IsDeleted == false)
             .Include(x => x.TaskMaterials)
                 .ThenInclude(t => t.Material)
             .Include(x => x.UserTasks)
                 .ThenInclude(u => u.Worker)
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync()
+            ?? throw new ArgumentNullException(nameof(task), "Task not found");
 
-        if (task is null)
-        {
-            throw new ArgumentNullException(nameof(task), "Task not found");
-        }
-
-        return new TaskViewModel
+        TaskViewModel model = new TaskViewModel
         {
             Id = taskId,
             Title = task.Title,
             Description = task.Description,
             ProjectId = task.ProfProjectId,
             IsCompleted = task.IsCompleted,
-            Materials = task.TaskMaterials.Select(x => new MaterialViewModel
+            Materials = task.TaskMaterials
+            .Select(x => new MaterialViewModel
             {
                 Id = x.MaterialId,
                 Name = x.Material.Name,
                 UsedFor = x.Material.UsedForId,
             }),
-            Users = task.UserTasks.Select(x => new UserViewModel
+            Users = task.UserTasks
+            .Select(x => new UserViewModel
             {
                 Id = x.WorkerId,
                 UserFirstName = x.Worker.FirstName,
                 UserLastName = x.Worker.LastName,
             }),
         };
+
+        return model;
     }
 
     public async Task CompleteTaskByIdAsync(
         int taskId)
     {
-        ProfTask? task = await taskRepository
-            .GetByIdAsync(taskId);
-
-        if (task is null)
-        {
-            throw new ArgumentNullException(nameof(task), "Task not found");
-        }
+        ProfTask task = await taskRepository
+            .GetByIdAsync(taskId)
+            ?? throw new ArgumentNullException(nameof(task), "Task not found"); ;
 
         task.IsCompleted = true;
 
@@ -114,7 +111,8 @@ public class TaskService(
                 .ThenInclude(u => u.Worker)
             .OrderByDescending(t => t.IsCompleted);
 
-        int totalTasks = await query.CountAsync();
+        int totalCount = await query
+            .CountAsync();
 
         TaskViewModel[] tasks = await query
             .Skip((page - 1) * pageSize)
@@ -126,34 +124,35 @@ public class TaskService(
                 Description = x.Description,
                 ProjectId = projectId,
                 IsCompleted = x.IsCompleted,
-                Materials = x.TaskMaterials.Select(t => new MaterialViewModel
+                Materials = x.TaskMaterials
+                .Select(t => new MaterialViewModel
                 {
                     Id = t.MaterialId,
                     Name = t.Material.Name,
                     UsedFor = t.Material.UsedForId,
                 }).ToArray(),
-                Users = x.UserTasks.Select(u => new UserViewModel
+                Users = x.UserTasks
+                .Select(u => new UserViewModel
                 {
                     Id = u.WorkerId,
                     UserFirstName = u.Worker.FirstName,
                     UserLastName = u.Worker.LastName,
-                }).ToArray(),
+                })
+                .ToArray(),
             })
             .ToArrayAsync();
-
-        int totalPages = (int)Math.Ceiling(totalTasks / (double)pageSize);
 
         return new PagedResult<TaskViewModel>
         {
             Items = tasks,
             CurrentPage = page,
-            TotalPages = totalPages
+            TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize),
         };
     }
 
     public async Task AddMaterialsToTaskAsync(
         int taskId,
-        List<int> materialIds)
+        IEnumerable<int> materialIds)
     {
         ProfTask? task = await taskRepository
             .GetByIdAsync(taskId);
@@ -171,18 +170,22 @@ public class TaskService(
             .ToListAsync();
 
         List<int> newMaterialIds = materialIds
-            .Where(materialId => !existingMaterials.Contains(materialId))
+            .Where(materialId => !existingMaterials
+                .Contains(materialId))
             .ToList();
 
         if (newMaterialIds.Any())
         {
-            TaskMaterial[] newTaskMaterials = newMaterialIds.Select(materialId => new TaskMaterial
+            TaskMaterial[] newTaskMaterials = newMaterialIds
+            .Select(materialId => new TaskMaterial
             {
                 TaskId = taskId,
                 MaterialId = materialId
-            }).ToArray();
+            })
+            .ToArray();
 
-            await taskMaterialRepository.AddRangeAsync(newTaskMaterials);
+            await taskMaterialRepository
+                .AddRangeAsync(newTaskMaterials);
         }
     }
 
@@ -190,7 +193,7 @@ public class TaskService(
         int taskId,
         int page,
         int pageSize,
-        List<UsedFor> usedForFilter)
+        IEnumerable<UsedFor> usedForFilter)
     {
         IQueryable<Material> query = materialRepository.GetAllAttached();
 
@@ -199,7 +202,9 @@ public class TaskService(
             query = query.Where(m => usedForFilter.Contains(m.UsedForId));
         }
 
-        var totalMaterials = await query.CountAsync();
+        var totalMaterials = await query
+            .CountAsync();
+
         var totalPages = (int)Math.Ceiling(totalMaterials / (double)pageSize);
 
         var materials = await query
@@ -298,7 +303,8 @@ public class TaskService(
             .GetAllAttached()
             .Where(x => x.IsDeleted == true);
 
-        int totalTasks = await query.CountAsync();
+        int totalCount = await query
+            .CountAsync();
 
         RecoverTaskViewModel[] tasks = await query
             .Skip((pageNumber - 1) * pageSize)
@@ -312,13 +318,11 @@ public class TaskService(
             })
             .ToArrayAsync();
 
-        int totalPages = (int)Math.Ceiling(totalTasks / (double)pageSize);
-
         return new PagedResult<RecoverTaskViewModel>
         {
             Items = tasks,
             CurrentPage = pageNumber,
-            TotalPages = totalPages
+            TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize),
         };
     }
 
@@ -344,32 +348,24 @@ public class TaskService(
     public async Task<MyTaskViewModel> GetMyTaskByIdAsync(
         string userId)
     {
-        ProfUserTask? userTask = await userTasksRepository
+        ProfUserTask userTask = await userTasksRepository
             .GetAllAttached()
             .Include(x => x.Task)
             .ThenInclude(x => x.ProfProject)
-            .FirstOrDefaultAsync(x => x.WorkerId == userId && x.Task.IsDeleted == false);
+            .FirstOrDefaultAsync(x => x.WorkerId == userId && x.Task.IsDeleted == false) 
+            ?? throw new ArgumentException("No user task found");
 
-        if (userTask is null)
-        {
-            throw new ArgumentException("No user task found");
-        }
-
-        ProfTask? task = await taskRepository
+        ProfTask task = await taskRepository
             .GetAllAttached()
             .Where(x => x.Id == userTask.TaskId && x.IsDeleted == false)
             .Include(x => x.TaskMaterials)
                 .ThenInclude(t => t.Material)
             .Include(x => x.UserTasks)
                 .ThenInclude(u => u.Worker)
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync()
+            ?? throw new ArgumentNullException(nameof(task), "Task not found"); ;
 
-        if (task is null)
-        {
-            throw new ArgumentNullException(nameof(task), "Task not found");
-        }
-
-        return new MyTaskViewModel
+        var model = new MyTaskViewModel
         {
             Id = userTask.TaskId,
             UserId = userId,
@@ -377,7 +373,8 @@ public class TaskService(
             Description = task.Description,
             ProjectId = task.ProfProjectId,
             IsVoted = userTask.IsVoted,
-            Materials = task.TaskMaterials.Select(x => new MaterialViewModel
+            Materials = task.TaskMaterials
+            .Select(x => new MaterialViewModel
             {
                 Id = x.MaterialId,
                 Name = x.Material.Name,
@@ -392,21 +389,19 @@ public class TaskService(
                 UserLastName = x.Worker.LastName,
             }),
         };
+
+        return model;
     }
 
     public async Task VoteAsync(
         string userId,
         int taskId)
     {
-        ProfUserTask? userTask = await userTasksRepository
+        ProfUserTask userTask = await userTasksRepository
            .GetAllAttached()
            .Include(x => x.Task)
-           .FirstOrDefaultAsync(x => x.WorkerId == userId && x.Task.IsDeleted == false);
-
-        if (userTask is null)
-        {
-            throw new ArgumentException("No user task found");
-        }
+           .FirstOrDefaultAsync(x => x.WorkerId == userId && x.Task.IsDeleted == false) 
+           ?? throw new ArgumentException("No user task found");
 
         userTask.IsVoted = true;
 
@@ -420,24 +415,83 @@ public class TaskService(
         await AddToAllTimeContributers(userId, userTask.Task.ProfProjectId);
     }
 
+    public async Task ResetTasksAsync()
+    {
+        IEnumerable<int> completedTasksIds = await taskRepository
+            .GetAllAttached()
+            .Where(x => x.IsCompleted)
+            .Select(x => x.Id)
+            .ToListAsync();
+
+        if (!completedTasksIds.Any())
+        {
+            return;
+        }
+
+        IEnumerable<ProfUserTask> userTasksToDelete = await userTasksRepository
+            .GetAllAttached()
+            .Where(x => completedTasksIds
+                .Contains(x.TaskId))
+            .ToListAsync();
+
+        if (userTasksToDelete.Any())
+        {
+            foreach (ProfUserTask userTask in userTasksToDelete)
+            {
+                await userTasksRepository
+                    .DeleteAsync(userTask);
+            }
+        }
+    }
+
+    public async Task<PagedResult<DailyTaskViewModel>> GetPagedDailyTasksAsync(
+        int pageNumber,
+        int pageSize)
+    {
+        IQueryable<ProfTask> query = taskRepository
+            .GetAllAttached()
+            .Include(x => x.ProfProject)
+            .Where(x => !x.IsDeleted)
+            .OrderBy(x => x.IsCompleted);
+
+        int totalCount = await query
+            .CountAsync();
+
+        DailyTaskViewModel[] tasks = await query
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .Select(x => new DailyTaskViewModel
+            {
+                TaskId = x.Id,
+                Title = x.Title,
+                Description = x.Description,
+                ProjectTitle = x.ProfProject.Title,
+                IsCompleted = x.IsCompleted,
+            })
+            .ToArrayAsync();
+
+        return new PagedResult<DailyTaskViewModel>
+        {
+            Items = tasks,
+            CurrentPage = pageNumber,
+            TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize),
+        };
+    }
+
     private async Task CheckFinalVote(
         int taskId)
     {
         ProfTask? task = await taskRepository
           .GetAllAttached()
           .Include(x => x.UserTasks)
-          .Where(x => x.IsDeleted == false && x.IsCompleted == false)
-          .FirstOrDefaultAsync(x => x.Id == taskId);
-
-        if (task is null)
-        {
-            throw new ArgumentException("Task for voting not found");
-        }
+          .Where(x => !x.IsDeleted && !x.IsCompleted)
+          .FirstOrDefaultAsync(x => x.Id == taskId)
+          ?? throw new ArgumentException("Task for voting not found");
 
         bool areAllCompleted = !(task.UserTasks
-            .Any(x => x.IsVoted == false));
+            .Any(x => !x.IsVoted));
 
-        if (areAllCompleted && task.IsCompleted == false)
+        if (areAllCompleted && !task.IsCompleted)
         {
             task.IsCompleted = true;
 
@@ -463,69 +517,8 @@ public class TaskService(
                 ProfProjectId = projectId,
             };
 
-            await userProjectRepository.AddAsync(userProject);
+            await userProjectRepository
+                .AddAsync(userProject);
         }
-    }
-
-    public async Task ResetTasksAsync()
-    {
-        IEnumerable<int> completedTasksIds = await taskRepository
-            .GetAllAttached()
-            .Where(x => x.IsCompleted == true)
-            .Select(x => x.Id)
-            .ToListAsync();
-
-        if (!completedTasksIds.Any())
-        {
-            return;
-        }
-
-        IEnumerable<ProfUserTask> userTasksToDelete = await userTasksRepository
-            .GetAllAttached()
-            .Where(x => completedTasksIds.Contains(x.TaskId))
-            .ToListAsync();
-
-        if (userTasksToDelete.Any())
-        {
-            foreach (ProfUserTask userTask in userTasksToDelete)
-            {
-                await userTasksRepository.DeleteAsync(userTask);
-            }
-        }
-    }
-
-    public async Task<PagedResult<DailyTaskViewModel>> GetPagedDailyTasksAsync(
-        int pageNumber,
-        int pageSize)
-    {
-        IQueryable<ProfTask> query = taskRepository
-            .GetAllAttached()
-            .Include(x => x.ProfProject)
-            .Where(x => x.IsDeleted == false)
-            .OrderBy(x => x.IsCompleted);
-
-        int totalTasks = await query.CountAsync();
-
-        DailyTaskViewModel[] tasks = await query
-            .Skip((pageNumber - 1) * pageSize)
-            .Take(pageSize)
-            .Select(x => new DailyTaskViewModel
-            {
-                TaskId = x.Id,
-                Title = x.Title,
-                Description = x.Description,
-                ProjectTitle = x.ProfProject.Title,
-                IsCompleted = x.IsCompleted,
-            })
-            .ToArrayAsync();
-
-        int totalPages = (int)Math.Ceiling(totalTasks / (double)pageSize);
-
-        return new PagedResult<DailyTaskViewModel>
-        {
-            Items = tasks,
-            CurrentPage = pageNumber,
-            TotalPages = totalPages
-        };
     }
 }

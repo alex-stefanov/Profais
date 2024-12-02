@@ -12,38 +12,6 @@ public class WorkerService(
     IRepository<ProfUserTask, object> userTaskRepository)
     : IWorkerService
 {
-    public async Task AssignWorkersToTaskAsync(
-        int taskId,
-        List<string> workerIds)
-    {
-        ProfTask? task = await taskRepository.
-            GetByIdAsync(taskId);
-
-        if (task is null)
-        {
-            throw new ArgumentException(nameof(taskId), "Task not found");
-        }
-
-        List<ProfUserTask> existingAssignments = await userTaskRepository
-            .GetAllAttached()
-            .Where(ut => ut.TaskId == taskId && workerIds.Contains(ut.WorkerId))
-            .ToListAsync();
-
-        List<string> workersToAssign = workerIds
-            .Where(workerId => !existingAssignments.Any(ut => ut.WorkerId == workerId))
-            .ToList();
-
-        foreach (var workerId in workersToAssign)
-        {
-            var userTask = new ProfUserTask
-            {
-                TaskId = taskId,
-                WorkerId = workerId
-            };
-            await userTaskRepository.AddAsync(userTask);
-        }
-    }
-
     public async Task<WorkerPagedResult> GetPagedAvaliableWorkersAsync(
         int pageNumber,
         int pageSize,
@@ -56,7 +24,8 @@ public class WorkerService(
             .Where(u => !u.UserTasks
                 .Any(ut => !ut.Task.IsCompleted));
 
-        int totalCount = await query.CountAsync();
+        int totalCount = await query
+            .CountAsync();
 
         List<UserViewModel> items = await query
             .OrderBy(x => x.FirstName)
@@ -91,7 +60,8 @@ public class WorkerService(
             .Where(u => u.UserTasks
                 .Any(ut => ut.TaskId == taskId && !ut.Task.IsCompleted));
 
-        int totalCount = await query.CountAsync();
+        int totalCount = await query
+            .CountAsync();
 
         List<UserViewModel> items = await query
             .OrderBy(x => x.FirstName)
@@ -114,26 +84,56 @@ public class WorkerService(
         };
     }
 
-    public async Task RemoveWorkersFromTaskAsync(
-        int taskId,
-        List<string> workerIds)
+    public async Task AssignWorkersToTaskAsync(
+       int taskId,
+       IEnumerable<string> workerIds)
     {
-        ProfTask? task = await taskRepository.
-             GetByIdAsync(taskId);
-
-        if (task is null)
-        {
-            throw new ArgumentException(nameof(taskId), "Task not found");
-        }
+        ProfTask task = await taskRepository.
+            GetByIdAsync(taskId)
+            ?? throw new ArgumentException(nameof(taskId), "Task not found");
 
         List<ProfUserTask> existingAssignments = await userTaskRepository
             .GetAllAttached()
-            .Where(ut => ut.TaskId == taskId && workerIds.Contains(ut.WorkerId))
+            .Where(ut => ut.TaskId == taskId && workerIds
+                .Contains(ut.WorkerId))
+            .ToListAsync();
+
+        List<string> workersToAssign = workerIds
+            .Where(workerId => !existingAssignments
+                .Any(ut => ut.WorkerId == workerId))
+            .ToList();
+
+        foreach (string workerId in workersToAssign)
+        {
+            var userTask = new ProfUserTask
+            {
+                TaskId = taskId,
+                WorkerId = workerId
+            };
+
+            await userTaskRepository
+                .AddAsync(userTask);
+        }
+    }
+
+    public async Task RemoveWorkersFromTaskAsync(
+        int taskId,
+        IEnumerable<string> workerIds)
+    {
+        ProfTask task = await taskRepository.
+             GetByIdAsync(taskId)
+             ?? throw new ArgumentException(nameof(taskId), "Task not found");
+
+        List<ProfUserTask> existingAssignments = await userTaskRepository
+            .GetAllAttached()
+            .Where(ut => ut.TaskId == taskId && workerIds
+                .Contains(ut.WorkerId))
             .ToListAsync();
 
         foreach (ProfUserTask assignment in existingAssignments)
         {
-            await userTaskRepository.DeleteAsync(assignment);
+            await userTaskRepository
+                .DeleteAsync(assignment);
         }
     }
 }

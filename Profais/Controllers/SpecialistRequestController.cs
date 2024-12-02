@@ -17,10 +17,10 @@ public class SpecialistRequestController(
 {
     [HttpGet]
     [Authorize(Roles = $"{WorkerRoleName},{ClientRoleName}")]
-
     public async Task<IActionResult> MakeSpecialistRequest()
     {
-        string userId = userManager.GetUserId(User)!;
+        string userId = userManager
+            .GetUserId(User)!;
 
         if (string.IsNullOrEmpty(userId))
         {
@@ -30,7 +30,10 @@ public class SpecialistRequestController(
 
         try
         {
-            return View(await requestService.GetEmptySpecialistViewModelAsync(userId));
+            MakeSpecialistRequestViewModel model = await requestService
+                .GetEmptySpecialistViewModelAsync(userId);
+
+            return View(model);
         }
         catch (Exception ex)
         {
@@ -51,21 +54,35 @@ public class SpecialistRequestController(
 
         try
         {
-            await requestService.CreateSpecialistRequestAsync(model);
+            await requestService
+                .CreateSpecialistRequestAsync(model);
+
+            return RedirectToAction("Index", "Home");
         }
         catch (Exception ex)
         {
             logger.LogError($"An error occured while creating specialist request. {ex.Message}");
             return RedirectToAction("Error", "Home");
         }
-
-        return RedirectToAction("Index", "Home");
     }
 
     [HttpGet]
     [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
     public async Task<IActionResult> PreviewSpecialistRequests()
-       => View(await requestService.GetAllSpecialistViewModelsAsync());
+    {
+        try
+        {
+            IEnumerable<SpecialistRequestViewModel> model = await requestService
+                .GetAllSpecialistViewModelsAsync();
+
+            return View(model);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError($"An error occured while getting all specialist requests. {ex.Message}");
+            return RedirectToAction("Error", "Home");
+        }
+    }
 
     [HttpPost]
     [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
@@ -81,15 +98,16 @@ public class SpecialistRequestController(
 
         try
         {
-            await requestService.ApproveSpecialistRequestAsync(model);
+            await requestService
+                .ApproveSpecialistRequestAsync(model.Id, model.UserId);
+
+            return RedirectToAction(nameof(PreviewSpecialistRequests));
         }
         catch (Exception ex)
         {
             logger.LogError($"An error occured while approving specialist request. {ex.Message}");
             return RedirectToAction("Error", "Home");
         }
-
-        return RedirectToAction(nameof(PreviewSpecialistRequests));
     }
 
     [HttpPost]
@@ -106,14 +124,15 @@ public class SpecialistRequestController(
 
         try
         {
-            await requestService.DeclineSpecialistRequestAsync(model);
+            await requestService
+                .DeclineSpecialistRequestAsync(model.Id);
+
+            return RedirectToAction(nameof(PreviewSpecialistRequests));
         }
         catch (Exception ex)
         {
             logger.LogError($"An error occured while declining specialist request. {ex.Message}");
             return RedirectToAction("Error", "Home");
         }
-
-        return RedirectToAction(nameof(PreviewSpecialistRequests));
     }
 }

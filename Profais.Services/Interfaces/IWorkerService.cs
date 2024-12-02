@@ -8,7 +8,7 @@ public interface IWorkerService
 
     Task<WorkerPagedResult> GetPagedWorkersFromTaskAsync(int pageNumber, int pageSize, int taskId);
 
-    Task AssignWorkersToTaskAsync(int taskId, List<string> workerIds);
+    Task AssignWorkersToTaskAsync(int taskId, IEnumerable<string> workerIds);
 
-    Task RemoveWorkersFromTaskAsync(int taskId, List<string> workerIds);
+    Task RemoveWorkersFromTaskAsync(int taskId, IEnumerable<string> workerIds);
 }

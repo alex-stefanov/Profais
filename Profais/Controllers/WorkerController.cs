@@ -22,9 +22,9 @@ public class WorkerController(
     {
         try
         {
-            var selectedIds = string.IsNullOrEmpty(selectedWorkerIds)
+            IEnumerable<string> selectedIds = string.IsNullOrEmpty(selectedWorkerIds)
                 ? []
-                : selectedWorkerIds.Split(',').ToList();
+                : selectedWorkerIds.Split(',');
 
             WorkerPagedResult model = await workerService
                 .GetPagedAvaliableWorkersAsync(pageNumber, pageSize, taskId);
@@ -50,11 +50,11 @@ public class WorkerController(
 
         try
         {
-            List<string> workerIds = selectedWorkerIds
-                .Split(',')
-                .ToList();
+            IEnumerable<string> workerIds = selectedWorkerIds
+                .Split(',');
 
-            await workerService.AssignWorkersToTaskAsync(taskId, workerIds);
+            await workerService
+                .AssignWorkersToTaskAsync(taskId, workerIds);
 
             return RedirectToAction("ViewTask", "Task", new { taskId });
         }
@@ -74,9 +74,9 @@ public class WorkerController(
     {
         try
         {
-            var selectedIds = string.IsNullOrEmpty(selectedWorkerIds)
+            IEnumerable<string> selectedIds = string.IsNullOrEmpty(selectedWorkerIds)
                 ? []
-                : selectedWorkerIds.Split(',').ToList();
+                : selectedWorkerIds.Split(',');
 
             WorkerPagedResult model = await workerService
                 .GetPagedWorkersFromTaskAsync(pageNumber, pageSize, taskId);
@@ -102,11 +102,11 @@ public class WorkerController(
 
         try
         {
-            List<string> workerIds = selectedWorkerIds
-                .Split(',')
-                .ToList();
+            IEnumerable<string> workerIds = selectedWorkerIds
+                .Split(',');
 
-            await workerService.RemoveWorkersFromTaskAsync(taskId, workerIds);
+            await workerService
+                .RemoveWorkersFromTaskAsync(taskId, workerIds);
 
             return RedirectToAction("ViewTask", "Task", new { taskId });
         }

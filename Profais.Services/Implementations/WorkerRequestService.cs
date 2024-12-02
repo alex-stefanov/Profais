@@ -15,98 +15,29 @@ public class WorkerRequestService(
     UserManager<ProfUser> userManager)
     : IWorkerRequestService
 {
-    public async Task ApproveWorkerRequestAsync(
-       ActionWorkerRequestViewModel workerRequestViewModel)
+    public async Task<MakeWorkerRequestViewModel> GetEmptyWorkerViewModelAsync(
+        string userId)
     {
-        if (workerRequestViewModel is null)
+        ProfUser? user = await userRepository
+            .GetByIdAsync(userId)
+            ?? throw new ArgumentNullException(nameof(user), $"No user found with id `{userId}`"); ;
+
+        ProfWorkerRequest result = await workerRequestRepository
+            .FirstOrDefaultAsync(x => x.ClientId == userId && x.Status == Approved)
+            ?? throw new ArgumentNullException(nameof(user), $"User with id `{userId}` already has a worker request");
+
+        return new MakeWorkerRequestViewModel
         {
-            throw new ArgumentException(nameof(workerRequestViewModel), "Worker request isn't specified");
-        }
-
-        ProfWorkerRequest? workerRequest = await workerRequestRepository
-            .GetByIdAsync(workerRequestViewModel.Id);
-
-        if (workerRequest is null)
-        {
-            throw new ArgumentException($"Worker request with id `{workerRequestViewModel.Id}` wasn't found");
-        }
-
-        workerRequest.Status = Approved;
-
-        if (!await workerRequestRepository.UpdateAsync(workerRequest))
-        {
-            throw new ArgumentException($"Worker request with id `{workerRequestViewModel.Id}` wasn't updated");
-        }
-
-        ProfUser? user = await userManager
-            .FindByIdAsync(workerRequestViewModel.UserId);
-
-        if (user is null)
-        {
-            throw new ArgumentException("No user found");
-        }
-
-        if (await userManager.IsInRoleAsync(user, WorkerRoleName))
-        {
-            return;
-        }
-
-        IdentityResult userResult = await userManager.AddToRoleAsync(user, WorkerRoleName);
-        if (!userResult.Succeeded)
-        {
-            throw new InvalidOperationException($"Error occurred while adding the user {user.UserName} to the {WorkerRoleName} role!");
-        }
-
-        if (await userManager.IsInRoleAsync(user, ClientRoleName))
-        {
-            IdentityResult userResult1 = await userManager.RemoveFromRoleAsync(user, ClientRoleName);
-            if (!userResult1.Succeeded)
-            {
-                throw new InvalidOperationException($"Error occurred while removing the user {user.UserName} from {ClientRoleName} role!");
-            }
-        }
-    }
-
-    public async Task CreateWorkerRequestAsync(
-       MakeWorkerRequestViewModel workerRequestViewModel)
-    {
-        ProfWorkerRequest profWorkerRequest = new ProfWorkerRequest()
-        {
-            ClientId = workerRequestViewModel.UserId,
-            FirstName = workerRequestViewModel.FirstName,
-            LastName = workerRequestViewModel.LastName,
-            ProfixId = workerRequestViewModel.ProfixId,
+            UserId = userId,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            ProfixId = string.Empty,
         };
-
-        await workerRequestRepository.AddAsync(profWorkerRequest);
-    }
-
-    public async Task DeclineWorkerRequestAsync(
-        ActionWorkerRequestViewModel workerRequestViewModel)
-    {
-        if (workerRequestViewModel is null)
-        {
-            throw new ArgumentException(nameof(workerRequestViewModel), "Worker request isn't specified");
-        }
-
-        ProfWorkerRequest? workerRequest = await workerRequestRepository
-            .GetByIdAsync(workerRequestViewModel.Id);
-
-        if (workerRequest is null)
-        {
-            throw new ArgumentException($"Worker request with id `{workerRequestViewModel.Id}` wasn't found");
-        }
-
-        workerRequest.Status = Declined;
-
-        if (!await workerRequestRepository.UpdateAsync(workerRequest))
-        {
-            throw new ArgumentException($"Worker request with id `{workerRequestViewModel.Id}` wasn't updated");
-        }
     }
 
     public async Task<IEnumerable<WorkerRequestViewModel>> GetAllWorkersViewModelsAsync()
-       => await workerRequestRepository
+    {
+        IEnumerable<WorkerRequestViewModel> model = await workerRequestRepository
            .GetAllAttached()
            .Where(x => x.Status == Pending)
            .Select(x => new WorkerRequestViewModel()
@@ -120,30 +51,81 @@ public class WorkerRequestService(
            })
            .ToListAsync();
 
-    public async Task<MakeWorkerRequestViewModel> GetEmptyWorkerViewModelAsync(
-        string userId)
+        return model;
+    }
+
+    public async Task CreateWorkerRequestAsync(
+       MakeWorkerRequestViewModel workerRequestViewModel)
     {
-        ProfUser? user = await userRepository.GetByIdAsync(userId);
-
-        if (user is null)
+        var profWorkerRequest = new ProfWorkerRequest()
         {
-            throw new ArgumentNullException(nameof(user), $"No user found with id `{userId}`");
-        }
-
-        var result = await workerRequestRepository
-            .FirstOrDefaultAsync(x => x.ClientId == userId && x.Status == Approved);
-
-        if (result is not null)
-        {
-            throw new ArgumentNullException(nameof(user), $"User with id `{userId}` already has a worker request");
-        }
-
-        return new MakeWorkerRequestViewModel()
-        {
-            UserId = userId,
-            FirstName = user.FirstName,
-            LastName = user.LastName,
-            ProfixId = string.Empty,
+            ClientId = workerRequestViewModel.UserId,
+            FirstName = workerRequestViewModel.FirstName,
+            LastName = workerRequestViewModel.LastName,
+            ProfixId = workerRequestViewModel.ProfixId,
         };
+
+        await workerRequestRepository
+            .AddAsync(profWorkerRequest);
+    }
+
+    public async Task ApproveWorkerRequestAsync(
+       int requestId,
+       string userId)
+    {
+
+        ProfWorkerRequest? workerRequest = await workerRequestRepository
+            .GetByIdAsync(requestId)
+            ?? throw new ArgumentException($"Worker request with id `{requestId}` wasn't found"); ;
+
+        workerRequest.Status = Approved;
+
+        if (!await workerRequestRepository.UpdateAsync(workerRequest))
+        {
+            throw new ArgumentException($"Worker request with id `{requestId}` wasn't updated");
+        }
+
+        ProfUser? user = await userManager
+            .FindByIdAsync(userId)
+            ?? throw new ArgumentException("No user found");
+
+        if (await userManager.IsInRoleAsync(user, WorkerRoleName))
+        {
+            return;
+        }
+
+        IdentityResult userResult = await userManager
+            .AddToRoleAsync(user, WorkerRoleName);
+
+        if (!userResult.Succeeded)
+        {
+            throw new InvalidOperationException($"Error occurred while adding the user {user.UserName} to the {WorkerRoleName} role!");
+        }
+
+        if (await userManager.IsInRoleAsync(user, ClientRoleName))
+        {
+            IdentityResult userResult1 = await userManager
+                .RemoveFromRoleAsync(user, ClientRoleName);
+
+            if (!userResult1.Succeeded)
+            {
+                throw new InvalidOperationException($"Error occurred while removing the user {user.UserName} from {ClientRoleName} role!");
+            }
+        }
+    }
+
+    public async Task DeclineWorkerRequestAsync(
+        int requestId)
+    {
+        ProfWorkerRequest? workerRequest = await workerRequestRepository
+            .GetByIdAsync(requestId)
+            ?? throw new ArgumentException($"Worker request with id `{requestId}` wasn't found");
+
+        workerRequest.Status = Declined;
+
+        if (!await workerRequestRepository.UpdateAsync(workerRequest))
+        {
+            throw new ArgumentException($"Worker request with id `{requestId}` wasn't updated");
+        }
     }
 }

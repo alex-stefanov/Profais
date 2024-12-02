@@ -20,7 +20,8 @@ public class UserService(
 
         foreach (ProfUser user in allUsers)
         {
-            IEnumerable<string> roles = await userManager.GetRolesAsync(user);
+            IEnumerable<string> roles = await userManager
+                .GetRolesAsync(user);
 
             allUsersViewModel.Add(new AllUsersViewModel()
             {
@@ -33,22 +34,26 @@ public class UserService(
         return allUsersViewModel;
     }
 
-    public async Task<bool> UserExistsByIdAsync(string userId)
+    public async Task<bool> UserExistsByIdAsync(
+        string userId)
     {
         ProfUser? user = await userManager
-            .FindByIdAsync(userId.ToString());
+            .FindByIdAsync(userId);
 
         return user is not null;
     }
 
-    public async Task<bool> AssignUserToRoleAsync(string userId, string roleName)
+    public async Task<bool> AssignUserToRoleAsync(
+        string userId,
+        string roleName)
     {
         ProfUser? user = await userManager
-            .FindByIdAsync(userId.ToString());
+            .FindByIdAsync(userId);
 
         bool roleExists = await roleManager.RoleExistsAsync(roleName);
 
-        if (user is null || !roleExists)
+        if (user is null 
+            || !roleExists)
         {
             return false;
         }
@@ -69,19 +74,24 @@ public class UserService(
         return true;
     }
 
-    public async Task<bool> RemoveUserRoleAsync(string userId, string roleName)
+    public async Task<bool> RemoveUserRoleAsync(
+        string userId,
+        string roleName)
     {
         ProfUser? user = await userManager
-            .FindByIdAsync(userId.ToString());
+            .FindByIdAsync(userId);
 
-        bool roleExists = await roleManager.RoleExistsAsync(roleName);
+        bool roleExists = await roleManager
+            .RoleExistsAsync(roleName);
 
-        if (user is null || !roleExists)
+        if (user is null 
+            || !roleExists)
         {
             return false;
         }
 
-        bool alreadyInRole = await userManager.IsInRoleAsync(user, roleName);
+        bool alreadyInRole = await userManager
+            .IsInRoleAsync(user, roleName);
 
         if (alreadyInRole)
         {
@@ -97,10 +107,11 @@ public class UserService(
         return true;
     }
 
-    public async Task<bool> DeleteUserAsync(string userId)
+    public async Task<bool> DeleteUserAsync(
+        string userId)
     {
         ProfUser? user = await userManager
-            .FindByIdAsync(userId.ToString());
+            .FindByIdAsync(userId);
 
         if (user is null)
         {

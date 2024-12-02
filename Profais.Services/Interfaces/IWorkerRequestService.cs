@@ -8,9 +8,9 @@ public interface IWorkerRequestService
 
     Task<IEnumerable<WorkerRequestViewModel>> GetAllWorkersViewModelsAsync();
 
-    Task ApproveWorkerRequestAsync(ActionWorkerRequestViewModel workerRequestViewModel);
-
     Task CreateWorkerRequestAsync(MakeWorkerRequestViewModel workerRequestViewModel);
 
-    Task DeclineWorkerRequestAsync(ActionWorkerRequestViewModel workerRequestViewModel);
+    Task ApproveWorkerRequestAsync(int requestId, string userId);
+
+    Task DeclineWorkerRequestAsync(int requestId);
 }

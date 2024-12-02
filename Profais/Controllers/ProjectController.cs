@@ -107,7 +107,8 @@ public class ProjectController(
 
         try
         {
-            await projectService.CreateProjectAsync(model);
+            await projectService
+                .CreateProjectAsync(model);
 
             return RedirectToAction(nameof(IncompletedProjects));
         }
@@ -149,7 +150,8 @@ public class ProjectController(
 
         try
         {
-            await projectService.UpdateProjectAsync(model);
+            await projectService
+                .UpdateProjectAsync(model);
 
             return RedirectToAction(nameof(ViewProject), new { projectId = model.Id });
         }
@@ -172,7 +174,8 @@ public class ProjectController(
 
         try
         {
-            await projectService.RemoveProjectByIdAsync(projectId);
+            await projectService
+                .RemoveProjectByIdAsync(projectId);
 
             return RedirectToAction(nameof(IncompletedProjects));
         }

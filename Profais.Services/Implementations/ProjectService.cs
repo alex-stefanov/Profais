@@ -28,7 +28,7 @@ public class ProjectService(
     public async Task CreateProjectAsync(
         AddProjectViewModel projectViewModel)
     {
-        ProfProject profProject = new ProfProject
+        var profProject = new ProfProject
         {
             Title = projectViewModel.Title,
             AbsoluteAddress = projectViewModel.AbsoluteAddress,
@@ -37,7 +37,8 @@ public class ProjectService(
             IsDeleted = false,
         };
 
-        await projectRepository.AddAsync(profProject);
+        await projectRepository
+            .AddAsync(profProject);
     }
 
     public async Task<ProjectViewModel> GetProjectByIdAsync(
@@ -69,84 +70,30 @@ public class ProjectService(
             AbsoluteAddress = project.AbsoluteAddress,
             IsCompleted = project.IsCompleted,
             Scheme = project.Scheme,
-            Tasks = project.Tasks.Select(x => new TaskViewModel
+            Tasks = project.Tasks
+            .Select(x => new TaskViewModel
             {
                 Id = x.Id,
                 Title = x.Title,
                 Description = x.Description,
                 IsCompleted = x.IsCompleted,
                 ProjectId = projectId,
-                Materials = x.TaskMaterials.Select(t => new MaterialViewModel
+                Materials = x.TaskMaterials
+                .Select(t => new MaterialViewModel
                 {
                     Id = t.MaterialId,
                     Name = t.Material.Name,
                     UsedFor = t.Material.UsedForId,
-                }).ToArray(),
-            }),
-            Contributers = userProjects.Select(x => new UserViewModel
+                })
+                .ToArray(),
+                }),
+            Contributers = userProjects
+            .Select(x => new UserViewModel
             {
                 Id = x.ContributerId,
                 UserFirstName = x.Contributer.FirstName,
                 UserLastName = x.Contributer.LastName,
             }),
-        };
-    }
-
-    public AddProjectViewModel GetAddProjectViewModel()
-        => new AddProjectViewModel
-        {
-            Title = string.Empty,
-            AbsoluteAddress = string.Empty,
-            IsCompleted = false,
-        };
-
-    private async Task<PagedResult<ProjectViewModel>> InternalGetPagedProjectsAsync(
-        int pageNumber,
-        int pageSize,
-        bool isCompleted)
-    {
-        IQueryable<ProfProject> query = projectRepository
-            .GetAllAttached()
-            .Include(x => x.Tasks)
-                .ThenInclude(x => x.TaskMaterials)
-                .ThenInclude(x => x.Material)
-            .Where(x => x.IsCompleted == isCompleted && x.IsDeleted == false);
-
-        int totalCount = await query.CountAsync();
-
-        List<ProjectViewModel> items = await query
-            .OrderBy(x => x.Title)
-            .Skip((pageNumber - 1) * pageSize)
-            .Take(pageSize)
-            .Select(x => new ProjectViewModel
-            {
-                Id = x.Id,
-                Title = x.Title,
-                AbsoluteAddress = x.AbsoluteAddress,
-                IsCompleted = x.IsCompleted,
-                Scheme = x.Scheme,
-                Tasks = x.Tasks.Select(z => new TaskViewModel
-                {
-                    Id = z.Id,
-                    Title = z.Title,
-                    Description = z.Description,
-                    ProjectId = z.ProfProjectId,
-                    IsCompleted = z.IsCompleted,
-                    Materials = z.TaskMaterials.Select(t => new MaterialViewModel
-                    {
-                        Id = t.MaterialId,
-                        Name = t.Material.Name,
-                        UsedFor = t.Material.UsedForId,
-                    }).ToArray(),
-                }).ToArray(),
-            })
-            .ToListAsync();
-
-        return new PagedResult<ProjectViewModel>
-        {
-            Items = items,
-            CurrentPage = pageNumber,
-            TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
         };
     }
 
@@ -195,6 +142,14 @@ public class ProjectService(
         }
     }
 
+    public AddProjectViewModel GetAddProjectViewModel()
+        => new AddProjectViewModel
+        {
+            Title = string.Empty,
+            AbsoluteAddress = string.Empty,
+            IsCompleted = false,
+        };
+
     public async Task RemoveProjectByIdAsync(
         int projectId)
     {
@@ -223,7 +178,7 @@ public class ProjectService(
              .GetAllAttached()
              .Where(x => x.IsDeleted == true);
 
-        int totalTasks = await query.CountAsync();
+        int totalCount = await query.CountAsync();
 
         RecoverProjectViewModel[] tasks = await query
             .Skip((pageNumber - 1) * pageSize)
@@ -236,26 +191,20 @@ public class ProjectService(
             })
             .ToArrayAsync();
 
-        int totalPages = (int)Math.Ceiling(totalTasks / (double)pageSize);
-
         return new PagedResult<RecoverProjectViewModel>
         {
             Items = tasks,
             CurrentPage = pageNumber,
-            TotalPages = totalPages
+            TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize),
         };
     }
 
     public async Task RecoverProjectByIdAsync(
         int projectId)
     {
-        ProfProject? project = await projectRepository
-            .GetByIdAsync(projectId);
-
-        if (project is null)
-        {
-            throw new Exception("Project not found.");
-        }
+        ProfProject project = await projectRepository
+            .GetByIdAsync(projectId) 
+            ?? throw new Exception("Project not found.");
 
         project.IsDeleted = false;
 
@@ -263,5 +212,59 @@ public class ProjectService(
         {
             throw new ArgumentException($"Project with id `{projectId}` couldn't be recovered");
         }
+    }
+
+    private async Task<PagedResult<ProjectViewModel>> InternalGetPagedProjectsAsync(
+       int pageNumber,
+       int pageSize,
+       bool isCompleted)
+    {
+        IQueryable<ProfProject> query = projectRepository
+            .GetAllAttached()
+            .Include(x => x.Tasks)
+                .ThenInclude(x => x.TaskMaterials)
+                .ThenInclude(x => x.Material)
+            .Where(x => x.IsCompleted == isCompleted && x.IsDeleted == false);
+
+        int totalCount = await query.CountAsync();
+
+        List<ProjectViewModel> items = await query
+            .OrderBy(x => x.Title)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .Select(x => new ProjectViewModel
+            {
+                Id = x.Id,
+                Title = x.Title,
+                AbsoluteAddress = x.AbsoluteAddress,
+                IsCompleted = x.IsCompleted,
+                Scheme = x.Scheme,
+                Tasks = x.Tasks
+                .Select(z => new TaskViewModel
+                {
+                    Id = z.Id,
+                    Title = z.Title,
+                    Description = z.Description,
+                    ProjectId = z.ProfProjectId,
+                    IsCompleted = z.IsCompleted,
+                    Materials = z.TaskMaterials
+                    .Select(t => new MaterialViewModel
+                    {
+                        Id = t.MaterialId,
+                        Name = t.Material.Name,
+                        UsedFor = t.Material.UsedForId,
+                    })
+                    .ToArray(),
+                })
+                .ToArray(),
+            })
+            .ToListAsync();
+
+        return new PagedResult<ProjectViewModel>
+        {
+            Items = items,
+            CurrentPage = pageNumber,
+            TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
+        };
     }
 }

@@ -22,7 +22,9 @@ public class EmailSenderService(
         client.EnableSsl = _smtpSettings.EnableSsl;
 
         var from = new MailAddress(_smtpSettings.SenderEmail, _smtpSettings.SenderName);
-        var to = _smtpSettings.EmailsTo.Select(email => new MailAddress(email)).ToList();
+
+        IEnumerable<MailAddress> to = _smtpSettings.EmailsTo.Select(email => new MailAddress(email)).ToList();
+
         var message = new MailMessage
         {
             From = from,
@@ -31,11 +33,12 @@ public class EmailSenderService(
             IsBodyHtml = true
         };
 
-        foreach (var recipient in to)
+        foreach (MailAddress recipient in to)
         {
             message.To.Add(recipient);
         }
 
-        await client.SendMailAsync(message);
+        await client
+            .SendMailAsync(message);
     }
 }

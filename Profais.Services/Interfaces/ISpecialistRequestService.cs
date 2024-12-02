@@ -10,7 +10,7 @@ public interface ISpecialistRequestService
 
     Task<IEnumerable<SpecialistRequestViewModel>> GetAllSpecialistViewModelsAsync();
 
-    Task ApproveSpecialistRequestAsync(ActionSpecialistRequestViewModel specialistRequestViewModel);
+    Task ApproveSpecialistRequestAsync(int requestId, string userId);
 
-    Task DeclineSpecialistRequestAsync(ActionSpecialistRequestViewModel specialistRequestViewModel);
+    Task DeclineSpecialistRequestAsync(int requestId);
 }

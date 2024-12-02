@@ -17,9 +17,9 @@ public interface ITaskService
 
     Task<PagedResult<TaskViewModel>> GetPagedTasksByProjectIdAsync(int projectId, int page, int pageSize);
 
-    Task AddMaterialsToTaskAsync(int taskId, List<int> materialIds);
+    Task AddMaterialsToTaskAsync(int taskId, IEnumerable<int> materialIds);
 
-    Task<PaginatedMaterialsViewModel> GetMaterialsWithPaginationAsync(int taskId, int page, int pageSize, List<UsedFor> usedForFilter);
+    Task<PaginatedMaterialsViewModel> GetMaterialsWithPaginationAsync(int taskId, int page, int pageSize, IEnumerable<UsedFor> usedForFilter);
 
     Task<EditTaskViewModel> GetEditTaskByIdAsync(int taskId);
 

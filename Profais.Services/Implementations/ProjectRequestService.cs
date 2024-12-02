@@ -14,6 +14,16 @@ public class ProjectRequestService(
     IEmailSenderService emailSenderService)
     : IProjectRequestService
 {
+    public AddProjectRequestViewModel CreateEmptyProjectRequestViewModel(
+        string userId)
+        => new AddProjectRequestViewModel
+        {
+            ClientId = userId,
+            ClientNumber = string.Empty,
+            Title = string.Empty,
+            Description = string.Empty,
+        };
+
     public async Task CreateAddProjectRequestAsync(
         AddProjectRequestViewModel model)
     {
@@ -26,28 +36,20 @@ public class ProjectRequestService(
             Status = Pending,
         };
 
-        await projectRequestRepository.AddAsync(projectRequest);
+        await projectRequestRepository
+            .AddAsync(projectRequest);
 
         string subject = "New Project Request Submitted";
         string body = $"A new project request has been submitted. Title: {projectRequest.Title}, Description: {projectRequest.Description}";
 
-        await emailSenderService.SendEmailAsync(subject, body);
+        await emailSenderService
+            .SendEmailAsync(subject, body);
     }
-
-    public AddProjectRequestViewModel CreateEmptyProjectRequestViewModel(
-        string userId)
-        => new AddProjectRequestViewModel
-        {
-            ClientId = userId,
-            ClientNumber = string.Empty,
-            Title = string.Empty,
-            Description = string.Empty,
-        };
 
     public async Task<ProjectRequestViewModel> GetProjectRequestsByIdAsync(
         int projectRequestId)
     {
-        return await projectRequestRepository
+        ProjectRequestViewModel model = await projectRequestRepository
             .GetAllAttached()
             .Select(x => new ProjectRequestViewModel
             {
@@ -60,6 +62,8 @@ public class ProjectRequestService(
             })
             .FirstOrDefaultAsync()
             ?? throw new ArgumentException("Project Request not found");
+
+        return model;
     }
 
     public async Task<PagedResult<CollectionProjectRequestViewModel>> GetPagedProjectRequestsAsync(
@@ -79,8 +83,8 @@ public class ProjectRequestService(
                 ClientName = $"{pr.Client.FirstName} {pr.Client.LastName}"
             });
 
-        int totalItems = await query.CountAsync();
-        int totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+        int totalCount = await query
+            .CountAsync();
 
         List<CollectionProjectRequestViewModel> items = await query
             .Skip((page - 1) * pageSize)
@@ -91,20 +95,16 @@ public class ProjectRequestService(
         {
             Items = items,
             CurrentPage = page,
-            TotalPages = totalPages,
+            TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
         };
     }
 
     public async Task ApproveProjectRequestById(
         int projectRequestId)
     {
-        ProfProjectRequest? profProjectRequest = projectRequestRepository
-            .GetById(projectRequestId);
-
-        if (profProjectRequest is null)
-        {
-            throw new ArgumentException("Project request not found!");
-        }
+        ProfProjectRequest profProjectRequest = projectRequestRepository
+            .GetById(projectRequestId) 
+            ?? throw new ArgumentException("Project request not found!");
 
         profProjectRequest.Status = Approved;
 
@@ -117,13 +117,9 @@ public class ProjectRequestService(
     public async Task DeclineProjectRequestById(
         int projectRequestId)
     {
-        ProfProjectRequest? profProjectRequest = projectRequestRepository
-            .GetById(projectRequestId);
-
-        if (profProjectRequest is null)
-        {
-            throw new ArgumentException("Project request not found!");
-        }
+        ProfProjectRequest profProjectRequest = projectRequestRepository
+            .GetById(projectRequestId) 
+            ?? throw new ArgumentException("Project request not found!");
 
         profProjectRequest.Status = Declined;
 

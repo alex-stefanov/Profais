@@ -4,9 +4,7 @@ using Profais.Services.ViewModels.Shared;
 namespace Profais.Services.Interfaces;
 
 public interface IPenaltyService
-{
-    Task<PagedResult<CollectionPenaltyViewModel>> GetPagedPenaltiesByUserIdAsync(string userId, int pageNumber, int pageSize);
-
+{ 
     Task<PenaltyViewModel> GetPenaltyById(int penaltyId);
 
     Task RemoveUserPenaltyByIds(string userId, int penaltyId);
@@ -16,4 +14,6 @@ public interface IPenaltyService
     Task<PagedResult<FullCollectionPenaltyViewModel>> GetAllPagedPenaltiesAsync(int pageNumber, int pageSize);
 
     Task<UserPenaltyViewModel> GetAllPenaltyUsersAsync();
+
+    Task<PagedResult<CollectionPenaltyViewModel>> GetPagedPenaltiesByUserIdAsync(string userId, int pageNumber, int pageSize);
 }

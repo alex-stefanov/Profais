@@ -22,7 +22,8 @@ public class PenaltyController(
         int pageNumber = 1,
         int pageSize = 8)
     {
-        string userId = userManager.GetUserId(User)!;
+        string userId = userManager
+            .GetUserId(User)!;
 
         if (string.IsNullOrEmpty(userId))
         {
@@ -120,7 +121,8 @@ public class PenaltyController(
 
         try
 		{
-			await penaltyService.AddUserPenaltyByIds(model.SelectedUserId!, (int)model.SelectedPenaltyId!);
+			await penaltyService
+                .AddUserPenaltyByIds(model.SelectedUserId!, (int)model.SelectedPenaltyId!);
 
 			return RedirectToAction(nameof(GetAllPenalties));
 		}
@@ -139,7 +141,8 @@ public class PenaltyController(
     {
 		try
 		{
-            await penaltyService.RemoveUserPenaltyByIds(userId, penaltyId);
+            await penaltyService
+                .RemoveUserPenaltyByIds(userId, penaltyId);
 
             return RedirectToAction(nameof(GetAllPenalties));
 		}
