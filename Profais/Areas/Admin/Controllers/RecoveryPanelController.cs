@@ -5,6 +5,8 @@ using Profais.Services.ViewModels.Shared;
 using Profais.Services.ViewModels.Project;
 using Microsoft.AspNetCore.Authorization;
 using static Profais.Common.Constants.UserConstants;
+using Profais.Common.Exceptions;
+using System.Threading.Tasks;
 
 namespace Profais.Areas.Admin.Controllers;
 
@@ -37,7 +39,8 @@ public class RecoveryPanelController(
         catch (Exception ex)
         {
             logger.LogError($"An error occurred while getting all the deleted tasks. {ex.Message}");
-            return RedirectToAction("Error", "Home");
+            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            return StatusCode(500);
         }
     }
 
@@ -47,14 +50,28 @@ public class RecoveryPanelController(
     {
         try
         {
-            await taskService.RecoverTaskByIdAsync(id);
+            await taskService
+                .RecoverTaskByIdAsync(id);
 
             return RedirectToAction(nameof(ViewDeletedTasks));
+        }
+        catch (ItemNotFoundException ex)
+        {
+            logger.LogError($"No material found with id `{id}` while trying to recover it. Exception: {ex.Message}");
+            ViewData["ErrorMessage"] = $"No material found with id `{id}`. {ex.Message}";
+            return NotFound();
+        }
+        catch (ItemNotUpdatedException ex)
+        {
+            logger.LogError($"Failed to recover task with id `{id}`. Exception: {ex.Message}");
+            ViewData["ErrorMessage"] = $"Unable to recover material with id `{id}`. {ex.Message}";
+            return StatusCode(500);
         }
         catch (Exception ex)
         {
             logger.LogError($"An error occured while recovering material with id `{id}`. {ex.Message}");
-            return RedirectToAction("Error", "Home");
+            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            return StatusCode(500);
         }
     }
 
@@ -73,7 +90,8 @@ public class RecoveryPanelController(
         catch (Exception ex)
         {
             logger.LogError($"An error occurred while getting all the deleted projects. {ex.Message}");
-            return RedirectToAction("Error", "Home");
+            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            return StatusCode(500);
         }
     }
 
@@ -83,14 +101,28 @@ public class RecoveryPanelController(
     {
         try
         {
-            await projectService.RecoverProjectByIdAsync(id);
+            await projectService
+                .RecoverProjectByIdAsync(id);
 
             return RedirectToAction(nameof(ViewDeletedProjects));
+        }
+        catch (ItemNotFoundException ex)
+        {
+            logger.LogError($"No project found with id `{id}` while trying to recover it. Exception: {ex.Message}");
+            ViewData["ErrorMessage"] = $"No project found with id `{id}`. {ex.Message}";
+            return NotFound();
+        }
+        catch (ItemNotUpdatedException ex)
+        {
+            logger.LogError($"Failed to recover project with id `{id}`. Exception: {ex.Message}");
+            ViewData["ErrorMessage"] = $"Unable to recover project with id `{id}`. {ex.Message}";
+            return StatusCode(500);
         }
         catch (Exception ex)
         {
             logger.LogError($"An error occured while recovering project with id `{id}`. {ex.Message}");
-            return RedirectToAction("Error", "Home");
+            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            return StatusCode(500);
         }
     }
 }

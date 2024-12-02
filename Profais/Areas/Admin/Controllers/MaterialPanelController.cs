@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Profais.Common.Exceptions;
 using Profais.Services.Interfaces;
 using Profais.Services.ViewModels.Material;
 using Profais.Services.ViewModels.Shared;
@@ -16,15 +17,11 @@ public class MaterialPanelController(
 {
     [HttpGet]
     public IActionResult Index()
-    {
-        return View();
-    }
+        => View();
 
     [HttpGet]
     public IActionResult Register()
-    {
-        return View();
-    }
+        => View();
 
     [HttpPost]
     public async Task<IActionResult> Register(
@@ -37,14 +34,16 @@ public class MaterialPanelController(
 
         try
         {
-            await materialService.CreateMaterialAsync(model);
+            await materialService
+                .CreateMaterialAsync(model);
 
             return RedirectToAction(nameof(ViewAll));
         }
         catch (Exception ex)
         {
             logger.LogError($"An error occured while registering new material. {ex.Message}");
-            return RedirectToAction("Error", "Home");
+            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            return StatusCode(500);
         }
     }
 
@@ -66,7 +65,8 @@ public class MaterialPanelController(
         catch (Exception ex)
         {
             logger.LogError($"An error occurred while getting all the incompleted projects. {ex.Message}");
-            return RedirectToAction("Error", "Home");
+            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            return StatusCode(500);
         }
     }
 
@@ -76,14 +76,28 @@ public class MaterialPanelController(
     {
         try
         {
-            await materialService.DeleteMaterialAsync(id);
+            await materialService
+                .DeleteMaterialAsync(id);
 
             return RedirectToAction(nameof(ViewAll));
+        }
+        catch (ItemNotFoundException ex)
+        {
+            logger.LogError($"No material found while removing material. Exception: {ex.Message}");
+            ViewData["ErrorMessage"] = $"Material not found. {ex.Message}";
+            return NotFound();
+        }
+        catch (ItemNotDeletedException ex)
+        {
+            logger.LogError($"Attempt to delete material failed. Exception: {ex.Message}");
+            ViewData["ErrorMessage"] = $"Unable to delete material. {ex.Message}";
+            return StatusCode(500);
         }
         catch (Exception ex)
         {
             logger.LogError($"An error occured while deleting material with id `{id}`. {ex.Message}");
-            return RedirectToAction("Error", "Home");
+            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            return StatusCode(500);
         }
     }
 }

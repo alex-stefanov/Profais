@@ -35,8 +35,10 @@ public class MaterialService(
             .GetByIdAsync(id)
             ?? throw new ItemNotFoundException($"Material with id `{id}` not found");
 
-        await materialRepository
-            .DeleteAsync(material);
+        if(!await materialRepository.DeleteAsync(material))
+        {
+            throw new ItemNotDeletedException($"Material with id `{id}` couldn't be removed");
+        }
     }
 
     public async Task<PaginatedMaterialsViewModel> GetMaterialsWithPaginationAsync(
