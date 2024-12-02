@@ -42,7 +42,7 @@ public class MaterialPanelController(
         catch (Exception ex)
         {
             logger.LogError($"An error occured while registering new material. {ex.Message}");
-            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            TempData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
             return StatusCode(500);
         }
     }
@@ -65,7 +65,7 @@ public class MaterialPanelController(
         catch (Exception ex)
         {
             logger.LogError($"An error occurred while getting all the incompleted projects. {ex.Message}");
-            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            TempData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
             return StatusCode(500);
         }
     }
@@ -84,19 +84,19 @@ public class MaterialPanelController(
         catch (ItemNotFoundException ex)
         {
             logger.LogError($"No material found while removing material. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"Material not found. {ex.Message}";
+            TempData["ErrorMessage"] = $"Material not found. {ex.Message}";
             return NotFound();
         }
         catch (ItemNotDeletedException ex)
         {
             logger.LogError($"Attempt to delete material failed. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"Unable to delete material. {ex.Message}";
+            TempData["ErrorMessage"] = $"Unable to delete material. {ex.Message}";
             return StatusCode(500);
         }
         catch (Exception ex)
         {
             logger.LogError($"An error occured while deleting material with id `{id}`. {ex.Message}");
-            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            TempData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
             return StatusCode(500);
         }
     }

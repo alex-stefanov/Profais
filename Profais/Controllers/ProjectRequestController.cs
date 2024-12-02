@@ -28,7 +28,7 @@ public class ProjectRequestController(
         if (string.IsNullOrEmpty(userId))
         {
             logger.LogError("User not found");
-            ViewData["ErrorMessage"] = "User ID is null or empty.";
+            TempData["ErrorMessage"] = "User ID is null or empty.";
             return StatusCode(500);
         }
 
@@ -42,7 +42,7 @@ public class ProjectRequestController(
         catch (Exception ex)
         {
             logger.LogError($"An unexpected error occurred while creating the project request form for user with id `{userId}`. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            TempData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
             return StatusCode(500);
         }
     }
@@ -67,7 +67,7 @@ public class ProjectRequestController(
         catch (Exception ex)
         {
             logger.LogError($"An unexpected error occurred while sending the project request. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            TempData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
             return StatusCode(500);
         }
     }
@@ -88,7 +88,7 @@ public class ProjectRequestController(
         catch (Exception ex)
         {
             logger.LogError($"An unexpected error occurred while fetching ongoing project requests. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            TempData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
             return StatusCode(500);
         }
     }
@@ -109,7 +109,7 @@ public class ProjectRequestController(
         catch (Exception ex)
         {
             logger.LogError($"An unexpected error occurred while fetching approved project requests. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            TempData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
             return StatusCode(500);
         }
     }
@@ -130,7 +130,7 @@ public class ProjectRequestController(
         catch (Exception ex)
         {
             logger.LogError($"An unexpected error occurred while fetching declined project requests. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            TempData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
             return StatusCode(500);
         }
     }
@@ -150,13 +150,13 @@ public class ProjectRequestController(
         catch (ItemNotFoundException ex)
         {
             logger.LogError($"No project request found with id {projectRequestId}. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"Project request with id {projectRequestId} not found. {ex.Message}";
+            TempData["ErrorMessage"] = $"Project request with id {projectRequestId} not found. {ex.Message}";
             return NotFound();
         }
         catch (Exception ex)
         {
             logger.LogError($"An unexpected error occurred while getting the project request with id {projectRequestId}. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            TempData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
             return StatusCode(500);
         }
     }
@@ -176,19 +176,19 @@ public class ProjectRequestController(
         catch (ItemNotFoundException ex)
         {
             logger.LogError($"No project request found with id {projectRequestId} for approval. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"Project request with id {projectRequestId} not found. {ex.Message}";
+            TempData["ErrorMessage"] = $"Project request with id {projectRequestId} not found. {ex.Message}";
             return NotFound();
         }
         catch (ItemNotUpdatedException ex)
         {
             logger.LogError($"Failed to update project request with id {projectRequestId} during approval. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"Unable to update project request with id {projectRequestId} during approval. {ex.Message}";
+            TempData["ErrorMessage"] = $"Unable to update project request with id {projectRequestId} during approval. {ex.Message}";
             return StatusCode(500);
         }
         catch (Exception ex)
         {
             logger.LogError($"An unexpected error occurred while approving project request with id {projectRequestId}. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            TempData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
             return StatusCode(500);
         }
     }
@@ -208,19 +208,19 @@ public class ProjectRequestController(
         catch (ItemNotFoundException ex)
         {
             logger.LogError($"No project request found with id {projectRequestId} for declining. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"Project request with id {projectRequestId} not found. {ex.Message}";
+            TempData["ErrorMessage"] = $"Project request with id {projectRequestId} not found. {ex.Message}";
             return NotFound();
         }
         catch (ItemNotUpdatedException ex)
         {
             logger.LogError($"Failed to update project request with id {projectRequestId} during decline. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"Unable to update project request with id {projectRequestId} during decline. {ex.Message}";
+            TempData["ErrorMessage"] = $"Unable to update project request with id {projectRequestId} during decline. {ex.Message}";
             return StatusCode(500);
         }
         catch (Exception ex)
         {
             logger.LogError($"An unexpected error occurred while declining project request with id {projectRequestId}. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            TempData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
             return StatusCode(500);
         }
     }

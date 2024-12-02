@@ -26,7 +26,7 @@ public class SpecialistRequestController(
         if (string.IsNullOrEmpty(userId))
         {
             logger.LogError("User not found");
-            ViewData["ErrorMessage"] = "User not found.";
+            TempData["ErrorMessage"] = "User not found.";
             return NotFound();
         }
 
@@ -40,13 +40,13 @@ public class SpecialistRequestController(
         catch (ItemNotFoundException ex)
         {
             logger.LogError($"No data found while creating empty specialist request for user {userId}. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"Specialist request data not found for user {userId}. {ex.Message}";
+            TempData["ErrorMessage"] = $"Specialist request data not found for user {userId}. {ex.Message}";
             return NotFound();
         }
         catch (Exception ex)
         {
             logger.LogError($"An unexpected error occurred while creating an empty specialist request for user {userId}. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            TempData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
             return StatusCode(500);
         }
     }
@@ -71,7 +71,7 @@ public class SpecialistRequestController(
         catch (Exception ex)
         {
             logger.LogError($"An unexpected error occurred while creating the specialist request. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            TempData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
             return StatusCode(500);
         }
     }
@@ -90,7 +90,7 @@ public class SpecialistRequestController(
         catch (Exception ex)
         {
             logger.LogError($"An unexpected error occurred while getting all specialist requests. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            TempData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
             return StatusCode(500);
         }
     }
@@ -104,7 +104,7 @@ public class SpecialistRequestController(
             || model is null)
         {
             logger.LogError("No request found or invalid model state.");
-            ViewData["ErrorMessage"] = "Specialist request not found or invalid request data.";
+            TempData["ErrorMessage"] = "Specialist request not found or invalid request data.";
             return NotFound();
         }
 
@@ -118,19 +118,19 @@ public class SpecialistRequestController(
         catch (ItemNotFoundException ex)
         {
             logger.LogError($"No specialist request found to approve. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"Specialist request not found. {ex.Message}";
+            TempData["ErrorMessage"] = $"Specialist request not found. {ex.Message}";
             return NotFound();
         }
         catch (ItemNotUpdatedException ex)
         {
             logger.LogError($"Failed to update specialist request while approving. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"Unable to update specialist request. {ex.Message}";
+            TempData["ErrorMessage"] = $"Unable to update specialist request. {ex.Message}";
             return StatusCode(500);
         }
         catch (Exception ex)
         {
             logger.LogError($"An unexpected error occurred while approving specialist request. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            TempData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
             return StatusCode(500);
         }
     }
@@ -144,7 +144,7 @@ public class SpecialistRequestController(
             || model is null)
         {
             logger.LogError("No request found or invalid model state.");
-            ViewData["ErrorMessage"] = "Specialist request not found or invalid request data.";
+            TempData["ErrorMessage"] = "Specialist request not found or invalid request data.";
             return NotFound();
         }
 
@@ -158,19 +158,19 @@ public class SpecialistRequestController(
         catch (ItemNotFoundException ex)
         {
             logger.LogError($"No specialist request found to decline. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"Specialist request not found. {ex.Message}";
+            TempData["ErrorMessage"] = $"Specialist request not found. {ex.Message}";
             return NotFound();
         }
         catch (ItemNotUpdatedException ex)
         {
             logger.LogError($"Failed to update specialist request while declining. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"Unable to update specialist request. {ex.Message}";
+            TempData["ErrorMessage"] = $"Unable to update specialist request. {ex.Message}";
             return StatusCode(500);
         }
         catch (Exception ex)
         {
             logger.LogError($"An unexpected error occurred while declining specialist request. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            TempData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
             return StatusCode(500);
         }
     }

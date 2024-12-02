@@ -26,7 +26,7 @@ public class TaskController(
         if (string.IsNullOrEmpty(userId))
         {
             logger.LogError("User not found");
-            ViewData["ErrorMessage"] = "User not found.";
+            TempData["ErrorMessage"] = "User not found.";
             return NotFound();
         }
 
@@ -40,13 +40,13 @@ public class TaskController(
         catch (ItemNotFoundException ex)
         {
             logger.LogError($"No task found for user with id `{userId}`. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"No task found for user with id `{userId}`. {ex.Message}";
+            TempData["ErrorMessage"] = $"No task found for user with id `{userId}`. {ex.Message}";
             return NotFound();
         }
         catch (Exception ex)
         {
             logger.LogError($"An unexpected error occurred while getting task for user with id `{userId}`. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            TempData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
             return StatusCode(500);
         }
     }
@@ -68,7 +68,7 @@ public class TaskController(
         catch (Exception ex)
         {
             logger.LogError($"An unexpected error occurred while getting tasks for project with ID {projectId}. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            TempData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
             return StatusCode(500);
         }
     }
@@ -87,13 +87,13 @@ public class TaskController(
         catch (ItemNotFoundException ex)
         {
             logger.LogError($"No task found with id `{taskId}`. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"No task found with id `{taskId}`. {ex.Message}";
+            TempData["ErrorMessage"] = $"No task found with id `{taskId}`. {ex.Message}";
             return NotFound();
         }
         catch (Exception ex)
         {
             logger.LogError($"An unexpected error occurred while finding a task with id `{taskId}`. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            TempData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
             return StatusCode(500);
         }
     }
@@ -117,19 +117,19 @@ public class TaskController(
         catch (ItemNotFoundException ex)
         {
             logger.LogError($"No task found with id `{taskId}` while trying to complete it. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"No task found with id `{taskId}`. {ex.Message}";
+            TempData["ErrorMessage"] = $"No task found with id `{taskId}`. {ex.Message}";
             return NotFound();
         }
         catch (ItemNotUpdatedException ex)
         {
             logger.LogError($"Failed to update task with id `{taskId}` while completing it. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"Unable to update task with id `{taskId}`. {ex.Message}";
+            TempData["ErrorMessage"] = $"Unable to update task with id `{taskId}`. {ex.Message}";
             return StatusCode(500);
         }
         catch (Exception ex)
         {
             logger.LogError($"An error occurred while completing task with id `{taskId}`. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            TempData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
             return StatusCode(500);
         }
     }
@@ -154,19 +154,19 @@ public class TaskController(
         catch (ItemNotFoundException ex)
         {
             logger.LogError($"No task found with id `{taskId}` while trying to delete it. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"No task found with id `{taskId}`. {ex.Message}";
+            TempData["ErrorMessage"] = $"No task found with id `{taskId}`. {ex.Message}";
             return NotFound();
         }
         catch (ItemNotUpdatedException ex)
         {
             logger.LogError($"Failed to update task with id `{taskId}` while attempting to delete it. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"Unable to update task with id `{taskId}`. {ex.Message}";
+            TempData["ErrorMessage"] = $"Unable to update task with id `{taskId}`. {ex.Message}";
             return StatusCode(500);
         }
         catch (Exception ex)
         {
             logger.LogError($"An unexpected error occurred while deleting task with id `{taskId}`. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            TempData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
             return StatusCode(500);
         }
     }
@@ -186,7 +186,7 @@ public class TaskController(
         catch (Exception ex)
         {
             logger.LogError($"An unexpected error occurred while creating add task view model for project id `{projectId}`. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            TempData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
             return StatusCode(500);
         }
     }
@@ -211,7 +211,7 @@ public class TaskController(
         catch (Exception ex)
         {
             logger.LogError($"An error occurred while adding the task. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            TempData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
             return StatusCode(500);
         }
     }
@@ -262,19 +262,19 @@ public class TaskController(
         catch (ItemNotFoundException ex)
         {
             logger.LogError($"No task found with id {model.Id} for updating. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"Task with id {model.Id} not found for updating. {ex.Message}";
+            TempData["ErrorMessage"] = $"Task with id {model.Id} not found for updating. {ex.Message}";
             return NotFound();
         }
         catch (ItemNotUpdatedException ex)
         {
             logger.LogError($"Failed to update task with id {model.Id}. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"Unable to update task with id {model.Id}. {ex.Message}";
+            TempData["ErrorMessage"] = $"Unable to update task with id {model.Id}. {ex.Message}";
             return StatusCode(500);
         }
         catch (Exception ex)
         {
             logger.LogError($"An error occurred while updating the task with id {model.Id}. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            TempData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
             return StatusCode(500);
         }
     }
@@ -295,19 +295,19 @@ public class TaskController(
         catch (ItemNotFoundException ex)
         {
             logger.LogError($"No task found with id {taskId} for voting by user {userId}. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"Task with id {taskId} not found for voting. {ex.Message}";
+            TempData["ErrorMessage"] = $"Task with id {taskId} not found for voting. {ex.Message}";
             return NotFound();
         }
         catch (ItemNotUpdatedException ex)
         {
             logger.LogError($"Failed to update task with id {taskId} during the voting process. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"Unable to update task with id {taskId} during the voting process. {ex.Message}";
+            TempData["ErrorMessage"] = $"Unable to update task with id {taskId} during the voting process. {ex.Message}";
             return StatusCode(500);
         }
         catch (Exception ex)
         {
             logger.LogError($"An error occurred while voting on task with id {taskId} by user with id {userId}. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            TempData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
             return StatusCode(500);
         }
     }
@@ -347,7 +347,7 @@ public class TaskController(
         catch (Exception ex)
         {
             logger.LogError($"An error occurred while resetting completed tasks. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            TempData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
             return StatusCode(500);
         }
     }

@@ -39,7 +39,7 @@ public class RecoveryPanelController(
         catch (Exception ex)
         {
             logger.LogError($"An error occurred while getting all the deleted tasks. {ex.Message}");
-            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            TempData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
             return StatusCode(500);
         }
     }
@@ -58,19 +58,19 @@ public class RecoveryPanelController(
         catch (ItemNotFoundException ex)
         {
             logger.LogError($"No material found with id `{id}` while trying to recover it. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"No material found with id `{id}`. {ex.Message}";
+            TempData["ErrorMessage"] = $"No material found with id `{id}`. {ex.Message}";
             return NotFound();
         }
         catch (ItemNotUpdatedException ex)
         {
             logger.LogError($"Failed to recover task with id `{id}`. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"Unable to recover material with id `{id}`. {ex.Message}";
+            TempData["ErrorMessage"] = $"Unable to recover material with id `{id}`. {ex.Message}";
             return StatusCode(500);
         }
         catch (Exception ex)
         {
             logger.LogError($"An error occured while recovering material with id `{id}`. {ex.Message}");
-            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            TempData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
             return StatusCode(500);
         }
     }
@@ -90,7 +90,7 @@ public class RecoveryPanelController(
         catch (Exception ex)
         {
             logger.LogError($"An error occurred while getting all the deleted projects. {ex.Message}");
-            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            TempData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
             return StatusCode(500);
         }
     }
@@ -109,19 +109,19 @@ public class RecoveryPanelController(
         catch (ItemNotFoundException ex)
         {
             logger.LogError($"No project found with id `{id}` while trying to recover it. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"No project found with id `{id}`. {ex.Message}";
+            TempData["ErrorMessage"] = $"No project found with id `{id}`. {ex.Message}";
             return NotFound();
         }
         catch (ItemNotUpdatedException ex)
         {
             logger.LogError($"Failed to recover project with id `{id}`. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"Unable to recover project with id `{id}`. {ex.Message}";
+            TempData["ErrorMessage"] = $"Unable to recover project with id `{id}`. {ex.Message}";
             return StatusCode(500);
         }
         catch (Exception ex)
         {
             logger.LogError($"An error occured while recovering project with id `{id}`. {ex.Message}");
-            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            TempData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
             return StatusCode(500);
         }
     }

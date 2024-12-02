@@ -21,16 +21,24 @@
     <table class="table table-bordered table-hover">
         <thead class="thead-light">
             <tr>
-                <th>Email</th>
-                <th>Roles</th>
-                <th>Actions</th>
+                <th style="color:white">
+                    Email
+                </th>
+                <th style="color:white">
+                    Roles
+                </th>
+                <th style="color:white">
+                    Actions
+                </th>
             </tr>
         </thead>
         <tbody>
             @foreach (var user in Model)
             {
                 <tr>
-                    <td>@user.Email</td>
+                    <td  style="color:white">
+                        @user.Email
+                    </td>
                     <td>
                         @foreach (var role in user.Roles)
                         {

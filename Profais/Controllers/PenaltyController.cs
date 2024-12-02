@@ -29,7 +29,7 @@ public class PenaltyController(
         if (string.IsNullOrEmpty(userId))
         {
             logger.LogError("No user found");
-            ViewData["ErrorMessage"] = $"User not found";
+            TempData["ErrorMessage"] = $"User not found";
             return NotFound();
         }
 
@@ -43,7 +43,7 @@ public class PenaltyController(
         catch (Exception ex)
         {
             logger.LogError($"An unexpected error occurred while getting penalties for user {userId}. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            TempData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
             return StatusCode(500);
         }
     }
@@ -63,13 +63,13 @@ public class PenaltyController(
         catch (ItemNotFoundException ex)
         {
             logger.LogError($"No penalty found with id {penaltyId}. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"Penalty with id {penaltyId} not found. {ex.Message}";
+            TempData["ErrorMessage"] = $"Penalty with id {penaltyId} not found. {ex.Message}";
             return NotFound();
         }
         catch (Exception ex)
         {
             logger.LogError($"An unexpected error occurred while getting penalty with id {penaltyId}. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"An unexpected error occurred while getting penalty with id {penaltyId}. {ex.Message}";
+            TempData["ErrorMessage"] = $"An unexpected error occurred while getting penalty with id {penaltyId}. {ex.Message}";
             return StatusCode(500);
         }
     }
@@ -90,7 +90,7 @@ public class PenaltyController(
         catch (Exception ex)
         {
             logger.LogError($"An unexpected error occurred while getting penalties with users. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            TempData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
             return StatusCode(500);
         }
     }
@@ -109,7 +109,7 @@ public class PenaltyController(
         catch (Exception ex)
         {
             logger.LogError($"An unexpected error occurred while getting user penalties. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            TempData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
             return StatusCode(500);
         }
     }
@@ -141,7 +141,7 @@ public class PenaltyController(
         catch (Exception ex)
         {
             logger.LogError($"An unexpected error occurred while adding a penalty to a user. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            TempData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
             return StatusCode(500);
         }
     }
@@ -162,19 +162,19 @@ public class PenaltyController(
         catch (ItemNotFoundException ex)
         {
             logger.LogError($"No penalty or user found while removing penalty. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"Penalty or user not found. {ex.Message}";
+            TempData["ErrorMessage"] = $"Penalty or user not found. {ex.Message}";
             return NotFound();
         }
         catch (ItemNotDeletedException ex)
         {
             logger.LogError($"Attempt to delete penalty while removing failed. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"Unable to delete penalty while removing. {ex.Message}";
+            TempData["ErrorMessage"] = $"Unable to delete penalty while removing. {ex.Message}";
             return StatusCode(500);
         }
         catch (Exception ex)
         {
             logger.LogError($"An unexpected error occurred while removing penalty from a user. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            TempData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
             return StatusCode(500);
         }
     }

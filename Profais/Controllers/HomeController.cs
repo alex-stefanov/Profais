@@ -20,7 +20,7 @@ public class HomeController()
 
     public IActionResult Error404()
     {
-        string errorMessage = ViewData["ErrorMessage"]?.ToString() ?? "An unexpected error occurred.";
+        string errorMessage = TempData["ErrorMessage"]?.ToString() ?? "An unexpected error occurred.";
 
         ViewData["ErrorMessage"] = errorMessage;
 
@@ -29,7 +29,7 @@ public class HomeController()
 
     public IActionResult Error500()
     {
-        string errorMessage = ViewData["ErrorMessage"]?.ToString() ?? "An unexpected error occurred.";
+        string errorMessage = TempData["ErrorMessage"]?.ToString() ?? "An unexpected error occurred.";
 
         ViewData["ErrorMessage"] = errorMessage;
 

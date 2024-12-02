@@ -25,7 +25,7 @@ public class WorkerRequestController(
         if (string.IsNullOrEmpty(userId))
         {
             logger.LogError("No user found");
-            ViewData["ErrorMessage"] = "User not found.";
+            TempData["ErrorMessage"] = "User not found.";
             return NotFound();
         }
 
@@ -39,13 +39,13 @@ public class WorkerRequestController(
         catch (ItemNotFoundException ex)
         {
             logger.LogError($"No worker request found for user {userId}. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"No worker request found for user {userId}. {ex.Message}";
+            TempData["ErrorMessage"] = $"No worker request found for user {userId}. {ex.Message}";
             return NotFound();
         }
         catch (Exception ex)
         {
             logger.LogError($"An error occurred while creating an empty worker request for user {userId}. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            TempData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
             return StatusCode(500);
         }
     }
@@ -70,7 +70,7 @@ public class WorkerRequestController(
         catch (Exception ex)
         {
             logger.LogError($"An error occurred while creating worker request. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            TempData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
             return StatusCode(500);
         }
     }
@@ -89,7 +89,7 @@ public class WorkerRequestController(
         catch (Exception ex)
         {
             logger.LogError($"An error occurred while retrieving worker request view models. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            TempData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
             return StatusCode(500);
         }
     }
@@ -103,7 +103,7 @@ public class WorkerRequestController(
             || model is null)
         {
             logger.LogError("Invalid model state or no request found.");
-            ViewData["ErrorMessage"] = "Invalid model state or no request found.";
+            TempData["ErrorMessage"] = "Invalid model state or no request found.";
             return NotFound();
         }
 
@@ -117,19 +117,19 @@ public class WorkerRequestController(
         catch (ItemNotFoundException ex)
         {
             logger.LogError($"No worker request found with ID {model.Id}. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"Worker request with ID {model.Id} not found. {ex.Message}";
+            TempData["ErrorMessage"] = $"Worker request with ID {model.Id} not found. {ex.Message}";
             return NotFound();
         }
         catch (ItemNotUpdatedException ex)
         {
             logger.LogError($"Failed to approve worker request with ID {model.Id}. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"Unable to approve worker request with ID {model.Id}. {ex.Message}";
+            TempData["ErrorMessage"] = $"Unable to approve worker request with ID {model.Id}. {ex.Message}";
             return StatusCode(500);
         }
         catch (Exception ex)
         {
             logger.LogError($"An error occurred while approving worker request. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            TempData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
             return StatusCode(500);
         }
     }
@@ -143,7 +143,7 @@ public class WorkerRequestController(
             || model is null)
         {
             logger.LogError("Invalid model state or no request found.");
-            ViewData["ErrorMessage"] = "Invalid model state or no request found.";
+            TempData["ErrorMessage"] = "Invalid model state or no request found.";
             return NotFound();
         }
 
@@ -157,19 +157,19 @@ public class WorkerRequestController(
         catch (ItemNotFoundException ex)
         {
             logger.LogError($"No worker request found with ID {model.Id}. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"Worker request with ID {model.Id} not found. {ex.Message}";
+            TempData["ErrorMessage"] = $"Worker request with ID {model.Id} not found. {ex.Message}";
             return NotFound();
         }
         catch (ItemNotUpdatedException ex)
         {
             logger.LogError($"Failed to decline worker request with ID {model.Id}. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"Unable to decline worker request with ID {model.Id}. {ex.Message}";
+            TempData["ErrorMessage"] = $"Unable to decline worker request with ID {model.Id}. {ex.Message}";
             return StatusCode(500);
         }
         catch (Exception ex)
         {
             logger.LogError($"An error occurred while declining worker request. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            TempData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
             return StatusCode(500);
         }
     }

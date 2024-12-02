@@ -15,7 +15,9 @@
     <form method="get" action="/Admin/MaterialPanel/ViewAll">
         <div class="input-group mb-4">
             <input type="text" class="form-control" id="searchInput" name="searchTerm" placeholder="Search by Name" value="@searchTerm" />
-            <button class="btn btn-primary" type="submit">Search</button>
+            <button class="btn btn-primary" type="submit" style="color:black">
+                Search
+            </button>
         </div>
     </form>
 
@@ -25,18 +27,18 @@
             <div class="col-md-4 mb-4 material-card">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">
+                        <h5 class="card-title" style="color:black">
                             @material.Name
                         </h5>
-                        <p class="card-text">
+                        <p class="card-text" style="color:black">
                             @material.Id
                         </p>
-                        <p class="card-text">
+                        <p class="card-text" style="color:black">
                             @material.UsedFor.ToString()
                         </p>
                         <form method="post" asp-area="Admin" asp-controller="MaterialPanel" asp-action="Delete">
                             <input type="hidden" name="id" value="@material.Id" />
-                            <button type="submit" class="btn btn-warning">
+                            <button type="submit" class="btn btn-warning" style="color:black">
                                 Delete Material
                             </button>
                         </form>

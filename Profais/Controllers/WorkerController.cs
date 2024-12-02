@@ -35,7 +35,7 @@ public class WorkerController(
         catch (Exception ex)
         {
             logger.LogError($"An error occurred while getting paged users for task {taskId}. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            TempData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
             return StatusCode(500);
         }
     }
@@ -63,13 +63,13 @@ public class WorkerController(
         catch (ItemNotFoundException ex)
         {
             logger.LogError($"No workers or task found for task {taskId}. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"No workers or task found for task {taskId}. {ex.Message}";
+            TempData["ErrorMessage"] = $"No workers or task found for task {taskId}. {ex.Message}";
             return NotFound();
         }
         catch (Exception ex)
         {
             logger.LogError($"Error assigning workers to task {taskId}. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            TempData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
             return StatusCode(500);
         }
     }
@@ -95,7 +95,7 @@ public class WorkerController(
         catch (Exception ex)
         {
             logger.LogError($"An error occurred while getting paged users for task {taskId}. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            TempData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
             return StatusCode(500);
         }
     }
@@ -123,13 +123,13 @@ public class WorkerController(
         catch (ItemNotFoundException ex)
         {
             logger.LogError($"No workers found to remove from task {taskId}. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"No workers found to remove from task {taskId}. {ex.Message}";
+            TempData["ErrorMessage"] = $"No workers found to remove from task {taskId}. {ex.Message}";
             return NotFound();
         }
         catch (Exception ex)
         {
             logger.LogError($"An error occurred while removing workers from task {taskId}. Exception: {ex.Message}");
-            ViewData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
+            TempData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
             return StatusCode(500);
         }
     }

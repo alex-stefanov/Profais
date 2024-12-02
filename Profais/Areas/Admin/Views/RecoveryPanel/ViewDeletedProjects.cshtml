@@ -17,18 +17,18 @@
             <div class="col-md-4 mb-4">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">
+                        <h5 class="card-title" style="color:black">
                             @project.Title
                         </h5>
-                        <p class="card-text">
+                        <p class="card-text" style="color:black">
                             @project.Id
                         </p>
-                        <p class="card-text">
+                        <p class="card-text" style="color:black">
                             @project.AbsoluteAddress
                         </p>
                         <form method="post" asp-area="Admin" asp-controller="RecoveryPanel" asp-action="RecoverProject">
                             <input type="hidden" name="id" value="@project.Id"/>
-                            <button type="submit" class="btn btn-warning">
+                            <button type="submit" class="btn btn-warning" style="color:black">
                                 Recover Project
                             </button>
                         </form>

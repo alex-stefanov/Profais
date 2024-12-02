@@ -98,7 +98,11 @@ public class Program
 
         if (app.Environment.IsDevelopment())
         {
-            app.UseDeveloperExceptionPage();
+            app.UseExceptionHandler("/Home/Error500");
+
+            app.UseStatusCodePagesWithReExecute("/Home/Error404");
+
+            //app.UseDeveloperExceptionPage();
         }
         else
         {

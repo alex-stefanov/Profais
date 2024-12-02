@@ -59,7 +59,7 @@ public class WorkerService(
             .Include(u => u.UserTasks)
                 .ThenInclude(ut => ut.Task)
             .Where(u => u.UserTasks
-                .Any(ut => ut.TaskId == taskId && !ut.Task.IsCompleted));
+                .Any(ut => ut.TaskId == taskId));
 
         int totalCount = await query
             .CountAsync();
