@@ -6,11 +6,13 @@ using Profais.Services.ViewModels.Project;
 using Profais.Services.ViewModels.Shared;
 using Profais.Services.ViewModels.Task;
 using Profais.Services.ViewModels.Material;
+using Profais.Services.ViewModels.Worker;
 
 namespace Profais.Services.Implementations;
 
 public class ProjectService(
-    IRepository<ProfProject, int> projectRepository)
+    IRepository<ProfProject, int> projectRepository,
+    IRepository<UserProject, object> userProjectRepository)
     : IProjectService
 {
     public async Task<PagedResult<ProjectViewModel>> GetPagedCompletedProjectsAsync(
@@ -54,6 +56,12 @@ public class ProjectService(
             throw new ArgumentNullException(nameof(project), "Project is not specified");
         }
 
+        List<UserProject> userProjects = await userProjectRepository
+            .GetAllAttached()
+            .Include(x => x.Contributer)
+            .Where(x => x.ProfProjectId == projectId)
+            .ToListAsync();
+
         return new ProjectViewModel
         {
             Id = projectId,
@@ -74,6 +82,12 @@ public class ProjectService(
                     Name = t.Material.Name,
                     UsedFor = t.Material.UsedForId,
                 }).ToArray(),
+            }),
+            Contributers = userProjects.Select(x => new UserViewModel
+            {
+                Id = x.ContributerId,
+                UserFirstName = x.Contributer.FirstName,
+                UserLastName = x.Contributer.LastName,
             }),
         };
     }

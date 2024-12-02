@@ -1,4 +1,5 @@
 ﻿@using Profais.Services.ViewModels.Project;
+@using Profais.Services.ViewModels.Worker;
 @model ProjectViewModel
 
 @{
@@ -76,6 +77,22 @@
                 </div>
             </div>
 
+            @if (Model.IsCompleted)
+            {
+                <div class="mb-3">
+                    <strong>
+                        Contributors:
+                    </strong>
+                    <div>
+                        @foreach (UserViewModel contributor in Model.Contributers)
+                        {
+                            <p>
+                                @($"{contributor.UserFirstName} {contributor.UserLastName} - {contributor.Id}")
+                            </p>
+                        }
+                    </div>
+                </div>
+            }
 
             <div class="btn-group" role="group">
                 <form method="get" asp-action="ViewTasks" asp-controller="Task" class="d-inline">
@@ -97,7 +114,7 @@
                         <button type="submit" class="btn btn-warning">
                             Edit Project
                         </button>
-                    </form>  
+                    </form>
                     <form method="post" asp-action="DeleteProject">
                         <input type="hidden" asp-for="Id" name="projectId" />
                         <button type="submit" class="btn btn-warning">
