@@ -50,17 +50,16 @@
                         {
                             <span class="badge bg-warning">
                                 No
-                                <form asp-action="Vote" asp-controller="Task" method="post" class="mt-2">
-                                    <input type="hidden" name="userId" value="@Model.UserId" />
-                                    <input type="hidden" name="taskId" value="@Model.Id" />
-                                    <button type="submit" class="btn btn-primary">
-                                        Vote
-                                    </button>
-                                </form>
                             </span>
+                            <form asp-action="Vote" asp-controller="Task" method="post" class="mt-2">
+                                <input type="hidden" name="userId" value="@Model.UserId" />
+                                <input type="hidden" name="taskId" value="@Model.Id" />
+                                <button type="submit" class="btn btn-primary">
+                                    Vote
+                                </button>
+                            </form>
                         }
                     </span>
-
                 </div>
             </div>
 

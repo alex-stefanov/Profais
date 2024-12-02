@@ -5,12 +5,12 @@ using Profais.Services.ViewModels.Shared;
 namespace Profais.Services.Interfaces;
 
 public interface IMaterialService
-{ 
+{
     Task CreateMaterialAsync(MaterialCreateViewModel model);
 
     Task DeleteMaterialAsync(int id);
 
-    Task<PagedResult<MaterialViewModel>> GetPagedMaterialsAsync(int pageNumber, int pageSize);
+    Task<PagedResult<MaterialViewModel>> GetPagedMaterialsAsync(string? searchTerm, int pageNumber, int pageSize);
 
     Task AddMaterialsToTaskAsync(int taskId, IEnumerable<int> materialIds);
 

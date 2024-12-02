@@ -50,13 +50,16 @@ public class MaterialPanelController(
 
     [HttpGet]
     public async Task<IActionResult> ViewAll(
-    int pageNumber = 1,
+        string? searchTerm = null,
+        int pageNumber = 1,
         int pageSize = 9)
     {
         try
         {
             PagedResult<MaterialViewModel> model = await materialService
-                .GetPagedMaterialsAsync(pageNumber, pageSize);
+                .GetPagedMaterialsAsync(searchTerm, pageNumber, pageSize);
+
+            ViewData["SearchTerm"] = searchTerm;
 
             return View(model);
         }

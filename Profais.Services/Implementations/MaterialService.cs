@@ -32,7 +32,7 @@ public class MaterialService(
         int id)
     {
         Material material = await materialRepository
-            .GetByIdAsync(id) 
+            .GetByIdAsync(id)
             ?? throw new ItemNotFoundException($"Material with id `{id}` not found");
 
         await materialRepository
@@ -83,11 +83,17 @@ public class MaterialService(
     }
 
     public async Task<PagedResult<MaterialViewModel>> GetPagedMaterialsAsync(
+        string? searchTerm,
         int pageNumber,
         int pageSize)
     {
         IQueryable<Material> query = materialRepository
             .GetAllAttached();
+
+        if (!string.IsNullOrEmpty(searchTerm))
+        {
+            query = query.Where(m => m.Name.Contains(searchTerm));
+        }
 
         int totalCount = await query.CountAsync();
 
@@ -98,7 +104,7 @@ public class MaterialService(
             .Select(x => new MaterialViewModel
             {
                 Id = x.Id,
-                Name= x.Name,
+                Name = x.Name,
                 UsedFor = x.UsedForId,
             })
             .ToListAsync();
