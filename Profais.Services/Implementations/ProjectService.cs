@@ -8,10 +8,12 @@ using Profais.Services.ViewModels.Task;
 using Profais.Services.ViewModels.Material;
 using Profais.Services.ViewModels.Worker;
 using Profais.Common.Exceptions;
+using Microsoft.AspNetCore.Identity;
 
 namespace Profais.Services.Implementations;
 
 public class ProjectService(
+    UserManager<ProfUser> userManager,
     IRepository<ProfProject, int> projectRepository,
     IRepository<UserProject, object> userProjectRepository)
     : IProjectService
@@ -94,6 +96,8 @@ public class ProjectService(
                 Id = x.ContributerId,
                 UserFirstName = x.Contributer.FirstName,
                 UserLastName = x.Contributer.LastName,
+                Role = userManager.GetRolesAsync(x.Contributer).Result
+                    .FirstOrDefault()!
             }),
         };
 

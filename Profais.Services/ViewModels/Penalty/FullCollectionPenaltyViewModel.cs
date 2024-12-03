@@ -9,4 +9,6 @@ public class FullCollectionPenaltyViewModel
 	public required string UserName { get; set; }
 
 	public required string UserId { get; set; }
+
+	public required string Role { get; set; }
 }

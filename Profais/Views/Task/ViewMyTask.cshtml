@@ -70,7 +70,7 @@
                 @foreach (MaterialViewModel material in Model.Materials)
                 {
                     <li class="list-group-item">
-                        @material.Name (Used for: @material.UsedFor)
+                        @($"{material.Name} (Used for: {material.UsedFor})")
                     </li>
                 }
             </ul>
@@ -80,7 +80,7 @@
                 @foreach (UserViewModel user in Model.Users)
                 {
                     <li class="list-group-item">
-                        @user.UserFirstName @user.UserLastName
+                        @($"{user.UserFirstName} {user.UserLastName} - {user.Role}")
                     </li>
                 }
             </ul>

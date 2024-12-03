@@ -7,4 +7,6 @@ public class UserViewModel
     public required string UserFirstName { get; set; }
 
     public required string UserLastName { get; set; }
+
+    public required string Role { get; set; }
 }

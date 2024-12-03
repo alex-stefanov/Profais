@@ -8,10 +8,12 @@ using Profais.Services.ViewModels.Material;
 using Profais.Services.ViewModels.Worker;
 using Profais.Services.ViewModels.Shared;
 using Profais.Common.Exceptions;
+using Microsoft.AspNetCore.Identity;
 
 namespace Profais.Services.Implementations;
 
 public class TaskService(
+    UserManager<ProfUser> userManager,
     IRepository<ProfTask, int> taskRepository,
     IRepository<ProfUserTask, object> userTasksRepository,
     IRepository<TaskMaterial, object> taskMaterialRepository,
@@ -77,6 +79,8 @@ public class TaskService(
                 Id = x.WorkerId,
                 UserFirstName = x.Worker.FirstName,
                 UserLastName = x.Worker.LastName,
+                Role = userManager.GetRolesAsync(x.Worker).Result
+                    .FirstOrDefault()!
             }),
         };
 
@@ -138,6 +142,8 @@ public class TaskService(
                     Id = u.WorkerId,
                     UserFirstName = u.Worker.FirstName,
                     UserLastName = u.Worker.LastName,
+                    Role = userManager.GetRolesAsync(u.Worker).Result
+                        .FirstOrDefault()!
                 })
                 .ToArray(),
             })
@@ -388,6 +394,8 @@ public class TaskService(
                 Id = x.WorkerId,
                 UserFirstName = x.Worker.FirstName,
                 UserLastName = x.Worker.LastName,
+                Role = userManager.GetRolesAsync(x.Worker).Result
+                    .FirstOrDefault()!
             }),
         };
 

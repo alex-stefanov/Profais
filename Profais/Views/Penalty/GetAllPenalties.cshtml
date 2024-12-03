@@ -21,7 +21,7 @@
                             @penalty.Title
                         </h5>
                         <p>
-                            @penalty.UserName
+                            @($"{penalty.UserName} - {penalty.Role}")
                         </p>
                         <form asp-action="RemoveUserPenalty" method="post">
                             <input type="hidden" name="penaltyId" value="@penalty.Id" />

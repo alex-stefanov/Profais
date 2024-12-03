@@ -14,18 +14,22 @@
     <input type="hidden" id="selectedUserIds" name="selectedWorkerIds" value="" />
 
     <div class="row">
-        @foreach (var user in Model.Users)
+        @foreach (UserViewModel user in Model.Users)
         {
             <div class="col-md-4">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">@user.UserFirstName @user.UserLastName</h5>
+                        <h5 class="card-title">
+                            @($"{user.UserFirstName} {user.UserLastName} - {user.Role}")
+                        </h5>
                         <div class="form-check">
                             <input class="form-check-input"
                                    type="checkbox"
                                    value="@user.Id"
                                    id="worker-@user.Id" />
-                            <label class="form-check-label" for="worker-@user.Id">Select</label>
+                            <label class="form-check-label" for="worker-@user.Id">
+                                Select
+                            </label>
                         </div>
                     </div>
                 </div>
@@ -38,19 +42,25 @@
             @if (Model.HasPreviousPage)
             {
                 <li class="page-item">
-                    <a class="page-link" asp-action="RemoveWorkers" asp-controller="Worker" asp-route-taskId="@Model.TaskId" asp-route-pageNumber="@(Model.CurrentPage - 1)" asp-route-pageSize="12">Previous</a>
+                    <a class="page-link" asp-action="RemoveWorkers" asp-controller="Worker" asp-route-taskId="@Model.TaskId" asp-route-pageNumber="@(Model.CurrentPage - 1)" asp-route-pageSize="12">
+                        Previous
+                    </a>
                 </li>
             }
             @for (int i = 1; i <= Model.TotalPages; i++)
             {
                 <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
-                    <a class="page-link" asp-action="RemoveWorkers" asp-controller="Worker" asp-route-taskId="@Model.TaskId" asp-route-pageNumber="@i" asp-route-pageSize="12">@i</a>
+                    <a class="page-link" asp-action="RemoveWorkers" asp-controller="Worker" asp-route-taskId="@Model.TaskId" asp-route-pageNumber="@i" asp-route-pageSize="12">
+                        @i
+                    </a>
                 </li>
             }
             @if (Model.HasNextPage)
             {
                 <li class="page-item">
-                    <a class="page-link" asp-action="RemoveWorkers" asp-controller="Worker" asp-route-taskId="@Model.TaskId" asp-route-pageNumber="@(Model.CurrentPage + 1)" asp-route-pageSize="12">Next</a>
+                    <a class="page-link" asp-action="RemoveWorkers" asp-controller="Worker" asp-route-taskId="@Model.TaskId" asp-route-pageNumber="@(Model.CurrentPage + 1)" asp-route-pageSize="12">
+                        Next
+                    </a>
                 </li>
             }
         </ul>

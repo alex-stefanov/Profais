@@ -16,7 +16,7 @@
             <option value="">--Select User--</option>
             @foreach (UserForPenaltyViewModel user in Model.Users)
             {
-                <option value="@user.Id">@user.UserName</option>
+                <option value="@user.Id">@($"{user.UserName} - {user.Role}")</option>
             }
         </select>
     </div>

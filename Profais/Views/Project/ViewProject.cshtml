@@ -87,7 +87,7 @@
                         @foreach (UserViewModel contributor in Model.Contributers)
                         {
                             <p>
-                                @($"{contributor.UserFirstName} {contributor.UserLastName} - {contributor.Id}")
+                                @($"{contributor.UserFirstName} {contributor.UserLastName} - {contributor.Id} - {contributor.Role}")
                             </p>
                         }
                     </div>

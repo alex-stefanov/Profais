@@ -57,6 +57,8 @@ public class WorkerService(
                 Id = u.Id,
                 UserFirstName = u.FirstName,
                 UserLastName = u.LastName,
+                Role = userManager.GetRolesAsync(u).Result
+                    .FirstOrDefault()!
             })
             .ToListAsync();
 
@@ -93,6 +95,8 @@ public class WorkerService(
                 Id = u.Id,
                 UserFirstName = u.FirstName,
                 UserLastName = u.LastName,
+                Role = userManager.GetRolesAsync(u).Result
+                    .FirstOrDefault()!
             })
             .ToListAsync();
 

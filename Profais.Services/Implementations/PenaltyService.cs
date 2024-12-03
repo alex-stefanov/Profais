@@ -81,6 +81,8 @@ public class PenaltyService(
                 Title = x.Penalty.Title,
                 UserId = x.UserId,
                 UserName = $"{x.User.FirstName} {x.User.LastName}",
+                Role = userManager.GetRolesAsync(x.User).Result
+                    .FirstOrDefault()!
             })
             .ToListAsync();
 
@@ -115,7 +117,7 @@ public class PenaltyService(
         idsNotToSelect
             .AddRange(managerUsers
                 .Select(x => x.Id));
-        
+
         var model = new UserPenaltyViewModel
         {
             Penalties = await penaltyQuery
@@ -133,6 +135,8 @@ public class PenaltyService(
             {
                 Id = x.Id,
                 UserName = $"{x.FirstName} {x.LastName}",
+                Role = userManager.GetRolesAsync(x).Result
+                    .FirstOrDefault()!
             })
             .ToListAsync(),
         };
