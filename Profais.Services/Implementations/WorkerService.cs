@@ -1,13 +1,16 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Profais.Common.Exceptions;
 using Profais.Data.Models;
 using Profais.Data.Repositories;
 using Profais.Services.Interfaces;
 using Profais.Services.ViewModels.Worker;
+using static Profais.Common.Constants.UserConstants;
 
 namespace Profais.Services.Implementations;
 
 public class WorkerService(
+    UserManager<ProfUser> userManager,
     IRepository<ProfUser, string> userRepository,
     IRepository<ProfTask, int> taskRepository,
     IRepository<ProfUserTask, object> userTaskRepository)
@@ -18,12 +21,29 @@ public class WorkerService(
         int pageSize,
         int taskId)
     {
+        IEnumerable<ProfUser> adminUsers = await userManager
+            .GetUsersInRoleAsync(AdminRoleName);
+
+        IEnumerable<ProfUser> managerUsers = await userManager
+            .GetUsersInRoleAsync(ManagerRoleName);
+
+        List<string> idsNotToSelect = [];
+
+        idsNotToSelect
+            .AddRange(adminUsers
+                .Select(x => x.Id));
+
+        idsNotToSelect
+            .AddRange(managerUsers
+                .Select(x => x.Id));
+
         IQueryable<ProfUser> query = userRepository
             .GetAllAttached()
             .Include(u => u.UserTasks)
                 .ThenInclude(ut => ut.Task)
             .Where(u => !u.UserTasks
-                .Any(ut => !ut.Task.IsCompleted));
+                .Any(ut => !ut.Task.IsCompleted)
+                && !idsNotToSelect.Contains(u.Id));
 
         int totalCount = await query
             .CountAsync();

@@ -24,7 +24,7 @@ public class WorkerController(
         try
         {
             IEnumerable<string> selectedIds = string.IsNullOrEmpty(selectedWorkerIds)
-                ? Array.Empty<string>()
+                ? []
                 : selectedWorkerIds.Split(',');
 
             WorkerPagedResult model = await workerService
