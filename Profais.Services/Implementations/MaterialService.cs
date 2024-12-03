@@ -41,49 +41,6 @@ public class MaterialService(
         }
     }
 
-    public async Task<PaginatedMaterialsViewModel> GetMaterialsWithPaginationAsync(
-        int taskId,
-        int page,
-        int pageSize,
-        IEnumerable<UsedFor> usedForFilter)
-    {
-        IQueryable<Material> query = materialRepository
-            .GetAllAttached();
-
-        if (usedForFilter.Any())
-        {
-            query = query.Where(m => usedForFilter.Contains(m.UsedForId));
-        }
-
-        int totalMaterials = await query
-            .CountAsync();
-
-        int totalPages = (int)Math.Ceiling(totalMaterials / (double)pageSize);
-
-        List<Material> materials = await query
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .ToListAsync();
-
-        var model = new PaginatedMaterialsViewModel
-        {
-            Materials = materials
-            .Select(x => new MaterialViewModel
-            {
-                Id = x.Id,
-                Name = x.Name,
-                UsedFor = x.UsedForId,
-            })
-            .ToList(),
-            TotalPages = totalPages,
-            CurrentPage = page,
-            UsedForEnumValues = Enum.GetValues(typeof(UsedFor)).Cast<UsedFor>().ToList(),
-            TaskId = taskId,
-        };
-
-        return model;
-    }
-
     public async Task<PagedResult<MaterialViewModel>> GetPagedMaterialsAsync(
         string? searchTerm,
         int pageNumber,
@@ -121,39 +78,5 @@ public class MaterialService(
                 PageSize = pageSize,
             },
         };
-    }
-
-    public async Task AddMaterialsToTaskAsync(
-        int taskId,
-        IEnumerable<int> materialIds)
-    {
-        ProfTask task = await taskRepository
-            .GetByIdAsync(taskId)
-            ?? throw new ItemNotFoundException($"Task with id `{taskId}` not found");
-
-        List<int> existingMaterials = await taskMaterialRepository
-            .GetAllAttached()
-            .Where(tm => tm.TaskId == taskId)
-            .Select(tm => tm.MaterialId)
-            .ToListAsync();
-
-        List<int> newMaterialIds = materialIds
-            .Where(materialId => !existingMaterials
-                .Contains(materialId))
-            .ToList();
-
-        if (newMaterialIds.Any())
-        {
-            TaskMaterial[] newTaskMaterials = newMaterialIds
-            .Select(materialId => new TaskMaterial
-            {
-                TaskId = taskId,
-                MaterialId = materialId
-            })
-            .ToArray();
-
-            await taskMaterialRepository
-                .AddRangeAsync(newTaskMaterials);
-        }
     }
 }
