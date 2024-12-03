@@ -6,12 +6,6 @@ public class PagedResult<T>
         = new HashSet<T>();
 
     public int? AdditionalProperty { get; set; }
-
-    public required int CurrentPage { get; set; }
-
-    public required int TotalPages { get; set; }
-
-    public bool HasPreviousPage => CurrentPage > 1;
-
-    public bool HasNextPage => CurrentPage < TotalPages;
+    
+    public required PaginationViewModel PaginationViewModel { get; set; }
 }

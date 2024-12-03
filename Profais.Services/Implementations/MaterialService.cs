@@ -114,8 +114,12 @@ public class MaterialService(
         return new PagedResult<MaterialViewModel>
         {
             Items = items,
-            CurrentPage = pageNumber,
-            TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
+            PaginationViewModel = new PaginationViewModel
+            {
+                CurrentPage = pageNumber,
+                TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize),
+                PageSize = pageSize,
+            },
         };
     }
 

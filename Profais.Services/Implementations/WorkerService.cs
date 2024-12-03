@@ -67,8 +67,12 @@ public class WorkerService(
         {
             Items = items,
             AdditionalProperty = taskId,
-            CurrentPage = pageNumber,
-            TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
+            PaginationViewModel = new PaginationViewModel
+            {
+                CurrentPage = pageNumber,
+                TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize),
+                PageSize = pageSize,
+            },
         };
     }
 
@@ -105,8 +109,12 @@ public class WorkerService(
         {
             Items = items,
             AdditionalProperty = taskId,
-            CurrentPage = pageNumber,
-            TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
+            PaginationViewModel = new PaginationViewModel
+            {
+                CurrentPage = pageNumber,
+                TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize),
+                PageSize = pageSize,
+            },
         };
     }
 

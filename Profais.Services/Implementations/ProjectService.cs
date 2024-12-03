@@ -202,8 +202,12 @@ public class ProjectService(
         return new PagedResult<RecoverProjectViewModel>
         {
             Items = tasks,
-            CurrentPage = pageNumber,
-            TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize),
+            PaginationViewModel = new PaginationViewModel
+            {
+                CurrentPage = pageNumber,
+                TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize),
+                PageSize = pageSize,
+            },
         };
     }
 
@@ -271,8 +275,12 @@ public class ProjectService(
         return new PagedResult<ProjectViewModel>
         {
             Items = items,
-            CurrentPage = pageNumber,
-            TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
+            PaginationViewModel = new PaginationViewModel
+            {
+                CurrentPage = pageNumber,
+                TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize),
+                PageSize = pageSize,
+            },
         };
     }
 }

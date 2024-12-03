@@ -89,8 +89,12 @@ public class PenaltyService(
         return new PagedResult<FullCollectionPenaltyViewModel>
         {
             Items = items,
-            CurrentPage = pageNumber,
-            TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
+            PaginationViewModel = new PaginationViewModel
+            {
+                CurrentPage = pageNumber,
+                TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize),
+                PageSize = pageSize,
+            },
         };
     }
 
@@ -172,8 +176,12 @@ public class PenaltyService(
         return new PagedResult<CollectionPenaltyViewModel>
         {
             Items = items,
-            CurrentPage = pageNumber,
-            TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
+            PaginationViewModel = new PaginationViewModel
+            {
+                CurrentPage = pageNumber,
+                TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize),
+                PageSize = pageSize,
+            },
         };
     }
 }

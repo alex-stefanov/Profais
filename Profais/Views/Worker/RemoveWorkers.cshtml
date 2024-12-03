@@ -4,6 +4,11 @@
 
 @{
     ViewData["Title"] = "Worker - Remove Workers";
+
+    Model.PaginationViewModel.Area = "";
+    Model.PaginationViewModel.Controller = "Worker";
+    Model.PaginationViewModel.Action = "RemoveWorkers";
+    Model.PaginationViewModel.RouteParams.Add("taskId", Model.AdditionalProperty!);
 }
 
 <div class="container mt-4">
@@ -41,34 +46,7 @@
             }
         </div>
 
-        <nav>
-            <ul class="pagination justify-content-center">
-                @if (Model.HasPreviousPage)
-                {
-                    <li class="page-item">
-                        <a class="page-link" asp-action="RemoveWorkers" asp-controller="Worker" asp-route-taskId="@Model.AdditionalProperty" asp-route-pageNumber="@(Model.CurrentPage - 1)" asp-route-pageSize="12">
-                            Previous
-                        </a>
-                    </li>
-                }
-                @for (int i = 1; i <= Model.TotalPages; i++)
-                {
-                    <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
-                        <a class="page-link" asp-action="RemoveWorkers" asp-controller="Worker" asp-route-taskId="@Model.AdditionalProperty" asp-route-pageNumber="@i" asp-route-pageSize="12">
-                            @i
-                        </a>
-                    </li>
-                }
-                @if (Model.HasNextPage)
-                {
-                    <li class="page-item">
-                        <a class="page-link" asp-action="RemoveWorkers" asp-controller="Worker" asp-route-taskId="@Model.AdditionalProperty" asp-route-pageNumber="@(Model.CurrentPage + 1)" asp-route-pageSize="12">
-                            Next
-                        </a>
-                    </li>
-                }
-            </ul>
-        </nav>
+        <partial name="_Pagination" model="Model.PaginationViewModel" />
 
         <button type="submit" class="btn btn-primary mt-3">
             Remove Selected Workers

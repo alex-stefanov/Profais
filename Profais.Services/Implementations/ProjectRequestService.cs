@@ -95,8 +95,12 @@ public class ProjectRequestService(
         return new PagedResult<CollectionProjectRequestViewModel>
         {
             Items = items,
-            CurrentPage = page,
-            TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
+            PaginationViewModel = new PaginationViewModel
+            {
+                CurrentPage = page,
+                TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize),
+                PageSize = pageSize,
+            },
         };
     }
 

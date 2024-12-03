@@ -152,8 +152,12 @@ public class TaskService(
         return new PagedResult<TaskViewModel>
         {
             Items = tasks,
-            CurrentPage = page,
-            TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize),
+            PaginationViewModel = new PaginationViewModel
+            {
+                CurrentPage = page,
+                TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize),
+                PageSize = pageSize,
+            },
         };
     }
 
@@ -332,8 +336,12 @@ public class TaskService(
         return new PagedResult<RecoverTaskViewModel>
         {
             Items = tasks,
-            CurrentPage = pageNumber,
-            TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize),
+            PaginationViewModel = new PaginationViewModel
+            {
+                CurrentPage = pageNumber,
+                TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize),
+                PageSize = pageSize,
+            },
         };
     }
 
@@ -482,8 +490,12 @@ public class TaskService(
         return new PagedResult<DailyTaskViewModel>
         {
             Items = tasks,
-            CurrentPage = pageNumber,
-            TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize),
+            PaginationViewModel = new PaginationViewModel
+            {
+                CurrentPage = pageNumber,
+                TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize),
+                PageSize = pageSize,
+            },
         };
     }
 
