@@ -5,6 +5,7 @@ using Profais.Data.Models;
 using Profais.Data.Repositories;
 using Profais.Services.Interfaces;
 using Profais.Services.ViewModels.Worker;
+using Profais.Services.ViewModels.Shared;
 using static Profais.Common.Constants.UserConstants;
 
 namespace Profais.Services.Implementations;
@@ -16,7 +17,7 @@ public class WorkerService(
     IRepository<ProfUserTask, object> userTaskRepository)
     : IWorkerService
 {
-    public async Task<WorkerPagedResult> GetPagedAvaliableWorkersAsync(
+    public async Task<PagedResult<UserViewModel>> GetPagedAvaliableWorkersAsync(
         int pageNumber,
         int pageSize,
         int taskId)
@@ -62,16 +63,16 @@ public class WorkerService(
             })
             .ToListAsync();
 
-        return new WorkerPagedResult
+        return new PagedResult<UserViewModel>
         {
-            Users = items,
-            TaskId = taskId,
+            Items = items,
+            AdditionalProperty = taskId,
             CurrentPage = pageNumber,
             TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
         };
     }
 
-    public async Task<WorkerPagedResult> GetPagedWorkersFromTaskAsync(
+    public async Task<PagedResult<UserViewModel>> GetPagedWorkersFromTaskAsync(
         int pageNumber,
         int pageSize,
         int taskId)
@@ -100,10 +101,10 @@ public class WorkerService(
             })
             .ToListAsync();
 
-        return new WorkerPagedResult
+        return new PagedResult<UserViewModel>
         {
-            Users = items,
-            TaskId = taskId,
+            Items = items,
+            AdditionalProperty = taskId,
             CurrentPage = pageNumber,
             TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
         };

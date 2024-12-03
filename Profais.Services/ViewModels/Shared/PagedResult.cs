@@ -5,7 +5,9 @@ public class PagedResult<T>
     public IEnumerable<T> Items { get; set; } 
         = new HashSet<T>();
 
-	public required int CurrentPage { get; set; }
+    public int? AdditionalProperty { get; set; }
+
+    public required int CurrentPage { get; set; }
 
     public required int TotalPages { get; set; }
 

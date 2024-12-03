@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Profais.Common.Exceptions;
 using Profais.Services.Interfaces;
 using Profais.Services.ViewModels.Worker;
+using Profais.Services.ViewModels.Shared;
 using static Profais.Common.Constants.UserConstants;
 
 namespace Profais.Controllers;
@@ -18,16 +18,11 @@ public class WorkerController(
     public async Task<IActionResult> AddWorkers(
         int taskId,
         int pageNumber = 1,
-        int pageSize = 12,
-        string? selectedWorkerIds = null)
+        int pageSize = 12)
     {
         try
         {
-            IEnumerable<string> selectedIds = string.IsNullOrEmpty(selectedWorkerIds)
-                ? []
-                : selectedWorkerIds.Split(',');
-
-            WorkerPagedResult model = await workerService
+            PagedResult<UserViewModel> model = await workerService
                 .GetPagedAvaliableWorkersAsync(pageNumber, pageSize, taskId);
 
             return View(model);
@@ -78,16 +73,11 @@ public class WorkerController(
     public async Task<IActionResult> RemoveWorkers(
         int taskId,
         int pageNumber = 1,
-        int pageSize = 12,
-        string? selectedWorkerIds = null)
+        int pageSize = 12)
     {
         try
         {
-            IEnumerable<string> selectedIds = string.IsNullOrEmpty(selectedWorkerIds)
-                ? []
-                : selectedWorkerIds.Split(',');
-
-            WorkerPagedResult model = await workerService
+            PagedResult<UserViewModel> model = await workerService
                 .GetPagedWorkersFromTaskAsync(pageNumber, pageSize, taskId);
 
             return View(model);
