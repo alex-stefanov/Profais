@@ -5,33 +5,34 @@
     ViewData["Title"] = "Project Request - Create";
 }
 
-<h2>
-    @ViewData["Title"]
-</h2>
+<div class="container mt-4">
+    <h2>
+        @ViewData["Title"]
+    </h2>
 
-<form asp-action="CreateProjectRequest" method="post">
-    <div>
-        <input class="form-control" hidden readonly asp-for="ClientId" value="@Model.ClientId"/>
-    </div>
-    <div class="form-group">
-        <label asp-for="Title" class="form-label"></label>
-        <input class="form-control" asp-for="Title" />
-        <span asp-validation-for="Title" class="text-danger"></span>
-    </div>
+    <form asp-action="CreateProjectRequest" asp-controller="ProjectRequest" method="post">
+        <input asp-for="ClientId" value="@Model.ClientId" hidden readonly class="form-control" />
 
-    <div class="form-group">
-        <label asp-for="Description" class="form-label"></label>
-        <textarea class="form-control" asp-for="Description"></textarea>
-        <span asp-validation-for="Description" class="text-danger"></span>
-    </div>
+        <div class="form-group">
+            <label asp-for="Title" class="form-label" />
+            <input asp-for="Title" class="form-control" />
+            <span asp-validation-for="Title" class="text-danger" />
+        </div>
 
-    <div class="form-group">
-        <label asp-for="ClientNumber" class="form-label"></label>
-        <input class="form-control" asp-for="ClientNumber" />
-        <span asp-validation-for="ClientNumber" class="text-danger"></span>
-    </div>
+        <div class="form-group">
+            <label asp-for="Description" class="form-label" />
+            <textarea asp-for="Description" class="form-control" />
+            <span asp-validation-for="Description" class="text-danger" />
+        </div>
 
-    <button type="submit" class="btn btn-primary mt-3">
-        Submit Project Request
-    </button>
-</form>
+        <div class="form-group">
+            <label asp-for="ClientNumber" class="form-label" />
+            <input asp-for="ClientNumber" class="form-control" />
+            <span asp-validation-for="ClientNumber" class="text-danger" />
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-3">
+            Submit Project Request
+        </button>
+    </form>
+</div>

@@ -5,36 +5,50 @@
     ViewData["Title"] = "Penalty - Add To User";
 }
 
-<h2>
-    @ViewData["Title"]
-</h2>
+<div class="container mt-4">
+    <h2>
+        @ViewData["Title"]
+    </h2>
 
-<form asp-action="AddPenaltyToUser" method="post">
-    <div>
-        <label asp-for="SelectedUserId" class="form-label"></label>
-        <select asp-for="SelectedUserId" class="form-control">
-            <option value="">--Select User--</option>
-            @foreach (UserForPenaltyViewModel user in Model.Users)
-            {
-                <option value="@user.Id">@($"{user.UserName} - {user.Role}")</option>
-            }
-        </select>
-    </div>
+    <form asp-action="AddPenaltyToUser" asp-controller="Penalty" method="post">
+        <div>
+            <label asp-for="SelectedUserId" class="form-label" />
+            <select asp-for="SelectedUserId" class="form-control">
+                <option value="">
+                    --Select User--
+                </option>
 
-    <div>
-        <label asp-for="SelectedPenaltyId" class="form-label"></label>
-        <select asp-for="SelectedPenaltyId" class="form-control">
-            <option value="">--Select Penalty--</option>
-            @foreach (PenaltyViewModel penalty in Model.Penalties)
-            {
-                <option value="@penalty.Id">@penalty.Title</option>
-            }
-        </select>
-    </div>
+                @foreach (UserForPenaltyViewModel user in Model.Users)
+                {
+                    <option value="@user.Id">
+                        @($"{user.UserName} - {user.Role}")
+                    </option>
+                }
+            </select>
+        </div>
 
-    <div>
-        <button type="submit" class="btn btn-primary mt-3">
-            Add Penalty to User
-        </button>
-    </div>
-</form>
+        <div>
+            <label asp-for="SelectedPenaltyId" class="form-label" />
+            <select asp-for="SelectedPenaltyId" class="form-control">
+                <option value="">
+                    --Select Penalty--
+                </option>
+
+                @foreach (PenaltyViewModel penalty in Model.Penalties)
+                {
+                    <option value="@penalty.Id">
+                        @penalty.Title
+                    </option>
+                }
+            </select>
+        </div>
+
+        <hr />
+
+        <div>
+            <button type="submit" class="btn btn-primary mt-3">
+                Add Penalty to User
+            </button>
+        </div>
+    </form>
+</div>

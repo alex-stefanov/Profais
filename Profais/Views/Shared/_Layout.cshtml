@@ -1,88 +1,104 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Profais</title>
+    <title>
+        @ViewData["Title"] - Profais Admin
+    </title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Profais.styles.css" asp-append-version="true" />
 </head>
-<body>
+
+<body class="bg-dark text-white">
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-dark bg-dark border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Profais</a>
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                    Profais
+                </a>
+
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
+
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">
+                            <a class="nav-link text-white" asp-area="" asp-action="Index" asp-controller="Home">
                                 Home
                             </a>
                         </li>
+
                         @if (User.Identity is not null
-                            && User.Identity.IsAuthenticated)
+                        && User.Identity.IsAuthenticated)
                         {
                             @if (User.IsInRole(WorkerRoleName)
-                                || User.IsInRole(ClientRoleName))
+                           || User.IsInRole(ClientRoleName))
                             {
                                 <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle text-dark" id="makeRoleRequestDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <a id="makeRoleRequestDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" class="nav-link dropdown-toggle text-white">
                                         Make Role Request
                                     </a>
-                                    <ul class="dropdown-menu" aria-labelledby="makeRoleRequestDropdown">
+
+                                    <ul aria-labelledby="makeRoleRequestDropdown" class="dropdown-menu">
                                         @if (User.IsInRole(ClientRoleName))
                                         {
                                             <li>
-                                                <a class="dropdown-item" asp-area="" asp-controller="WorkerRequest" asp-action="MakeWorkerRequest">
+                                                <a asp-area="" asp-action="MakeWorkerRequest" asp-controller="WorkerRequest" class="dropdown-item text-dark">
                                                     Worker
                                                 </a>
                                             </li>
                                         }
+
                                         <li>
-                                            <a class="dropdown-item" asp-area="" asp-controller="SpecialistRequest" asp-action="MakeSpecialistRequest">
+                                            <a asp-area="" asp-action="MakeSpecialistRequest" asp-controller="SpecialistRequest" class="dropdown-item text-dark">
                                                 Specialist
                                             </a>
                                         </li>
                                     </ul>
                                 </li>
                             }
+
                             @if (User.IsInRole(ManagerRoleName)
-                                || User.IsInRole(AdminRoleName)
-                                || User.IsInRole(ClientRoleName))
+                           || User.IsInRole(AdminRoleName)
+                           || User.IsInRole(ClientRoleName))
                             {
                                 <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle text-dark" id="makeProjectRequestDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <a id="makeProjectRequestDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" class="nav-link dropdown-toggle text-white">
                                         Project Requests
                                     </a>
-                                    <ul class="dropdown-menu" aria-labelledby="makeProjectRequestDropdown">
+
+                                    <ul aria-labelledby="makeProjectRequestDropdown" class="dropdown-menu">
                                         @if (User.IsInRole(ClientRoleName))
                                         {
                                             <li>
-                                                <a class="dropdown-item" asp-area="" asp-controller="ProjectRequest" asp-action="CreateProjectRequest">
+                                                <a asp-area="" asp-action="CreateProjectRequest" asp-controller="ProjectRequest" class="dropdown-item text-dark">
                                                     Create
                                                 </a>
                                             </li>
                                         }
+
                                         @if (User.IsInRole(ManagerRoleName)
-                                            || User.IsInRole(AdminRoleName))
+                                       || User.IsInRole(AdminRoleName))
                                         {
                                             <li>
-                                                <a class="dropdown-item" asp-area="" asp-controller="ProjectRequest" asp-action="ViewOnGoingProjectRequests">
+                                                <a asp-area="" asp-action="ViewOnGoingProjectRequests" asp-controller="ProjectRequest" class="dropdown-item text-dark">
                                                     On Going
                                                 </a>
                                             </li>
+
                                             <li>
-                                                <a class="dropdown-item" asp-area="" asp-controller="ProjectRequest" asp-action="ViewApprovedProjectRequests">
+                                                <a asp-area="" asp-action="ViewApprovedProjectRequests" asp-controller="ProjectRequest" class="dropdown-item text-dark">
                                                     Approved
                                                 </a>
                                             </li>
+
                                             <li>
-                                                <a class="dropdown-item" asp-area="" asp-controller="ProjectRequest" asp-action="ViewDeclinedProjectRequests">
+                                                <a asp-area="" asp-action="ViewDeclinedProjectRequests" asp-controller="ProjectRequest" class="dropdown-item text-dark">
                                                     Declined
                                                 </a>
                                             </li>
@@ -90,79 +106,89 @@
                                     </ul>
                                 </li>
                             }
+
                             @if (User.IsInRole(ManagerRoleName)
-                                || User.IsInRole(AdminRoleName))
+                           || User.IsInRole(AdminRoleName))
                             {
                                 <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle text-dark" id="acceptRequestDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <a id="acceptRequestDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" class="nav-link dropdown-toggle text-white">
                                         Preview Role Requests
                                     </a>
-                                    <ul class="dropdown-menu" aria-labelledby="acceptRequestDropdown">
+
+                                    <ul aria-labelledby="acceptRequestDropdown" class="dropdown-menu">
                                         <li>
-                                            <a class="dropdown-item" asp-area="" asp-controller="WorkerRequest" asp-action="PreviewWorkerRequests">
+                                            <a asp-area="" asp-action="PreviewWorkerRequests" asp-controller="WorkerRequest" class="dropdown-item text-dark">
                                                 Workers
                                             </a>
                                         </li>
+
                                         <li>
-                                            <a class="dropdown-item" asp-area="" asp-controller="SpecialistRequest" asp-action="PreviewSpecialistRequests">
+                                            <a asp-area="" asp-action="PreviewSpecialistRequests" asp-controller="SpecialistRequest" class="dropdown-item text-dark">
                                                 Specialists
                                             </a>
                                         </li>
                                     </ul>
                                 </li>
                             }
+
                             @if (!User.IsInRole(ClientRoleName))
                             {
                                 <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle text-dark" id="penaltyDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <a id="penaltyDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" class="nav-link dropdown-toggle text-white">
                                         Penalties
                                     </a>
-                                    <ul class="dropdown-menu" aria-labelledby="penaltyDropdown">
-                                        @if(User.IsInRole(WorkerRoleName)
-                                           || User.IsInRole(SpecialistRoleName))
+
+                                    <ul aria-labelledby="penaltyDropdown" class="dropdown-menu">
+                                        @if (User.IsInRole(WorkerRoleName)
+                                       || User.IsInRole(SpecialistRoleName))
                                         {
                                             <li>
-                                                <a class="dropdown-item" asp-area="" asp-controller="Penalty" asp-action="GetMyPenalties">
+                                                <a asp-area="" asp-action="GetMyPenalties" asp-controller="Penalty" class="dropdown-item text-dark">
                                                     My Penalties
                                                 </a>
                                             </li>
                                         }
+
                                         @if (User.IsInRole(ManagerRoleName)
-                                            || User.IsInRole(AdminRoleName))
+                                       || User.IsInRole(AdminRoleName))
                                         {
                                             <li>
-                                                <a class="dropdown-item" asp-area="" asp-controller="Penalty" asp-action="GetAllPenalties">
+                                                <a asp-area="" asp-action="GetAllPenalties" asp-controller="Penalty" class="dropdown-item text-dark">
                                                     All Penalties
                                                 </a>
                                             </li>
                                             <li>
-                                                <a class="dropdown-item" asp-area="" asp-controller="Penalty" asp-action="AddPenaltyToUser">
+                                                <a asp-area="" asp-action="AddPenaltyToUser" asp-controller="Penalty" class="dropdown-item text-dark">
                                                     Punish
                                                 </a>
                                             </li>
                                         }
                                     </ul>
                                 </li>
-                                @if(User.IsInRole(ManagerRoleName)
-                                   || User.IsInRole(AdminRoleName))
+
+                                @if (User.IsInRole(ManagerRoleName)
+                               || User.IsInRole(AdminRoleName))
                                 {
                                     <li class="nav-item dropdown">
-                                        <a class="nav-link dropdown-toggle text-dark" id="projectsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <a id="projectsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" class="nav-link dropdown-toggle text-white">
                                             Projects
                                         </a>
-                                        <ul class="dropdown-menu" aria-labelledby="projectsDropdown">
+
+                                        <ul aria-labelledby="projectsDropdown" class="dropdown-menu">
                                             <li>
-                                                <a class="dropdown-item" asp-area="" asp-controller="Project" asp-action="IncompletedProjects">
+                                                <a asp-area="" asp-action="IncompletedProjects" asp-controller="Project" class="dropdown-item text-dark">
                                                     On Going
                                                 </a>
                                             </li>
+
                                             <li>
-                                                <a class="dropdown-item" asp-area="" asp-controller="Project" asp-action="CompletedProjects">
+                                                <a asp-area="" asp-action="CompletedProjects" asp-controller="Project" class="dropdown-item text-dark">
                                                     Completed
                                                 </a>
                                             </li>
+
                                             <li>
-                                                <a class="dropdown-item" asp-area="" asp-controller="Project" asp-action="AddProject">
+                                                <a asp-area="" asp-action="AddProject" asp-controller="Project" class="dropdown-item text-dark">
                                                     Add Project
                                                 </a>
                                             </li>
@@ -170,66 +196,75 @@
                                     </li>
                                 }
                             }
+
                             @if (User.IsInRole(ManagerRoleName))
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="Task" asp-action="DailyTasks">
+                                    <a asp-area="" asp-action="DailyTasks" asp-controller="Task" class="nav-link text-white">
                                         Daily Tasks
                                     </a>
                                 </li>
                             }
+
                             @if (User.IsInRole(AdminRoleName))
                             {
                                 <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle text-dark" id="projectsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <a id="projectsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" class="nav-link dropdown-toggle text-white">
                                         Admin Panel
                                     </a>
-                                    <ul class="dropdown-menu" aria-labelledby="projectsDropdown">
+
+                                    <ul aria-labelledby="projectsDropdown" class="dropdown-menu">
                                         <li>
-                                            <a class="dropdown-item" asp-area="Admin" asp-controller="UserPanel" asp-action="Index">
+                                            <a asp-area="Admin" asp-action="Index" asp-controller="UserPanel" class="dropdown-item text-dark">
                                                 User Panel
                                             </a>
                                         </li>
+
                                         <li>
-                                            <a class="dropdown-item" asp-area="Admin" asp-controller="MaterialPanel" asp-action="Index">
+                                            <a asp-area="Admin" asp-action="Index" asp-controller="MaterialPanel" class="dropdown-item text-dark">
                                                 Material Panel
                                             </a>
                                         </li>
+
                                         <li>
-                                            <a class="dropdown-item" asp-area="Admin" asp-controller="RecoveryPanel" asp-action="Index">
+                                            <a asp-area="Admin" asp-action="Index" asp-controller="RecoveryPanel" class="dropdown-item text-dark">
                                                 Recovery Panel
                                             </a>
                                         </li>
                                     </ul>
                                 </li>
                             }
+
                             @if (User.IsInRole(WorkerRoleName)
-                                || User.IsInRole(SpecialistRoleName))
+                           || User.IsInRole(SpecialistRoleName))
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="Task" asp-action="ViewMytask">
+                                    <a asp-area="" asp-action="ViewMytask" asp-controller="Task" class="nav-link text-white">
                                         My Task
                                     </a>
                                 </li>
                             }
                         }
                     </ul>
+
                     <partial name="_LoginPartial" />
                 </div>
             </div>
         </nav>
     </header>
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    <footer class="border-top footer text-muted bg-dark">
         <div class="container">
-            &copy; 2024 - Profais - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2024 - Profais
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

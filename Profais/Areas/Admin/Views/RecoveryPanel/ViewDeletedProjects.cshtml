@@ -6,11 +6,11 @@
     ViewData["Title"] = "Recovery Panel - View deleted projects";
 }
 
-<h2>
-    @ViewData["Title"]
-</h2>
-
 <div class="container mt-4">
+    <h2>
+        @ViewData["Title"]
+    </h2>
+
     <div class="row">
         @foreach (RecoverProjectViewModel project in Model.Items)
         {
@@ -20,14 +20,18 @@
                         <h5 class="card-title" style="color:black">
                             @project.Title
                         </h5>
+
                         <p class="card-text" style="color:black">
                             @project.Id
                         </p>
+
                         <p class="card-text" style="color:black">
                             @project.AbsoluteAddress
                         </p>
-                        <form method="post" asp-area="Admin" asp-controller="RecoveryPanel" asp-action="RecoverProject">
-                            <input type="hidden" name="id" value="@project.Id"/>
+
+                        <form asp-area="Admin" asp-action="RecoverProject" asp-controller="RecoveryPanel" method="post">
+                            <input value="@project.Id" hidden name="id" />
+
                             <button type="submit" class="btn btn-warning" style="color:black">
                                 Recover Project
                             </button>
@@ -43,19 +47,25 @@
             @if (Model.HasPreviousPage)
             {
                 <li class="page-item">
-                    <a class="page-link" asp-area="Admin" asp-controller="RecoveryPanel" asp-action="ViewDeletedProjects" asp-route-pageNumber="@(Model.CurrentPage - 1)" asp-route-pageSize="9">Previous</a>
+                    <a class="page-link" asp-area="Admin" asp-controller="RecoveryPanel" asp-action="ViewDeletedProjects" asp-route-pageNumber="@(Model.CurrentPage - 1)" asp-route-pageSize="9">
+                        Previous
+                    </a>
                 </li>
             }
             @for (int i = 1; i <= Model.TotalPages; i++)
             {
                 <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
-                    <a class="page-link" asp-area="Admin" asp-controller="RecoveryPanel" asp-action="ViewDeletedProjects" asp-route-pageNumber="@i" asp-route-pageSize="9">@i</a>
+                    <a class="page-link" asp-area="Admin" asp-controller="RecoveryPanel" asp-action="ViewDeletedProjects" asp-route-pageNumber="@i" asp-route-pageSize="9">
+                        @i
+                    </a>
                 </li>
             }
             @if (Model.HasNextPage)
             {
                 <li class="page-item">
-                    <a class="page-link" asp-area="Admin" asp-controller="RecoveryPanel" asp-action="ViewDeletedProjects" asp-route-pageNumber="@(Model.CurrentPage + 1)" asp-route-pageSize="9">Next</a>
+                    <a class="page-link" asp-area="Admin" asp-controller="RecoveryPanel" asp-action="ViewDeletedProjects" asp-route-pageNumber="@(Model.CurrentPage + 1)" asp-route-pageSize="9">
+                        Next
+                    </a>
                 </li>
             }
         </ul>

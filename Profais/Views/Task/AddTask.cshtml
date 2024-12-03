@@ -5,28 +5,28 @@
     ViewData["Title"] = "Task - Add";
 }
 
-<h2>
-    @ViewData["Title"]
-</h2>
-
 <div class="container mt-4">
-    <form asp-action="AddTask" method="post">
+    <h2>
+        @ViewData["Title"]
+    </h2>
+
+    <form asp-action="AddTask" asp-controller="Task" method="post">
         <div class="form-group">
-            <label asp-for="Title" class="form-label"></label>
+            <label asp-for="Title" class="form-label" />
             <input asp-for="Title" class="form-control" />
-            <span asp-validation-for="Title" class="text-danger"></span>
+            <span asp-validation-for="Title" class="text-danger" />
         </div>
 
         <div class="form-group mt-3">
-            <label asp-for="Description" class="form-label"></label>
+            <label asp-for="Description" class="form-label" />
             <input asp-for="Description" class="form-control" />
-            <span asp-validation-for="Description" class="text-danger"></span>
+            <span asp-validation-for="Description" class="text-danger" />
         </div>
 
         <div class="form-group mt-3">
-            <label asp-for="ProjectId" class="form-label"></label>
+            <label asp-for="ProjectId" class="form-label" />
             <input asp-for="ProjectId" readonly class="form-control" />
-            <span asp-validation-for="ProjectId" class="text-danger"></span>
+            <span asp-validation-for="ProjectId" class="text-danger" />
         </div>
 
         <button type="submit" class="btn btn-primary mt-3">

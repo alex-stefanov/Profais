@@ -6,7 +6,7 @@
     ViewData["Title"] = "Project - Details";
 }
 
-<div class="container mt-5">
+<div class="container mt-4">
     <h2>
         @ViewData["Title"]
     </h2>
@@ -23,6 +23,7 @@
                 <strong>
                     ID:
                 </strong>
+
                 <span>
                     @Model.Id
                 </span>
@@ -32,6 +33,7 @@
                 <strong>
                     Address:
                 </strong>
+
                 <span>
                     @Model.AbsoluteAddress
                 </span>
@@ -41,6 +43,7 @@
                 <strong>
                     Status:
                 </strong>
+
                 <span>
                     @if (Model.IsCompleted)
                     {
@@ -61,6 +64,7 @@
                 <strong>
                     Scheme:
                 </strong>
+
                 <div>
                     @if (!string.IsNullOrEmpty(Model.Scheme))
                     {
@@ -83,6 +87,7 @@
                     <strong>
                         Contributors:
                     </strong>
+
                     <div>
                         @foreach (UserViewModel contributor in Model.Contributers)
                         {
@@ -95,28 +100,35 @@
             }
 
             <div class="btn-group" role="group">
-                <form method="get" asp-action="ViewTasks" asp-controller="Task" class="d-inline">
-                    <input type="hidden" asp-for="Id" name="projectId" />
+                <form asp-action="ViewTasks" asp-controller="Task" method="get" class="d-inline">
+                    <input asp-for="Id" hidden name="projectId" />
+
                     <button type="submit" class="btn btn-primary">
                         See Tasks
                     </button>
                 </form>
+
                 @if (!Model.IsCompleted)
                 {
-                    <form method="get" asp-action="AddTask" asp-controller="Task" class="d-inline">
-                        <input type="hidden" asp-for="Id" name="projectId" />
+                    <form asp-action="AddTask" asp-controller="Task" method="get" class="d-inline">
+                        <input asp-for="Id" hidden name="projectId" />
+
                         <button type="submit" class="btn btn-success">
                             Add Task
                         </button>
                     </form>
-                    <form method="get" asp-action="EditProject">
-                        <input type="hidden" asp-for="Id" name="projectId" />
+
+                    <form asp-action="EditProject" asp-controller="Project" method="get">
+                        <input asp-for="Id" hidden name="projectId" />
+
                         <button type="submit" class="btn btn-warning">
                             Edit Project
                         </button>
                     </form>
-                    <form method="post" asp-action="DeleteProject">
-                        <input type="hidden" asp-for="Id" name="projectId" />
+
+                    <form asp-action="DeleteProject" asp-controller="Project" method="post">
+                        <input asp-for="Id" hidden name="projectId" />
+
                         <button type="submit" class="btn btn-warning">
                             Delete Project
                         </button>

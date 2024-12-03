@@ -5,34 +5,38 @@
 	ViewData["Title"] = "Penalty - Details";
 }
 
-<h2>@ViewData["Title"]</h2>
-
 <div class="card">
 	<div class="card-header">
-		<h4>
-			@Model.Title
-		</h4>
+		<h2>
+			@ViewData["Title"]
+		</h2>
 	</div>
+
 	<div class="card-body">
 		<div class="mb-3">
 			<label for="penaltyId" class="form-label">
 				Penalty ID
 			</label>
-			<input type="text" class="form-control" id="penaltyId" value="@Model.Id" readonly />
+
+			<input id="penaltyId" value="@Model.Id" type="text" readonly class="form-control" />
 		</div>
 
 		<div class="mb-3">
 			<label for="penaltyTitle" class="form-label">
 				Title
 			</label>
-			<input type="text" class="form-control" id="penaltyTitle" value="@Model.Title" readonly />
+
+			<input id="penaltyTitle" value="@Model.Title" type="text" readonly class="form-control" />
 		</div>
 
 		<div class="mb-3">
 			<label for="penaltyDescription" class="form-label">
 				Description
 			</label>
-			<textarea class="form-control" id="penaltyDescription" rows="4" readonly>@Model.Description</textarea>
+
+			<textarea id="penaltyDescription" rows="4" readonly class="form-control">
+				@Model.Description
+			</textarea>
 		</div>
 	</div>
 </div>

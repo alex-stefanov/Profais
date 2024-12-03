@@ -5,42 +5,44 @@
     ViewData["Title"] = "Task - Edit";
 }
 
-<h2>
-    @ViewData["Title"]
-</h2>
+<div class="container mt-4">
+    <h2>
+        @ViewData["Title"]
+    </h2>
 
-<form asp-action="EditTask" method="post">
-    <div class="form-group">
-        <label asp-for="Id" class="control-label"></label>
-        <input asp-for="Id" required class="form-control" />
-        <span asp-validation-for="Id" class="text-danger"></span>
-    </div>
+    <form asp-action="EditTask" asp-controller="Task" method="post">
+        <div class="form-group">
+            <label asp-for="Id" class="control-label" />
+            <input asp-for="Id" class="form-control" />
+            <span asp-validation-for="Id" class="text-danger" />
+        </div>
 
-    <div class="form-group">
-        <label asp-for="Title" class="control-label"></label>
-        <input asp-for="Title" class="form-control" />
-        <span asp-validation-for="Title" class="text-danger"></span>
-    </div>
+        <div class="form-group">
+            <label asp-for="Title" class="control-label" />
+            <input asp-for="Title" class="form-control" />
+            <span asp-validation-for="Title" class="text-danger" />
+        </div>
 
-    <div class="form-group">
-        <label asp-for="Description" class="control-label"></label>
-        <textarea asp-for="Description" class="form-control"></textarea>
-        <span asp-validation-for="Description" class="text-danger"></span>
-    </div>
+        <div class="form-group">
+            <label asp-for="Description" class="control-label" />
+            <textarea asp-for="Description" class="form-control" />
+            <span asp-validation-for="Description" class="text-danger" />
+        </div>
 
-    <div class="form-group">
-        <label asp-for="ProjectId" class="control-label"></label>
-        <input asp-for="ProjectId" required class="form-control" />
-        <span asp-validation-for="ProjectId" class="text-danger"></span>
-    </div>
+        <div class="form-group">
+            <label asp-for="ProjectId" class="control-label" />
+            <input asp-for="ProjectId" class="form-control" />
+            <span asp-validation-for="ProjectId" class="text-danger" />
+        </div>
 
-    <div class="form-group">
-        <label asp-for="IsCompleted" class="control-label"></label>
-        <input asp-for="IsCompleted" type="checkbox" />
-        <span asp-validation-for="IsCompleted" class="text-danger"></span>
-    </div>
+        <div class="form-group">
+            <label asp-for="IsCompleted" class="control-label" />
+            <input asp-for="IsCompleted" type="checkbox" />
+            <span asp-validation-for="IsCompleted" class="text-danger" />
+        </div>
 
-    <button type="submit" class="btn btn-success">
-        Save Changes
-    </button>
-</form>
+        <button type="submit" class="btn btn-success">
+            Save Changes
+        </button>
+    </form>
+</div>

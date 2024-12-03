@@ -2,20 +2,22 @@
     ViewData["Title"] = "Recovery Panel - Index";
 }
 
-<div class="text-center">
-    <h2 class="mb-4">
-        @ViewData["Title"]
-    </h2>
+<div class="container mt-4">
+    <div class="text-center">
+        <h2 class="mb-4">
+            @ViewData["Title"]
+        </h2>
 
-    <form method="get" asp-area="Admin" asp-controller="RecoveryPanel" asp-action="ViewDeletedTasks" class="mb-3">
-        <button type="submit" class="btn btn-lg btn-primary" style="width: 250px; height: 80px; font-size: 20px;">
-            View Deleted Tasks
-        </button>
-    </form>
+        <form asp-area="Admin" asp-action="ViewDeletedTasks" asp-controller="RecoveryPanel" method="get" class="mb-3">
+            <button type="submit" class="btn btn-lg btn-primary" style="width: 250px; height: 80px; font-size: 20px;">
+                View Deleted Tasks
+            </button>
+        </form>
 
-    <form method="get" asp-area="Admin" asp-controller="RecoveryPanel" asp-action="ViewDeletedProjects">
-        <button type="submit" class="btn btn-lg btn-success" style="width: 250px; height: 80px; font-size: 20px;">
-            View Deleted Projects
-        </button>
-    </form>
+        <form asp-area="Admin" asp-action="ViewDeletedProjects" asp-controller="RecoveryPanel" method="get">
+            <button type="submit" class="btn btn-lg btn-success" style="width: 250px; height: 80px; font-size: 20px;">
+                View Deleted Projects
+            </button>
+        </form>
+    </div>
 </div>

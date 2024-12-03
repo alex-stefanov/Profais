@@ -7,15 +7,15 @@
     var searchTerm = ViewData["SearchTerm"] as string ?? "";
 }
 
-<h2>
-    @ViewData["Title"]
-</h2>
-
 <div class="container mt-4">
-    <form method="get" action="/Admin/MaterialPanel/ViewAll">
+    <h2>
+        @ViewData["Title"]
+    </h2>
+
+    <form asp-area="Admin" asp-action="ViewAll" asp-controller="MaterialPanel" method="get">
         <div class="input-group mb-4">
-            <input type="text" class="form-control" id="searchInput" name="searchTerm" placeholder="Search by Name" value="@searchTerm" />
-            <button class="btn btn-primary" type="submit" style="color:black">
+            <input id="searchInput" value="@searchTerm" placeholder="Search by Name" type="text" name="searchTerm" class="form-control" />
+            <button type="submit" class="btn btn-primary" style="color:black">
                 Search
             </button>
         </div>
@@ -30,14 +30,18 @@
                         <h5 class="card-title" style="color:black">
                             @material.Name
                         </h5>
+
                         <p class="card-text" style="color:black">
                             @material.Id
                         </p>
+
                         <p class="card-text" style="color:black">
                             @material.UsedFor.ToString()
                         </p>
-                        <form method="post" asp-area="Admin" asp-controller="MaterialPanel" asp-action="Delete">
-                            <input type="hidden" name="id" value="@material.Id" />
+
+                        <form asp-area="Admin" asp-action="Delete" asp-controller="MaterialPanel" method="post">
+                            <input value="@material.Id" hidden name="id" />
+
                             <button type="submit" class="btn btn-warning" style="color:black">
                                 Delete Material
                             </button>
@@ -53,19 +57,25 @@
             @if (Model.HasPreviousPage)
             {
                 <li class="page-item">
-                    <a class="page-link" asp-area="Admin" asp-controller="MaterialPanel" asp-action="ViewAll" asp-route-pageNumber="@(Model.CurrentPage - 1)" asp-route-pageSize="9" asp-route-searchTerm="@searchTerm">Previous</a>
+                    <a class="page-link" asp-area="Admin" asp-controller="MaterialPanel" asp-action="ViewAll" asp-route-pageNumber="@(Model.CurrentPage - 1)" asp-route-pageSize="9" asp-route-searchTerm="@searchTerm">
+                        Previous
+                    </a>
                 </li>
             }
             @for (int i = 1; i <= Model.TotalPages; i++)
             {
                 <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
-                    <a class="page-link" asp-area="Admin" asp-controller="MaterialPanel" asp-action="ViewAll" asp-route-pageNumber="@i" asp-route-pageSize="9" asp-route-searchTerm="@searchTerm">@i</a>
+                    <a class="page-link" asp-area="Admin" asp-controller="MaterialPanel" asp-action="ViewAll" asp-route-pageNumber="@i" asp-route-pageSize="9" asp-route-searchTerm="@searchTerm">
+                        @i
+                    </a>
                 </li>
             }
             @if (Model.HasNextPage)
             {
                 <li class="page-item">
-                    <a class="page-link" asp-area="Admin" asp-controller="MaterialPanel" asp-action="ViewAll" asp-route-pageNumber="@(Model.CurrentPage + 1)" asp-route-pageSize="9" asp-route-searchTerm="@searchTerm">Next</a>
+                    <a class="page-link" asp-area="Admin" asp-controller="MaterialPanel" asp-action="ViewAll" asp-route-pageNumber="@(Model.CurrentPage + 1)" asp-route-pageSize="9" asp-route-searchTerm="@searchTerm">
+                        Next
+                    </a>
                 </li>
             }
         </ul>

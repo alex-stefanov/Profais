@@ -6,11 +6,11 @@
     ViewData["Title"] = "Penalty - All";
 }
 
-<h2>
-    @ViewData["Title"]
-</h2>
-
 <div class="container mt-4">
+    <h2>
+        @ViewData["Title"]
+    </h2>
+
     <div class="row">
         @foreach (FullCollectionPenaltyViewModel penalty in Model.Items)
         {
@@ -20,12 +20,14 @@
                         <h5 class="card-title">
                             @penalty.Title
                         </h5>
+
                         <p>
                             @($"{penalty.UserName} - {penalty.Role}")
                         </p>
-                        <form asp-action="RemoveUserPenalty" method="post">
-                            <input type="hidden" name="penaltyId" value="@penalty.Id" />
-                            <input type="hidden" name="userId" value="@penalty.UserId" />
+
+                        <form asp-action="RemoveUserPenalty" asp-controller="Penalty" method="post">
+                            <input hidden name="penaltyId" value="@penalty.Id" />
+                            <input hidden name="userId" value="@penalty.UserId" />
                             <button type="submit" class="btn btn-primary">
                                 Remove Penalty
                             </button>
@@ -41,19 +43,25 @@
             @if (Model.HasPreviousPage)
             {
                 <li class="page-item">
-                    <a class="page-link" asp-action="GetAllPenalties" asp-route-pageNumber="@(Model.CurrentPage - 1)" asp-route-pageSize="9">Previous</a>
+                    <a class="page-link" asp-action="GetAllPenalties" asp-route-pageNumber="@(Model.CurrentPage - 1)" asp-route-pageSize="9">
+                        Previous
+                    </a>
                 </li>
             }
             @for (int i = 1; i <= Model.TotalPages; i++)
             {
                 <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
-                    <a class="page-link" asp-action="GetAllPenalties" asp-route-pageNumber="@i" asp-route-pageSize="9">@i</a>
+                    <a class="page-link" asp-action="GetAllPenalties" asp-route-pageNumber="@i" asp-route-pageSize="9">
+                        @i
+                    </a>
                 </li>
             }
             @if (Model.HasNextPage)
             {
                 <li class="page-item">
-                    <a class="page-link" asp-action="GetAllPenalties" asp-route-pageNumber="@(Model.CurrentPage + 1)" asp-route-pageSize="9">Next</a>
+                    <a class="page-link" asp-action="GetAllPenalties" asp-route-pageNumber="@(Model.CurrentPage + 1)" asp-route-pageSize="9">
+                        Next
+                    </a>
                 </li>
             }
         </ul>

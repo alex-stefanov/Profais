@@ -6,7 +6,7 @@
     ViewData["Title"] = "Task - Daily Tasks";
 }
 
-<div class="container mt-5">
+<div class="container mt-4">
     @if (Model.Items.Any())
     {
         <div class="row">
@@ -19,11 +19,13 @@
                                 @task.Title
                             </h4>
                         </div>
+
                         <div class="card-body">
                             <p>
                                 <strong>
                                     Status:
                                 </strong>
+
                                 <span>
                                     @(task.IsCompleted ? "Completed" : "Not Completed")
                                 </span>
@@ -33,6 +35,7 @@
                                 <strong>
                                     Project Title:
                                 </strong>
+
                                 <span>
                                     @task.ProjectTitle
                                 </span>
@@ -42,6 +45,7 @@
                                 <strong>
                                     Description:
                                 </strong>
+
                                 <span>
                                     @task.Description
                                 </span>
@@ -52,7 +56,7 @@
             }
         </div>
 
-        <nav aria-label="Page navigation">
+        <nav>
             <ul class="pagination justify-content-center">
                 @if (Model.HasPreviousPage)
                 {

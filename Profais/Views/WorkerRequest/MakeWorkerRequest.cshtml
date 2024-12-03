@@ -4,44 +4,45 @@
 @{
     ViewData["Title"] = "Worker Request - Make";
 }
+<div class="container mt-4">
+    <h2>
+        @ViewData["Title"]
+    </h2>
 
-<h2>
-    @ViewData["Title"]
-</h2>
+    <form asp-action="MakeWorkerRequest" asp-controller="WorkerRequest" method="post">
+        <div class="form-group">
+            <input asp-for="UserId" hidden readonly class="form-control" />
+            <span asp-validation-for="UserId" class="text-danger" />
+        </div>
 
-<form asp-action="MakeWorkerRequest" method="post">
-    <div class="form-group">
-        <input asp-for="UserId" hidden readonly class="form-control" />
-        <span asp-validation-for="UserId" class="text-danger"></span>
-    </div>
+        <div class="form-group">
+            <label asp-for="FirstName" class="form-label" />
+            <input asp-for="FirstName" readonly class="form-control" />
+            <span asp-validation-for="FirstName" class="text-danger" />
+        </div>
 
-    <div class="form-group">
-        <label asp-for="FirstName" class="form-label"></label>
-        <input asp-for="FirstName" readonly class="form-control" />
-        <span asp-validation-for="FirstName" class="text-danger"></span>
-    </div>
+        <div class="form-group">
+            <label asp-for="LastName" class="form-label" />
+            <input asp-for="LastName" readonly class="form-control" />
+            <span asp-validation-for="LastName" class="text-danger" />
+        </div>
 
-    <div class="form-group">
-        <label asp-for="LastName" class="form-label"></label>
-        <input asp-for="LastName" readonly class="form-control" />
-        <span asp-validation-for="LastName" class="text-danger"></span>
-    </div>
+        <div class="form-group">
+            <label asp-for="ProfixId" class="form-label" />
+            <input asp-for="ProfixId" class="form-control" />
+            <span asp-validation-for="ProfixId" class="text-danger" />
+        </div>
 
-    <div class="form-group">
-        <label asp-for="ProfixId" class="form-label"></label>
-        <input asp-for="ProfixId" class="form-control" />
-        <span asp-validation-for="ProfixId" class="text-danger"></span>
-    </div>
+        <div hidden class="form-group">
+            <label asp-for="Status" class="form-label" />
+            <input asp-for="Status" readonly class="form-control" />
+            <span asp-validation-for="Status" class="text-danger" />
+        </div>
 
-    <div hidden class="form-group">
-        <label asp-for="Status" class="form-label"></label>
-        <input asp-for="Status" readonly class="form-control" />
-        <span asp-validation-for="Status" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <button type="submit" class="btn btn-primary">
-            Submit
-        </button>
-    </div>
-</form>
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">
+                Submit
+            </button>
+        </div>
+    </form>
+</div>

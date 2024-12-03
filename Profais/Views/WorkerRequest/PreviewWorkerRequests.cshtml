@@ -1,74 +1,89 @@
 ﻿@using Profais.Services.ViewModels.WorkerRequest;
-@model ICollection<WorkerRequestViewModel>
+@model IEnumerable<WorkerRequestViewModel>
 
 @{
     ViewData["Title"] = "Worker Request - Preview";
 }
 
-<h2>
-    @ViewData["Title"]
-</h2>
+<div class="container mt-4">
+    <h2>
+        @ViewData["Title"]
+    </h2>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                Client Id
-            </th>
-            <th>
-                First Name
-            </th>
-            <th>
-                Last Name
-            </th>
-            <th>
-                Profix Id
-            </th>
-            <th>
-                Current Status
-            </th>
-            <th>
-                Actions
-            </th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var request in Model)
-        {
+    <table class="table">
+        <thead>
             <tr>
-                <td>
-                    @request.UserId
-                </td>
-                <td>
-                    @request.FirstName
-                </td>
-                <td>
-                    @request.LastName
-                </td>
-                <td>
-                    @request.ProfixId
-                </td>
-                <td>
-                    @request.Status.ToString()
-                </td>
-                <td>
-                    <form method="post" asp-action="ApproveWorkerRequest">
-                        <input type="hidden" name="model.Id" value="@request.Id" />
-                        <input type="hidden" name="model.UserId" value="@request.UserId" />
-                        <button type="submit" class="btn btn-success">
-                            Approve
-                        </button>
-                    </form>
+                <th>
+                    Client Id
+                </th>
 
-                    <form method="post" asp-action="DeclineWorkerRequest">
-                        <input type="hidden" name="model.Id" value="@request.Id" />
-                        <input type="hidden" name="model.UserId" value="@request.UserId" />
-                        <button type="submit" class="btn btn-danger">
-                            Decline
-                        </button>
-                    </form>
-                </td>
+                <th>
+                    First Name
+                </th>
+
+                <th>
+                    Last Name
+                </th>
+
+                <th>
+                    Profix Id
+                </th>
+
+                <th>
+                    Current Status
+                </th>
+
+                <th>
+                    Actions
+                </th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+
+        <tbody>
+            @foreach (WorkerRequestViewModel request in Model)
+            {
+                <tr>
+                    <td>
+                        @request.UserId
+                    </td>
+
+                    <td>
+                        @request.FirstName
+                    </td>
+
+                    <td>
+                        @request.LastName
+                    </td>
+
+                    <td>
+                        @request.ProfixId
+                    </td>
+
+                    <td>
+                        @request.Status.ToString()
+                    </td>
+
+                    <td>
+                        <form asp-action="ApproveWorkerRequest" asp-controller="WorkerRequest" method="post">
+                            <input value="@request.Id" hidden name="model.Id" />
+                            <input value="@request.UserId" hidden name="model.UserId" />
+
+                            <button type="submit" class="btn btn-success">
+                                Approve
+                            </button>
+                        </form>
+
+                        <form asp-action="DeclineWorkerRequest" asp-controller="WorkerRequest" method="post">
+                            <input value="@request.Id" hidden name="model.Id" />
+                            <input value="@request.UserId" hidden name="model.UserId" />
+
+                            <button type="submit" class="btn btn-danger">
+                                Decline
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

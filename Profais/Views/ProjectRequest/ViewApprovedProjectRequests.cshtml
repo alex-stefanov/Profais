@@ -6,11 +6,11 @@
     ViewData["Title"] = "Project Request - Approved";
 }
 
-<h2>
-    @ViewData["Title"]
-</h2>
-
 <div class="container mt-4">
+    <h2>
+        @ViewData["Title"]
+    </h2>
+
     <div class="row">
         @foreach (CollectionProjectRequestViewModel project in Model.Items)
         {
@@ -20,11 +20,14 @@
                         <h5 class="card-title">
                             @project.Title
                         </h5>
+
                         <p class="card-text">
                             @project.ClientName
                         </p>
-                        <form asp-action="ViewProjectRequest" method="get">
-                            <input type="hidden" name="projectRequestId" value="@project.Id" />
+
+                        <form asp-action="ViewProjectRequest" asp-controller="ProjectRequest" method="get">
+                            <input value="@project.Id" hidden name="projectRequestId" />
+
                             <button type="submit" class="btn btn-primary">
                                 View Project
                             </button>

@@ -6,25 +6,30 @@
     ViewData["Title"] = "Material Panel - Add";
 }
 
-<h2>
-    @ViewData["Title"]
-</h2>
-
 <div class="container mt-4">
-    <form asp-area="Admin" asp-controller="MaterialPanel" asp-action="Register" method="post">
+    <h2>
+        @ViewData["Title"]
+    </h2>
+
+    <form asp-area="Admin" asp-action="Register" asp-controller="MaterialPanel" method="post">
         <div class="form-group">
-            <label asp-for="Name" class="form-label"></label>
+            <label asp-for="Name" class="form-label" />
             <input asp-for="Name" class="form-control" />
-            <span asp-validation-for="Name" class="text-danger"></span>
+            <span asp-validation-for="Name" class="text-danger" />
         </div>
 
         <div>
-            <label asp-for="UsedFor" class="form-label"></label>
+            <label asp-for="UsedFor" class="form-label" />
             <select asp-for="UsedFor" class="form-control">
-                <option value="">--Select Used For--</option>
+                <option value="">
+                    --Select Used For--
+                </option>
+
                 @foreach (SelectListItem item in Html.GetEnumSelectList<UsedFor>())
                 {
-                    <option value="@item.Value">@item.Text</option>
+                    <option value="@item.Value">
+                        @item.Text
+                    </option>
                 }
             </select>
         </div>

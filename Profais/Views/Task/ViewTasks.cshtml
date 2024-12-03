@@ -6,11 +6,11 @@
     ViewData["Title"] = "Task - Paged Tasks";
 }
 
-<div class="container mt-5">
+<div class="container mt-4">
     @if (Model.Items.Any())
     {
         <h2>
-            Tasks for Project @(Model.Items.FirstOrDefault()!.ProjectId)
+            @($"Tasks for Project {Model.Items.FirstOrDefault()!.ProjectId}")
         </h2>
 
         <div class="row">
@@ -23,18 +23,21 @@
                                 @task.Title
                             </h4>
                         </div>
+
                         <div class="card-body">
                             <p>
                                 <strong>
                                     Status:
                                 </strong>
+
                                 <span>
                                     @(task.IsCompleted ? "Completed" : "Not Completed")
                                 </span>
                             </p>
 
-                            <form asp-action="ViewTask" method="get">
-                                <input type="hidden" name="taskId" value="@task.Id" />
+                            <form asp-action="ViewTask" asp-controller="Task" method="get">
+                                <input value="@task.Id" name="taskId" />
+
                                 <button type="submit" class="btn btn-primary">
                                     View Task
                                 </button>
@@ -45,24 +48,30 @@
             }
         </div>
 
-        <nav aria-label="Page navigation">
+        <nav>
             <ul class="pagination justify-content-center">
                 @if (Model.HasPreviousPage)
                 {
                     <li class="page-item">
-                        <a class="page-link" asp-action="ViewTasks" asp-route-projectId="@Model.Items.FirstOrDefault()!.ProjectId" asp-route-page="@(Model.CurrentPage - 1)">Previous</a>
+                        <a class="page-link" asp-action="ViewTasks" asp-route-projectId="@Model.Items.FirstOrDefault()!.ProjectId" asp-route-page="@(Model.CurrentPage - 1)">
+                            Previous
+                        </a>
                     </li>
                 }
                 @for (int i = 1; i <= Model.TotalPages; i++)
                 {
                     <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
-                        <a class="page-link" asp-action="ViewTasks" asp-route-projectId="@Model.Items.FirstOrDefault()!.ProjectId" asp-route-page="@i">@i</a>
+                        <a class="page-link" asp-action="ViewTasks" asp-route-projectId="@Model.Items.FirstOrDefault()!.ProjectId" asp-route-page="@i">
+                            @i
+                        </a>
                     </li>
                 }
                 @if (Model.HasNextPage)
                 {
                     <li class="page-item">
-                        <a class="page-link" asp-action="ViewTasks" asp-route-projectId="@Model.Items.FirstOrDefault()!.ProjectId" asp-route-page="@(Model.CurrentPage + 1)">Next</a>
+                        <a class="page-link" asp-action="ViewTasks" asp-route-projectId="@Model.Items.FirstOrDefault()!.ProjectId" asp-route-page="@(Model.CurrentPage + 1)">
+                            Next
+                        </a>
                     </li>
                 }
             </ul>

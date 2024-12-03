@@ -15,40 +15,44 @@
                 @ViewData["Title"]
             </h2>
         </div>
+
         <div class="card-body">
             <div class="row mb-3">
                 <div class="col-md-6">
                     <strong>
                         Title:
                     </strong> 
+
                     <span>
                         @Model.Title
                     </span>
                 </div>
+
                 <div class="col-md-6">
                     <strong>
                         Description:
                     </strong> 
+
                     <span>
                         @Model.Description
                     </span>
                 </div>
             </div>
+
             <div class="row mb-3">
                 <div class="col-md-6">
                     <strong>
                         Status:
                      </strong>
+
                     <span>
                         @if (Model.IsCompleted)
-
                         {
                             <span class="badge bg-success">
                                 Completed
                             </span>
                         }
                         else
-
                         {
                             <span class="badge bg-warning">
                                 In Progress
@@ -61,6 +65,7 @@
             <h5>
                 Materials
             </h5>
+
             <ul class="list-group mb-3">
                 @foreach (MaterialViewModel material in Model.Materials)
                 {
@@ -70,7 +75,10 @@
                 }
             </ul>
 
-            <h5>Assigned Workers</h5>
+            <h5>
+                Assigned Workers
+            </h5>
+
             <ul class="list-group mb-3">
                 @foreach (UserViewModel user in Model.Users)
                 {
@@ -86,31 +94,40 @@
             {
                 <div class="mt-4 d-flex flex-wrap gap-2">
                     <form asp-action="AddWorkers" asp-controller="Worker" method="get">
-                        <input type="hidden" name="taskId" value="@Model.Id" />
+                        <input value="@Model.Id" hidden name="taskId" />
+
                         <button type="submit" class="btn btn-primary">
                             Add Workers
                         </button>
                     </form>
+
                     <form asp-action="RemoveWorkers" asp-controller="Worker" method="get">
-                        <input type="hidden" name="taskId" value="@Model.Id" />
+                        <input value="@Model.Id" hidden name="taskId" />
+
                         <button type="submit" class="btn btn-danger">
                             Remove Workers
                         </button>
                     </form>
+
                     <form asp-action="AddMaterialsToTask" asp-controller="Material" method="get">
-                        <input type="hidden" name="taskId" value="@Model.Id" />
+                        <input value="@Model.Id" hidden name="taskId" />
+
                         <button type="submit" class="btn btn-secondary">
                             Add Materials
                         </button>
                     </form>
-                    <form asp-action="CompleteTask" method="post">
-                        <input type="hidden" name="taskId" value="@Model.Id" />
+
+                    <form asp-action="CompleteTask" asp-controller="Task" method="post">
+                        <input value="@Model.Id" hidden name="taskId" />
+
                         <button type="submit" class="btn btn-success">
                             Complete Task
                         </button>
                     </form>
-                    <form asp-action="DeleteTask" method="post">
-                        <input type="hidden" name="taskId" value="@Model.Id" />
+
+                    <form asp-action="DeleteTask" asp-controller="Task" method="post">
+                        <input value="@Model.Id" hidden name="taskId" />
+
                         <button type="submit" class="btn btn-warning">
                             Delete Task
                         </button>
@@ -124,7 +141,8 @@
             {
                 <div class="mt-4">
                     <form asp-action="ViewProject" asp-controller="Project" method="get" class="mt-2">
-                        <input type="hidden" name="projectId" value="@Model.ProjectId" />
+                        <input value="@Model.ProjectId" hidden name="projectId" />
+
                         <button type="submit" class="btn btn-primary">
                             View Project
                         </button>
