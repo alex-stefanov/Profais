@@ -63,6 +63,8 @@ public class TaskController(
             PagedResult<TaskViewModel> model = await taskService
                 .GetPagedTasksByProjectIdAsync(projectId, page, pageSize);
 
+            model.AdditionalProperty = projectId;
+
             return View(model);
         }
         catch (Exception ex)

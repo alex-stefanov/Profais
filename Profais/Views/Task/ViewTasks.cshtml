@@ -8,7 +8,7 @@
     Model.PaginationViewModel.Area = "";
     Model.PaginationViewModel.Controller = "Task";
     Model.PaginationViewModel.Action = "ViewTasks";
-    Model.PaginationViewModel.RouteParams.Add("projectId", Model.Items.FirstOrDefault()!.ProjectId);
+    Model.PaginationViewModel.RouteParams.Add("projectId", Model.AdditionalProperty!);
 }
 
 <div class="container mt-4">
@@ -41,7 +41,7 @@
                             </p>
 
                             <form asp-action="ViewTask" asp-controller="Task" method="get">
-                                <input value="@task.Id" name="taskId" />
+                                <input value="@task.Id" hidden readonly name="taskId" />
 
                                 <button type="submit" class="btn btn-primary">
                                     View Task

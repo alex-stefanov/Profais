@@ -23,9 +23,13 @@ public class WorkerRequestService(
             .GetByIdAsync(userId)
             ?? throw new ItemNotFoundException($"User with id `{userId}` not found"); ;
 
-        ProfWorkerRequest result = await workerRequestRepository
-            .FirstOrDefaultAsync(x => x.ClientId == userId && x.Status == Approved)
-            ?? throw new ItemNotFoundException($"User with id `{userId}` already has a worker request");
+        ProfWorkerRequest? result = await workerRequestRepository
+            .FirstOrDefaultAsync(x => x.ClientId == userId && x.Status == Pending);
+
+        if (result is not null)
+        {
+            throw new ArgumentException($"User with id `{userId}` already has a worker request");
+        }
 
         return new MakeWorkerRequestViewModel
         {

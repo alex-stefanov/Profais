@@ -23,9 +23,13 @@ public class SpecialistRequestService(
             .GetByIdAsync(userId)
             ?? throw new ItemNotFoundException($"User with id `{userId}` not found"); ;
 
-        ProfSpecialistRequest result = await specialistRequestRepository
-            .FirstOrDefaultAsync(x => x.ClientId == userId && x.Status == Approved)
-            ?? throw new ItemNotFoundException($"User with id `{userId}` already has a specialist request"); ;
+        ProfSpecialistRequest? result = await specialistRequestRepository
+            .FirstOrDefaultAsync(x => x.ClientId == userId && x.Status == Pending);
+
+        if (result is not null)
+        {
+            throw new ArgumentException($"User with id `{userId}` already has a specialist request"); ;
+        }
 
         return new MakeSpecialistRequestViewModel()
         {
@@ -75,7 +79,7 @@ public class SpecialistRequestService(
         string userId)
     {
         ProfSpecialistRequest specialistRequest = await specialistRequestRepository
-            .GetByIdAsync(requestId) 
+            .GetByIdAsync(requestId)
             ?? throw new ItemNotFoundException($"Specialist request with id `{requestId}` not found");
 
         ProfUser user = await userManager
@@ -127,7 +131,7 @@ public class SpecialistRequestService(
         int requestId)
     {
         ProfSpecialistRequest? specialistRequest = await specialistRequestRepository
-            .GetByIdAsync(requestId) 
+            .GetByIdAsync(requestId)
             ?? throw new ItemNotFoundException($"Specialist request with id `{requestId}` not found");
 
         specialistRequest.Status = Declined;

@@ -119,7 +119,7 @@ public class TaskService(
         int totalCount = await query
             .CountAsync();
 
-        TaskViewModel[] tasks = await query
+        var tasks = await query
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .Select(x => new TaskViewModel
@@ -129,25 +129,35 @@ public class TaskService(
                 Description = x.Description,
                 ProjectId = projectId,
                 IsCompleted = x.IsCompleted,
-                Materials = x.TaskMaterials
-                .Select(t => new MaterialViewModel
+                Materials = x.TaskMaterials.Select(t => new MaterialViewModel
                 {
                     Id = t.MaterialId,
                     Name = t.Material.Name,
                     UsedFor = t.Material.UsedForId,
                 }).ToArray(),
-                Users = x.UserTasks
-                .Select(u => new UserViewModel
+                Users = x.UserTasks.Select(u => new UserViewModel
                 {
                     Id = u.WorkerId,
                     UserFirstName = u.Worker.FirstName,
                     UserLastName = u.Worker.LastName,
-                    Role = userManager.GetRolesAsync(u.Worker).Result
-                        .FirstOrDefault()!
-                })
-                .ToArray(),
+                    Role = string.Empty
+                }).ToArray(),
             })
-            .ToArrayAsync();
+            .ToListAsync();
+
+        foreach (TaskViewModel task in tasks)
+        {
+            foreach (UserViewModel user in task.Users)
+            {
+                ProfUser profUser = await userManager
+                    .FindByIdAsync(user.Id)
+                    ?? throw new ItemNotFoundException($"User wasnt found with id `{user.Id}`");
+
+                var roles = await userManager.GetRolesAsync(profUser);
+
+                user.Role = roles.FirstOrDefault()!;
+            }
+        }
 
         return new PagedResult<TaskViewModel>
         {

@@ -28,7 +28,7 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-white" asp-area="" asp-action="Index" asp-controller="Home">
+                            <a asp-area="" asp-action="Index" asp-controller="Home" role="button" class="nav-link text-white">
                                 Home
                             </a>
                         </li>
@@ -48,14 +48,14 @@
                                         @if (User.IsInRole(ClientRoleName))
                                         {
                                             <li>
-                                                <a asp-area="" asp-action="MakeWorkerRequest" asp-controller="WorkerRequest" class="dropdown-item text-dark">
+                                                <a asp-area="" asp-action="MakeWorkerRequest" asp-controller="WorkerRequest" role="button" class="dropdown-item text-dark">
                                                     Worker
                                                 </a>
                                             </li>
                                         }
 
                                         <li>
-                                            <a asp-area="" asp-action="MakeSpecialistRequest" asp-controller="SpecialistRequest" class="dropdown-item text-dark">
+                                            <a asp-area="" asp-action="MakeSpecialistRequest" asp-controller="SpecialistRequest" role="button" class="dropdown-item text-dark">
                                                 Specialist
                                             </a>
                                         </li>
@@ -76,7 +76,7 @@
                                         @if (User.IsInRole(ClientRoleName))
                                         {
                                             <li>
-                                                <a asp-area="" asp-action="CreateProjectRequest" asp-controller="ProjectRequest" class="dropdown-item text-dark">
+                                                <a asp-area="" asp-action="CreateProjectRequest" asp-controller="ProjectRequest" role="button" class="dropdown-item text-dark">
                                                     Create
                                                 </a>
                                             </li>
@@ -86,19 +86,19 @@
                                             || User.IsInRole(AdminRoleName))
                                         {
                                             <li>
-                                                <a asp-area="" asp-action="ViewOnGoingProjectRequests" asp-controller="ProjectRequest" class="dropdown-item text-dark">
+                                                <a asp-area="" asp-action="ViewOnGoingProjectRequests" asp-controller="ProjectRequest" role="button" class="dropdown-item text-dark">
                                                     On Going
                                                 </a>
                                             </li>
 
                                             <li>
-                                                <a asp-area="" asp-action="ViewApprovedProjectRequests" asp-controller="ProjectRequest" class="dropdown-item text-dark">
+                                                <a asp-area="" asp-action="ViewApprovedProjectRequests" asp-controller="ProjectRequest" role="button" class="dropdown-item text-dark">
                                                     Approved
                                                 </a>
                                             </li>
 
                                             <li>
-                                                <a asp-area="" asp-action="ViewDeclinedProjectRequests" asp-controller="ProjectRequest" class="dropdown-item text-dark">
+                                                <a asp-area="" asp-action="ViewDeclinedProjectRequests" asp-controller="ProjectRequest" role="button" class="dropdown-item text-dark">
                                                     Declined
                                                 </a>
                                             </li>
@@ -117,13 +117,13 @@
 
                                     <ul aria-labelledby="acceptRequestDropdown" class="dropdown-menu">
                                         <li>
-                                            <a asp-area="" asp-action="PreviewWorkerRequests" asp-controller="WorkerRequest" class="dropdown-item text-dark">
+                                            <a asp-area="" asp-action="PreviewWorkerRequests" asp-controller="WorkerRequest" role="button" class="dropdown-item text-dark">
                                                 Workers
                                             </a>
                                         </li>
 
                                         <li>
-                                            <a asp-area="" asp-action="PreviewSpecialistRequests" asp-controller="SpecialistRequest" class="dropdown-item text-dark">
+                                            <a asp-area="" asp-action="PreviewSpecialistRequests" asp-controller="SpecialistRequest" role="button" class="dropdown-item text-dark">
                                                 Specialists
                                             </a>
                                         </li>
@@ -143,7 +143,7 @@
                                             || User.IsInRole(SpecialistRoleName))
                                         {
                                             <li>
-                                                <a asp-area="" asp-action="GetMyPenalties" asp-controller="Penalty" class="dropdown-item text-dark">
+                                                <a asp-area="" asp-action="GetMyPenalties" asp-controller="Penalty" role="button" class="dropdown-item text-dark">
                                                     My Penalties
                                                 </a>
                                             </li>
@@ -153,12 +153,12 @@
                                             || User.IsInRole(AdminRoleName))
                                         {
                                             <li>
-                                                <a asp-area="" asp-action="GetAllPenalties" asp-controller="Penalty" class="dropdown-item text-dark">
+                                                <a asp-area="" asp-action="GetAllPenalties" asp-controller="Penalty" role="button" class="dropdown-item text-dark">
                                                     All Penalties
                                                 </a>
                                             </li>
                                             <li>
-                                                <a asp-area="" asp-action="AddPenaltyToUser" asp-controller="Penalty" class="dropdown-item text-dark">
+                                                <a asp-area="" asp-action="AddPenaltyToUser" asp-controller="Penalty" role="button" class="dropdown-item text-dark">
                                                     Punish
                                                 </a>
                                             </li>
@@ -176,19 +176,19 @@
 
                                         <ul aria-labelledby="projectsDropdown" class="dropdown-menu">
                                             <li>
-                                                <a asp-area="" asp-action="IncompletedProjects" asp-controller="Project" class="dropdown-item text-dark">
+                                                <a asp-area="" asp-action="IncompletedProjects" asp-controller="Project" role="button" class="dropdown-item text-dark">
                                                     On Going
                                                 </a>
                                             </li>
 
                                             <li>
-                                                <a asp-area="" asp-action="CompletedProjects" asp-controller="Project" class="dropdown-item text-dark">
+                                                <a asp-area="" asp-action="CompletedProjects" asp-controller="Project" role="button" class="dropdown-item text-dark">
                                                     Completed
                                                 </a>
                                             </li>
 
                                             <li>
-                                                <a asp-area="" asp-action="AddProject" asp-controller="Project" class="dropdown-item text-dark">
+                                                <a asp-area="" asp-action="AddProject" asp-controller="Project" role="button" class="dropdown-item text-dark">
                                                     Add Project
                                                 </a>
                                             </li>
@@ -200,7 +200,7 @@
                             @if (User.IsInRole(ManagerRoleName))
                             {
                                 <li class="nav-item">
-                                    <a asp-area="" asp-action="DailyTasks" asp-controller="Task" class="nav-link text-white">
+                                    <a asp-area="" asp-action="DailyTasks" asp-controller="Task" role="button" class="nav-link text-white">
                                         Daily Tasks
                                     </a>
                                 </li>
@@ -215,19 +215,19 @@
 
                                     <ul aria-labelledby="projectsDropdown" class="dropdown-menu">
                                         <li>
-                                            <a asp-area="Admin" asp-action="Index" asp-controller="UserPanel" class="dropdown-item text-dark">
+                                            <a asp-area="Admin" asp-action="Index" asp-controller="UserPanel" role="button" class="dropdown-item text-dark">
                                                 User Panel
                                             </a>
                                         </li>
 
                                         <li>
-                                            <a asp-area="Admin" asp-action="Index" asp-controller="MaterialPanel" class="dropdown-item text-dark">
+                                            <a asp-area="Admin" asp-action="Index" asp-controller="MaterialPanel" role="button" class="dropdown-item text-dark">
                                                 Material Panel
                                             </a>
                                         </li>
 
                                         <li>
-                                            <a asp-area="Admin" asp-action="Index" asp-controller="RecoveryPanel" class="dropdown-item text-dark">
+                                            <a asp-area="Admin" asp-action="Index" asp-controller="RecoveryPanel" role="button" class="dropdown-item text-dark">
                                                 Recovery Panel
                                             </a>
                                         </li>
@@ -239,7 +239,7 @@
                                 || User.IsInRole(SpecialistRoleName))
                             {
                                 <li class="nav-item">
-                                    <a asp-area="" asp-action="ViewMytask" asp-controller="Task" class="nav-link text-white">
+                                    <a asp-area="" asp-action="ViewMytask" asp-controller="Task" role="button" class="nav-link text-white">
                                         My Task
                                     </a>
                                 </li>

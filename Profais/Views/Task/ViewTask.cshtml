@@ -88,9 +88,10 @@
                 }
             </ul>
 
-            @if (User.IsInRole(ManagerRoleName)
+            @if ((User.IsInRole(ManagerRoleName)
                 || User.IsInRole(AdminRoleName)
                 || User.IsInRole(SpecialistRoleName))
+                && !Model.IsCompleted)
             {
                 <div class="mt-4 d-flex flex-wrap gap-2">
                     <form asp-action="AddWorkers" asp-controller="Worker" method="get">
@@ -125,6 +126,13 @@
                         </button>
                     </form>
 
+                    <form asp-action="EditTask" asp-controller="Task" method="get">
+                        <input value="@Model.Id" hidden name="taskId" />
+
+                        <button type="submit" class="btn btn-primary">
+                            Edit
+                        </button>
+                    </form>
                     <form asp-action="DeleteTask" asp-controller="Task" method="post">
                         <input value="@Model.Id" hidden name="taskId" />
 

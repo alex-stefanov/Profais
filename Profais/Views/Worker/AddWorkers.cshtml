@@ -17,7 +17,7 @@
     </h2>
 
     <form id="assignWorkersForm" asp-action="AssignWorkersToTask" asp-controller="Worker" method="post">
-        <input value="@Model.AdditionalProperty="taskId" />
+        <input value="@Model.AdditionalProperty" name="taskId" hidden/>
         <input id="selectedUserIds" value="" hidden name="selectedWorkerIds" />
 
         <div class="row">

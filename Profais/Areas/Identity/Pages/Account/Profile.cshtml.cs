@@ -33,10 +33,8 @@ namespace Profais.Areas.Identity.Pages.Account
 
             CurrentUser = user;
 
-            IEnumerable<string> userRoles = await userManager
-                .GetRolesAsync(user);
-
-            Roles.AddRange(userRoles);
+            Roles.AddRange(await userManager
+                .GetRolesAsync(user));
 
             return Page();
         }

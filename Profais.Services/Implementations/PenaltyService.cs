@@ -112,6 +112,9 @@ public class PenaltyService(
         IEnumerable<ProfUser> managerUsers = await userManager
             .GetUsersInRoleAsync(ManagerRoleName);
 
+        IEnumerable<ProfUser> clientUsers = await userManager
+            .GetUsersInRoleAsync(ClientRoleName);
+
         List<string> idsNotToSelect = [];
 
         idsNotToSelect
@@ -122,27 +125,40 @@ public class PenaltyService(
             .AddRange(managerUsers
                 .Select(x => x.Id));
 
+        idsNotToSelect
+            .AddRange(clientUsers
+                .Select(x => x.Id));
+
+        var penalties = await penaltyQuery
+        .Select(x => new PenaltyViewModel
+        {
+            Id = x.Id,
+            Title = x.Title,
+            Description = x.Description,
+        })
+        .ToListAsync();
+
+        var usersData = await userQuery
+            .Where(x => !idsNotToSelect.Contains(x.Id))
+            .ToListAsync();
+
+        var users = new List<UserForPenaltyViewModel>();
+
+        foreach (var user in usersData)
+        {
+            IList<string> roles = await userManager.GetRolesAsync(user);
+            users.Add(new UserForPenaltyViewModel
+            {
+                Id = user.Id,
+                UserName = $"{user.FirstName} {user.LastName}",
+                Role = roles.FirstOrDefault()!,
+            });
+        }
+
         var model = new UserPenaltyViewModel
         {
-            Penalties = await penaltyQuery
-            .Select(x => new PenaltyViewModel
-            {
-                Id = x.Id,
-                Title = x.Title,
-                Description = x.Description,
-            })
-            .ToListAsync(),
-            Users = await userQuery
-            .Where(x => !idsNotToSelect
-                .Contains(x.Id))
-            .Select(x => new UserForPenaltyViewModel
-            {
-                Id = x.Id,
-                UserName = $"{x.FirstName} {x.LastName}",
-                Role = userManager.GetRolesAsync(x).Result
-                    .FirstOrDefault()!
-            })
-            .ToListAsync(),
+            Penalties = penalties,
+            Users = users
         };
 
         return model;

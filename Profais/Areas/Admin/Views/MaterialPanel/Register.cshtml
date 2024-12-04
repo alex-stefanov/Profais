@@ -13,13 +13,13 @@
 
     <form asp-area="Admin" asp-action="Register" asp-controller="MaterialPanel" method="post">
         <div class="form-group">
-            <label asp-for="Name" class="form-label" />
+            <label asp-for="Name" class="form-label"></label>
             <input asp-for="Name" class="form-control" />
             <span asp-validation-for="Name" class="text-danger" />
         </div>
 
         <div>
-            <label asp-for="UsedFor" class="form-label" />
+            <label asp-for="UsedFor" class="form-label"></label>
             <select asp-for="UsedFor" class="form-control">
                 <option value="">
                     --Select Used For--
