@@ -33,24 +33,29 @@
     </ul>
 </nav>
 
-@section Scripts{
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var routeParams = @Html.Raw(Json.Serialize(Model.RouteParams))
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var routeParams = @Html.Raw(Json.Serialize(Model.RouteParams));
 
-            function updatePaginationLinks() {
-                var pageLinks = document.querySelectorAll('.page-link');
+        console.log(routeParams);
 
-                pageLinks.forEach(function(link) {
-                    for (var key in routeParams) {
-                        if (routeParams.hasOwnProperty(key)) {
-                            link.setAttribute(`asp-route-${key}`, routeParams[key]);
-                        }
+        function updatePaginationLinks() {
+            var pageLinks = document.querySelectorAll('.page-link');
+
+            pageLinks.forEach(function (link) {
+                var currentHref = new URL(link.href, window.location.origin);
+
+                for (var key in routeParams) {
+                    if (routeParams.hasOwnProperty(key)) {
+                        currentHref.searchParams.set(key, routeParams[key]);
                     }
-                });
-            }
+                }
 
-            updatePaginationLinks();
-        });
-    </script>
-}
+                link.href = currentHref.toString();
+                console.log('Updated link:', link.href);
+            });
+        }
+
+        updatePaginationLinks();
+    });
+</script>

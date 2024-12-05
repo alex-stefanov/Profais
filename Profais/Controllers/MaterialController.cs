@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Profais.Common.Exceptions;
 using Profais.Services.Interfaces;
+using Profais.Services.ViewModels.Material;
+using Profais.Services.ViewModels.Shared;
 using static Profais.Common.Constants.UserConstants;
 
 namespace Profais.Controllers;
@@ -15,14 +17,15 @@ public class MaterialController(
     [HttpGet]
     public async Task<IActionResult> AddMaterialsToTask(
         int taskId,
-        int page = 1,
-        int pageSize = 8)
+        int pageNumber = 1,
+        int pageSize = 9)
     {
         try
         {
-            
+            PagedResult<MaterialViewModel> model = await materialService
+                .GetPagedMaterialsForTaskAsync(pageNumber, pageSize, taskId);
 
-            return View();
+            return View(model);
         }
         catch (Exception ex)
         {
@@ -44,6 +47,12 @@ public class MaterialController(
 
         try
         {
+            IEnumerable<int> materialIds = selectedMaterialIds
+                 .Split(',').Select(int.Parse);
+
+            await materialService
+                .AssignMaterialsToTaskAsync(taskId, materialIds);
+
             return RedirectToAction("ViewTask", "Task", new { taskId });
         }
         catch (ItemNotFoundException ex)
@@ -68,7 +77,10 @@ public class MaterialController(
     {
         try
         {
-            return View();
+            PagedResult<MaterialViewModel> model = await materialService
+                .GetPagedMaterialsForTaskAsync(pageNumber, pageSize, taskId);
+
+            return View(model);
         }
         catch (Exception ex)
         {
@@ -79,9 +91,9 @@ public class MaterialController(
     }
 
     [HttpPost]
-    public async Task<IActionResult> RemoveWorkersFromTask(
+    public async Task<IActionResult> RemoveMaterialsFromTask(
         int taskId,
-        string selectedWorkerIds)
+        string selectedMaterialIds)
     {
         if (!ModelState.IsValid)
         {
@@ -90,6 +102,12 @@ public class MaterialController(
 
         try
         {
+            IEnumerable<int> materialIds = selectedMaterialIds
+                 .Split(',').Select(int.Parse);
+
+            await materialService
+                .RemoveMaterialsFromTaskAsync(taskId, materialIds);
+
             return RedirectToAction("ViewTask", "Task", new { taskId });
         }
         catch (ItemNotFoundException ex)

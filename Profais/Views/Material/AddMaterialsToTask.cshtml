@@ -1,1 +1,95 @@
-﻿
+﻿@using Profais.Services.ViewModels.Material;
+@using Profais.Services.ViewModels.Shared;
+@model PagedResult<MaterialViewModel>;
+
+@{
+    ViewData["Title"] = "Material - Add Materials";
+
+    Model.PaginationViewModel.Area = "";
+    Model.PaginationViewModel.Controller = "Material";
+    Model.PaginationViewModel.Action = "AddMaterialsToTask";
+    Model.PaginationViewModel.RouteParams.Add("taskId", Model.AdditionalProperty!);
+}
+
+<div class="container mt-4">
+    <h2>
+        @ViewData["Title"]
+    </h2>
+
+    <form id="assignMaterialsForm" asp-action="AssignMaterialsToTask" asp-controller="Material" method="post">
+        <input value="@Model.AdditionalProperty" name="taskId" />
+        <input id="selectedMaterialIdsId" value="" hidden name="selectedMaterialIds" />
+
+        <div class="row">
+            @foreach (MaterialViewModel material in Model.Items)
+            {
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                @material.Name
+                            </h5>
+
+                            <p>
+                                @material.UsedFor.ToString()
+                            </p>
+
+                            <div class="form-check">
+                                <input type="checkbox"
+                                       value="@material.Id"
+                                       id="material-@material.Id"
+                                       class="form-check-input" />
+
+                                <label for="material-@material.Id" class="form-check-label">
+                                    Select
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <partial name="_Pagination" model="Model.PaginationViewModel" />
+
+        <button type="submit" class="btn btn-primary mt-3">
+            Add Selected Materials
+        </button>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const selectedMaterialsIds = JSON.parse(localStorage.getItem('selectedMaterialsIds')) || [];
+
+            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                if (selectedMaterialsIds.includes(checkbox.value)) {
+                    checkbox.checked = true;
+                }
+            });
+
+            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.addEventListener('change', () => {
+                    let selectedIds = JSON.parse(localStorage.getItem('selectedMaterialsIds')) || [];
+
+                    if (checkbox.checked) {
+                        if (!selectedIds.includes(checkbox.value)) {
+                            selectedIds.push(checkbox.value);
+                        }
+                    } else {
+                        selectedIds = selectedIds.filter(id => id !== checkbox.value);
+                    }
+
+                    localStorage.setItem('selectedMaterialsIds', JSON.stringify(selectedIds));
+                });
+            });
+        });
+
+        document.querySelector('#assignMaterialsForm').addEventListener('submit', function () {
+            const selectedMaterialsIds = JSON.parse(localStorage.getItem('selectedMaterialsIds')) || [];
+            document.getElementById('selectedMaterialIdsId').value = selectedMaterialsIds.join(',');
+            localStorage.removeItem('selectedMaterialsIds');
+        });
+    </script>
+}
