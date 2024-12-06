@@ -61,15 +61,6 @@
         </div>
 
         <partial name="_Pagination" model="Model.PaginationViewModel" />
-
-        @if (Model.Items.Any(x => x.IsCompleted))
-        {
-            <form method="post" action="ResetCompletedTasks">
-                <button type="submit" class="btn btn-primary mt-3">
-                    Reset Tasks
-                </button>
-            </form>
-        }
     }
     else
     {

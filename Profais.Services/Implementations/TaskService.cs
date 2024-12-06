@@ -436,38 +436,9 @@ public class TaskService(
             throw new ItemNotUpdatedException($"User task with ids: user `{userId}`, task `{taskId}` couldn't be updated");
         }
 
-        await CheckFinalVote(taskId);
+        await CheckFinalVote(taskId, userTask);
 
         await AddToAllTimeContributers(userId, userTask.Task.ProfProjectId);
-    }
-
-    public async Task ResetTasksAsync()
-    {
-        IEnumerable<int> completedTasksIds = await taskRepository
-            .GetAllAttached()
-            .Where(x => x.IsCompleted)
-            .Select(x => x.Id)
-            .ToListAsync();
-
-        if (!completedTasksIds.Any())
-        {
-            return;
-        }
-
-        IEnumerable<ProfUserTask> userTasksToDelete = await userTasksRepository
-            .GetAllAttached()
-            .Where(x => completedTasksIds
-                .Contains(x.TaskId))
-            .ToListAsync();
-
-        if (userTasksToDelete.Any())
-        {
-            foreach (ProfUserTask userTask in userTasksToDelete)
-            {
-                await userTasksRepository
-                    .DeleteAsync(userTask);
-            }
-        }
     }
 
     public async Task<PagedResult<DailyTaskViewModel>> GetPagedDailyTasksAsync(
@@ -477,8 +448,8 @@ public class TaskService(
         IQueryable<ProfTask> query = taskRepository
             .GetAllAttached()
             .Include(x => x.ProfProject)
-            .Where(x => !x.IsDeleted)
-            .OrderBy(x => x.IsCompleted);
+            .Where(x => !x.IsDeleted && !x.IsCompleted)
+            .OrderBy(x => x.ProfProject.Id);
 
         int totalCount = await query
             .CountAsync();
@@ -509,7 +480,8 @@ public class TaskService(
     }
 
     private async Task CheckFinalVote(
-        int taskId)
+        int taskId,
+        ProfUserTask userTask)
     {
         ProfTask? task = await taskRepository
           .GetAllAttached()
@@ -529,6 +501,11 @@ public class TaskService(
             if (!await taskRepository.UpdateAsync(task))
             {
                 throw new ItemNotUpdatedException($"Task with id `{taskId}` couldn't be completed");
+            }
+
+            if (!await userTasksRepository.DeleteAsync(userTask))
+            {
+                throw new ItemNotUpdatedException($"User Task couldn't be deleted");
             }
         }
     }

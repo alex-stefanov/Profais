@@ -334,23 +334,4 @@ public class TaskController(
             return StatusCode(500);
         }
     }
-
-    [HttpPost]
-    [Authorize(Roles = ManagerRoleName)]
-    public async Task<IActionResult> ResetCompletedTasks()
-    {
-        try
-        {
-            await taskService
-                .ResetTasksAsync();
-
-            return RedirectToAction(nameof(DailyTasks));
-        }
-        catch (Exception ex)
-        {
-            logger.LogError($"An error occurred while resetting completed tasks. Exception: {ex.Message}");
-            TempData["ErrorMessage"] = $"An unexpected error occurred. {ex.Message}";
-            return StatusCode(500);
-        }
-    }
 }

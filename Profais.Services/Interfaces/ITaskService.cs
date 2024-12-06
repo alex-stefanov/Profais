@@ -35,7 +35,5 @@ public interface ITaskService
 
     Task VoteAsync(string userId, int taskId);
 
-    Task ResetTasksAsync();
-
     Task<PagedResult<DailyTaskViewModel>> GetPagedDailyTasksAsync(int pageNumber, int pageSize);
 }
