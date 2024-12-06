@@ -28,6 +28,9 @@ public class WorkerService(
         IEnumerable<ProfUser> managerUsers = await userManager
             .GetUsersInRoleAsync(ManagerRoleName);
 
+        IEnumerable<ProfUser> clientUsers = await userManager
+            .GetUsersInRoleAsync(ClientRoleName);
+
         List<string> idsNotToSelect = [];
 
         idsNotToSelect
@@ -38,13 +41,17 @@ public class WorkerService(
             .AddRange(managerUsers
                 .Select(x => x.Id));
 
+        idsNotToSelect
+            .AddRange(clientUsers
+                .Select(x => x.Id));
+
         IQueryable<ProfUser> query = userRepository
             .GetAllAttached()
             .Include(u => u.UserTasks)
                 .ThenInclude(ut => ut.Task)
             .Where(u => !u.UserTasks
                 .Any(ut => !ut.Task.IsCompleted)
-                && !idsNotToSelect.Contains(u.Id));
+                     && !idsNotToSelect.Contains(u.Id));
 
         int totalCount = await query
             .CountAsync();

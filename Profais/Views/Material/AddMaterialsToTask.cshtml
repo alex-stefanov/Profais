@@ -17,7 +17,7 @@
     </h2>
 
     <form id="assignMaterialsForm" asp-action="AssignMaterialsToTask" asp-controller="Material" method="post">
-        <input value="@Model.AdditionalProperty" name="taskId" />
+        <input value="@Model.AdditionalProperty" hidden name="taskId" />
         <input id="selectedMaterialIdsId" value="" hidden name="selectedMaterialIds" />
 
         <div class="row">

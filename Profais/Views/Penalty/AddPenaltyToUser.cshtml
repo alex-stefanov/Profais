@@ -12,7 +12,7 @@
 
     <form asp-action="AddPenaltyToUser" asp-controller="Penalty" method="post">
         <div>
-            <label asp-for="SelectedUserId" class="form-label" />
+            <label asp-for="SelectedUserId" class="form-label"></label>
             <select asp-for="SelectedUserId" class="form-control">
                 <option value="">
                     --Select User--
@@ -28,7 +28,7 @@
         </div>
 
         <div>
-            <label asp-for="SelectedPenaltyId" class="form-label" />
+            <label asp-for="SelectedPenaltyId" class="form-label"></label>
             <select asp-for="SelectedPenaltyId" class="form-control">
                 <option value="">
                     --Select Penalty--
@@ -42,8 +42,6 @@
                 }
             </select>
         </div>
-
-        <hr />
 
         <div>
             <button type="submit" class="btn btn-primary mt-3">

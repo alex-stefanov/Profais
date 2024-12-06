@@ -52,16 +52,16 @@ public class TaskController(
     }
 
     [HttpGet]
-    [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
+    [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName},{SpecialistRoleName}")]
     public async Task<IActionResult> ViewTasks(
         int projectId,
-        int page = 1,
+        int pageNumber = 1,
         int pageSize = 6)
     {
         try
         {
             PagedResult<TaskViewModel> model = await taskService
-                .GetPagedTasksByProjectIdAsync(projectId, page, pageSize);
+                .GetPagedTasksByProjectIdAsync(projectId, pageNumber, pageSize);
 
             model.AdditionalProperty = projectId;
 
@@ -292,7 +292,7 @@ public class TaskController(
             await taskService
                 .VoteAsync(userId, taskId);
 
-            return RedirectToAction(nameof(ViewMyTask));
+            return RedirectToAction("Index","Home");
         }
         catch (ItemNotFoundException ex)
         {
@@ -317,13 +317,13 @@ public class TaskController(
     [HttpGet]
     [Authorize(Roles = ManagerRoleName)]
     public async Task<IActionResult> DailyTasks(
-        int page = 1,
+        int pageNumber = 1,
         int pageSize = 6)
     {
         try
         {
             PagedResult<DailyTaskViewModel> model = await taskService
-                .GetPagedDailyTasksAsync(page, pageSize);
+                .GetPagedDailyTasksAsync(pageNumber, pageSize);
 
             return View(model);
         }

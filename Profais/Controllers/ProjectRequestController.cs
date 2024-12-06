@@ -75,13 +75,13 @@ public class ProjectRequestController(
     [HttpGet]
     [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
     public async Task<IActionResult> ViewOnGoingProjectRequests(
-        int page = 1,
+        int pageNumber = 1,
         int pageSize = 10)
     {
         try
         {
             PagedResult<CollectionProjectRequestViewModel> model = await projectRequestService
-                .GetPagedProjectRequestsAsync(page, pageSize, Pending);
+                .GetPagedProjectRequestsAsync(pageNumber, pageSize, Pending);
 
             return View(model);
         }
@@ -96,13 +96,13 @@ public class ProjectRequestController(
     [HttpGet]
     [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
     public async Task<IActionResult> ViewApprovedProjectRequests(
-        int page = 1,
+        int pageNumber = 1,
         int pageSize = 10)
     {
         try
         {
             PagedResult<CollectionProjectRequestViewModel> model = await projectRequestService
-                .GetPagedProjectRequestsAsync(page, pageSize, Approved);
+                .GetPagedProjectRequestsAsync(pageNumber, pageSize, Approved);
 
             return View(model);
         }
@@ -117,13 +117,13 @@ public class ProjectRequestController(
     [HttpGet]
     [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
     public async Task<IActionResult> ViewDeclinedProjectRequests(
-        int page = 1,
+        int pageNumber = 1,
         int pageSize = 10)
     {
         try
         {
             PagedResult<CollectionProjectRequestViewModel> model = await projectRequestService
-                .GetPagedProjectRequestsAsync(page, pageSize, Declined);
+                .GetPagedProjectRequestsAsync(pageNumber, pageSize, Declined);
 
             return View(model);
         }

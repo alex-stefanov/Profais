@@ -376,19 +376,18 @@ public class TaskService(
         ProfUserTask userTask = await userTasksRepository
             .GetAllAttached()
             .Include(x => x.Task)
-            .ThenInclude(x => x.ProfProject)
-            .FirstOrDefaultAsync(x => x.WorkerId == userId && x.Task.IsDeleted == false) 
-            ?? throw new ItemNotFoundException($"UserTask for user with id `{userId}` not found");
+                .ThenInclude(t => t.ProfProject)
+            .Include(x => x.Task)
+                .ThenInclude(t => t.TaskMaterials)
+                    .ThenInclude(tm => tm.Material)
+            .Include(x => x.Task)
+                .ThenInclude(t => t.UserTasks)
+                    .ThenInclude(ut => ut.Worker)
+            .FirstOrDefaultAsync(x => x.WorkerId == userId && !x.Task.IsDeleted && !x.Task.IsCompleted)
+            ?? throw new ItemNotFoundException($"No available daily task");
 
-        ProfTask task = await taskRepository
-            .GetAllAttached()
-            .Where(x => x.Id == userTask.TaskId && x.IsDeleted == false)
-            .Include(x => x.TaskMaterials)
-                .ThenInclude(t => t.Material)
-            .Include(x => x.UserTasks)
-                .ThenInclude(u => u.Worker)
-            .FirstOrDefaultAsync()
-            ?? throw new ItemNotFoundException($"Task with id `{userTask.TaskId}` not found");
+        ProfTask task = userTask.Task 
+            ?? throw new ItemNotFoundException($"No available daily task");
 
         var model = new MyTaskViewModel
         {
@@ -427,7 +426,7 @@ public class TaskService(
         ProfUserTask userTask = await userTasksRepository
            .GetAllAttached()
            .Include(x => x.Task)
-           .FirstOrDefaultAsync(x => x.WorkerId == userId && x.Task.IsDeleted == false) 
+           .FirstOrDefaultAsync(x => x.WorkerId == userId && !x.Task.IsDeleted && !x.Task.IsCompleted) 
            ?? throw new ItemNotFoundException($"User task with ids: user `{userId}`, task `{taskId}` not found");
 
         userTask.IsVoted = true;

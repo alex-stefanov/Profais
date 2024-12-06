@@ -89,8 +89,7 @@
             </ul>
 
             @if ((User.IsInRole(ManagerRoleName)
-                || User.IsInRole(AdminRoleName)
-                || User.IsInRole(SpecialistRoleName))
+                || User.IsInRole(AdminRoleName))
                 && !Model.IsCompleted)
             {
                 <div class="mt-4 d-flex flex-wrap gap-2">

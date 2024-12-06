@@ -108,7 +108,9 @@
                     </button>
                 </form>
 
-                @if (!Model.IsCompleted)
+                @if ((User.IsInRole(ManagerRoleName)
+                    || User.IsInRole(AdminRoleName))
+                    && !Model.IsCompleted)
                 {
                     <form asp-action="AddTask" asp-controller="Task" method="get" class="d-inline">
                         <input asp-for="Id" hidden name="projectId" />
