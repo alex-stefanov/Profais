@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Profais.Common.Options;
 using Profais.Data;
@@ -77,7 +78,10 @@ public class Program
             .RegisterUserDefinedServices();
 
         builder.Services
-            .AddControllersWithViews();
+            .AddControllersWithViews(cfg =>
+            {
+                cfg.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+            });
 
         builder.Services
             .AddRazorPages()
@@ -100,7 +104,7 @@ public class Program
         {
             app.UseExceptionHandler("/Home/Error500");
 
-            app.UseStatusCodePagesWithReExecute("/Home/Error404");
+            app.UseStatusCodePagesWithRedirects("/Home/Error{0}");
 
             //app.UseDeveloperExceptionPage();
         }
@@ -108,7 +112,7 @@ public class Program
         {
             app.UseExceptionHandler("/Home/Error500");
 
-            app.UseStatusCodePagesWithReExecute("/Home/Error404");
+            app.UseStatusCodePagesWithRedirects("/Home/Error{0}");
         }
 
         app.UseHttpsRedirection();
