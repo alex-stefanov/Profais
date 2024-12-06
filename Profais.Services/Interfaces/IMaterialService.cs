@@ -13,6 +13,8 @@ public interface IMaterialService
 
     Task<PagedResult<MaterialViewModel>> GetPagedMaterialsForTaskAsync(int pageNumber, int pageSize, int taskId);
 
+    Task<PagedResult<MaterialViewModel>> GetPagedMaterialsForDeletionTaskAsync(int pageNumber, int pageSize, int taskId);
+
     Task AssignMaterialsToTaskAsync(int taskId, IEnumerable<int> materialIds);
 
     Task RemoveMaterialsFromTaskAsync(int taskId, IEnumerable<int> materialIds);

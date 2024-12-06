@@ -78,7 +78,7 @@ public class MaterialController(
         try
         {
             PagedResult<MaterialViewModel> model = await materialService
-                .GetPagedMaterialsForTaskAsync(pageNumber, pageSize, taskId);
+                .GetPagedMaterialsForDeletionTaskAsync(pageNumber, pageSize, taskId);
 
             return View(model);
         }

@@ -117,6 +117,14 @@
                         </button>
                     </form>
 
+                    <form asp-action="RemoveMaterials" asp-controller="Material" method="get">
+                        <input value="@Model.Id" hidden name="taskId" />
+
+                        <button type="submit" class="btn btn-danger">
+                            Remove Materials
+                        </button>
+                    </form>
+
                     <form asp-action="CompleteTask" asp-controller="Task" method="post">
                         <input value="@Model.Id" hidden name="taskId" />
 

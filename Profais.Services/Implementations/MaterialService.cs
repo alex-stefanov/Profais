@@ -66,7 +66,7 @@ public class MaterialService(
             .GetByIdAsync(id)
             ?? throw new ItemNotFoundException($"Material with id `{id}` not found");
 
-        if(!await materialRepository.DeleteAsync(material))
+        if (!await materialRepository.DeleteAsync(material))
         {
             throw new ItemNotDeletedException($"Material with id `{id}` couldn't be removed");
         }
@@ -118,6 +118,44 @@ public class MaterialService(
     {
         IQueryable<Material> query = materialRepository
             .GetAllAttached();
+
+        int totalCount = await query
+            .CountAsync();
+
+        List<MaterialViewModel> items = await query
+            .OrderBy(x => x.Name)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .Select(x => new MaterialViewModel
+            {
+                Id = x.Id,
+                Name = x.Name,
+                UsedFor = x.UsedForId,
+            })
+            .ToListAsync();
+
+        return new PagedResult<MaterialViewModel>
+        {
+            Items = items,
+            AdditionalProperty = taskId,
+            PaginationViewModel = new PaginationViewModel
+            {
+                CurrentPage = pageNumber,
+                TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize),
+                PageSize = pageSize,
+            },
+        };
+    }
+
+    public async Task<PagedResult<MaterialViewModel>> GetPagedMaterialsForDeletionTaskAsync(
+        int pageNumber,
+        int pageSize,
+        int taskId)
+    {
+        IQueryable<Material> query = materialRepository
+            .GetAllAttached()
+            .Include(x => x.TaskMaterials)
+            .Where(x => x.TaskMaterials.Any(x => x.TaskId == taskId));
 
         int totalCount = await query
             .CountAsync();

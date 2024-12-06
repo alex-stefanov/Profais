@@ -1,1 +1,91 @@
-﻿
+﻿@using Profais.Services.ViewModels.Material;
+@using Profais.Services.ViewModels.Shared;
+@model PagedResult<MaterialViewModel>
+
+@{
+    ViewData["Title"] = "Material - Remove Materials";
+
+    Model.PaginationViewModel.Area = "";
+    Model.PaginationViewModel.Controller = "Material";
+    Model.PaginationViewModel.Action = "RemoveMaterials";
+    Model.PaginationViewModel.RouteParams.Add("taskId", Model.AdditionalProperty!);
+}
+
+<div class="container mt-4">
+    <h2>
+        @ViewData["Title"]
+    </h2>
+
+    <form id="removeMaterialsForm" asp-action="RemoveMaterialsFromTask" asp-controller="Material" method="post">
+        <input value="@Model.AdditionalProperty" hidden name="taskId" />
+        <input id="selectedMaterialIds" value="" hidden name="selectedMaterialIds" />
+
+        <div class="row">
+            @foreach (MaterialViewModel material in Model.Items)
+            {
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                @($"{material.Name} {material.UsedFor.ToString()}")
+                            </h5>
+
+                            <div class="form-check">
+                                <input type="checkbox"
+                                       value="@material.Id"
+                                       id="material-@material.Id"
+                                       class="form-check-input" />
+
+                                <label for="material-@material.Id" class="form-check-label">
+                                    Select
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <partial name="_Pagination" model="Model.PaginationViewModel" />
+
+        <button type="submit" class="btn btn-primary mt-3">
+            Remove Selected Materials
+        </button>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const selectedMaterialIds = JSON.parse(localStorage.getItem('selectedMaterialIds')) || [];
+
+            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                if (selectedMaterialIds.includes(checkbox.value)) {
+                    checkbox.checked = true;
+                }
+            });
+
+            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.addEventListener('change', () => {
+                    let selectedIds = JSON.parse(localStorage.getItem('selectedMaterialIds')) || [];
+
+                    if (checkbox.checked) {
+                        if (!selectedIds.includes(checkbox.value)) {
+                            selectedIds.push(checkbox.value);
+                        }
+                    } else {
+                        selectedIds = selectedIds.filter(id => id !== checkbox.value);
+                    }
+
+                    localStorage.setItem('selectedMaterialIds', JSON.stringify(selectedIds));
+                });
+            });
+        });
+
+        document.querySelector('#removeMaterialsForm').addEventListener('submit', function () {
+            const selectedMaterialIds = JSON.parse(localStorage.getItem('selectedMaterialIds')) || [];
+            document.getElementById('selectedMaterialIds').value = selectedMaterialIds.join(',');
+            localStorage.removeItem('selectedMaterialIds');
+        });
+    </script>
+}
