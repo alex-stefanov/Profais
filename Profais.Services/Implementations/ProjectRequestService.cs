@@ -1,11 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
+
 using Profais.Common.Enums;
 using Profais.Common.Exceptions;
 using Profais.Data.Models;
 using Profais.Data.Repositories;
 using Profais.Services.Interfaces;
-using Profais.Services.ViewModels.ProjectRequest;
 using Profais.Services.ViewModels.Shared;
+using Profais.Services.ViewModels.ProjectRequest;
+
 using static Profais.Common.Enums.RequestStatus;
 
 namespace Profais.Services.Implementations;
@@ -17,7 +19,7 @@ public class ProjectRequestService(
 {
     public AddProjectRequestViewModel CreateEmptyProjectRequestViewModel(
         string userId)
-        => new AddProjectRequestViewModel
+        => new()
         {
             ClientId = userId,
             ClientNumber = string.Empty,
@@ -84,8 +86,7 @@ public class ProjectRequestService(
                 ClientName = $"{pr.Client.FirstName} {pr.Client.LastName}"
             });
 
-        int totalCount = await query
-            .CountAsync();
+        int totalCount = await query.CountAsync();
 
         List<CollectionProjectRequestViewModel> items = await query
             .Skip((page - 1) * pageSize)
@@ -107,26 +108,24 @@ public class ProjectRequestService(
     public async Task ApproveProjectRequestById(
         int projectRequestId)
     {
-        ProfProjectRequest profProjectRequest = projectRequestRepository
-            .GetById(projectRequestId) 
-            ?? throw new ItemNotFoundException($"ProjectRequest with id `{projectRequestId}` not found");
-
-        profProjectRequest.Status = Approved;
-
-        if (!await projectRequestRepository.UpdateAsync(profProjectRequest))
-        {
-            throw new ItemNotUpdatedException($"Project request with id `{projectRequestId}` couldn't be updated");
-        }
+        await UpdateProjectRequestStatus(projectRequestId, Approved);
     }
 
     public async Task DeclineProjectRequestById(
         int projectRequestId)
     {
-        ProfProjectRequest profProjectRequest = projectRequestRepository
-            .GetById(projectRequestId) 
+        await UpdateProjectRequestStatus(projectRequestId, Declined);
+    }
+
+    private async Task UpdateProjectRequestStatus(
+        int projectRequestId,
+        RequestStatus newStatus)
+    {
+        ProfProjectRequest profProjectRequest = await projectRequestRepository
+            .GetByIdAsync(projectRequestId)
             ?? throw new ItemNotFoundException($"ProjectRequest with id `{projectRequestId}` not found");
 
-        profProjectRequest.Status = Declined;
+        profProjectRequest.Status = newStatus;
 
         if (!await projectRequestRepository.UpdateAsync(profProjectRequest))
         {

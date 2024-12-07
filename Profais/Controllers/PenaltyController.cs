@@ -1,19 +1,21 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Profais.Common.Exceptions;
-using Profais.Data.Models;
-using Profais.Services.Interfaces;
-using Profais.Services.ViewModels.Penalty;
-using Profais.Services.ViewModels.Shared;
+
+using EXCEPTIONS = Profais.Common.Exceptions;
+using MODELS = Profais.Data.Models;
+using INTERFACES = Profais.Services.Interfaces;
+using VIEW_MODELS_PENALTY = Profais.Services.ViewModels.Penalty;
+using VIEW_MODELS_SHARED = Profais.Services.ViewModels.Shared;
+
 using static Profais.Common.Constants.UserConstants;
 
 namespace Profais.Controllers;
 
 [Authorize]
 public class PenaltyController(
-    IPenaltyService penaltyService,
-    UserManager<ProfUser> userManager,
+    INTERFACES.IPenaltyService penaltyService,
+    UserManager<MODELS.ProfUser> userManager,
     ILogger<PenaltyController> logger)
     : Controller
 {
@@ -35,7 +37,7 @@ public class PenaltyController(
 
         try
         {
-            PagedResult<CollectionPenaltyViewModel> model = await penaltyService
+            VIEW_MODELS_SHARED.PagedResult<VIEW_MODELS_PENALTY.CollectionPenaltyViewModel> model = await penaltyService
                 .GetPagedPenaltiesByUserIdAsync(userId, pageNumber, pageSize);
 
             return View(model);
@@ -55,12 +57,12 @@ public class PenaltyController(
     {
         try
         {
-            PenaltyViewModel model = await penaltyService
+            VIEW_MODELS_PENALTY.PenaltyViewModel model = await penaltyService
                 .GetPenaltyById(penaltyId);
 
             return View(model);
         }
-        catch (ItemNotFoundException ex)
+        catch (EXCEPTIONS.ItemNotFoundException ex)
         {
             logger.LogError($"No penalty found with id {penaltyId}. Exception: {ex.Message}");
             TempData["ErrorMessage"] = $"Penalty with id {penaltyId} not found. {ex.Message}";
@@ -82,7 +84,7 @@ public class PenaltyController(
     {
         try
         {
-            PagedResult<FullCollectionPenaltyViewModel> model = await penaltyService
+            VIEW_MODELS_SHARED.PagedResult<VIEW_MODELS_PENALTY.FullCollectionPenaltyViewModel> model = await penaltyService
                 .GetAllPagedPenaltiesAsync(pageNumber, pageSize);
 
             return View(model);
@@ -101,7 +103,7 @@ public class PenaltyController(
     {
         try
         {
-            UserPenaltyViewModel model = await penaltyService
+            VIEW_MODELS_PENALTY.UserPenaltyViewModel model = await penaltyService
                 .GetAllPenaltyUsersAsync();
 
             return View(model);
@@ -117,9 +119,9 @@ public class PenaltyController(
     [HttpPost]
     [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
     public async Task<IActionResult> AddPenaltyToUser(
-        UserPenaltyViewModel model)
+        VIEW_MODELS_PENALTY.UserPenaltyViewModel model)
     {
-        if(model.SelectedUserId is null)
+        if (model.SelectedUserId is null)
         {
             ModelState.AddModelError(nameof(model.SelectedUserId), "User not selected");
             return View(model);
@@ -147,8 +149,8 @@ public class PenaltyController(
     }
 
     [HttpPost]
-	[Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
-	public async Task<IActionResult> RemoveUserPenalty(
+    [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
+    public async Task<IActionResult> RemoveUserPenalty(
         string userId,
         int penaltyId)
     {
@@ -159,13 +161,13 @@ public class PenaltyController(
 
             return RedirectToAction(nameof(GetAllPenalties));
         }
-        catch (ItemNotFoundException ex)
+        catch (EXCEPTIONS.ItemNotFoundException ex)
         {
             logger.LogError($"No penalty or user found while removing penalty. Exception: {ex.Message}");
             TempData["ErrorMessage"] = $"Penalty or user not found. {ex.Message}";
             return NotFound();
         }
-        catch (ItemNotDeletedException ex)
+        catch (EXCEPTIONS.ItemNotDeletedException ex)
         {
             logger.LogError($"Attempt to delete penalty while removing failed. Exception: {ex.Message}");
             TempData["ErrorMessage"] = $"Unable to delete penalty while removing. {ex.Message}";

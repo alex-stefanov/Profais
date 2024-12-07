@@ -1,18 +1,20 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Profais.Common.Exceptions;
-using Profais.Data.Models;
-using Profais.Services.Interfaces;
-using Profais.Services.ViewModels.WorkerRequest;
+
+using EXCEPTIONS = Profais.Common.Exceptions;
+using MODELS = Profais.Data.Models;
+using INTERFACES = Profais.Services.Interfaces;
+using VIEW_MODELS = Profais.Services.ViewModels.WorkerRequest;
+
 using static Profais.Common.Constants.UserConstants;
 
 namespace Profais.Controllers;
 
 [Authorize]
 public class WorkerRequestController(
-    IWorkerRequestService requestService,
-    UserManager<ProfUser> userManager,
+    INTERFACES.IWorkerRequestService requestService,
+    UserManager<MODELS.ProfUser> userManager,
     ILogger<WorkerRequestController> logger)
     : Controller
 {
@@ -31,12 +33,12 @@ public class WorkerRequestController(
 
         try
         {
-            MakeWorkerRequestViewModel model = await requestService
+            VIEW_MODELS.MakeWorkerRequestViewModel model = await requestService
                 .GetEmptyWorkerViewModelAsync(userId);
 
             return View(model);
         }
-        catch (ItemNotFoundException ex)
+        catch (EXCEPTIONS.ItemNotFoundException ex)
         {
             logger.LogError($"No worker request found for user {userId}. Exception: {ex.Message}");
             TempData["ErrorMessage"] = $"No worker request found for user {userId}. {ex.Message}";
@@ -53,7 +55,7 @@ public class WorkerRequestController(
     [HttpPost]
     [Authorize(Roles = ClientRoleName)]
     public async Task<IActionResult> MakeWorkerRequest(
-        MakeWorkerRequestViewModel model)
+        VIEW_MODELS.MakeWorkerRequestViewModel model)
     {
         if (!ModelState.IsValid)
         {
@@ -81,7 +83,7 @@ public class WorkerRequestController(
     {
         try
         {
-            IEnumerable<WorkerRequestViewModel> model = await requestService
+            IEnumerable<VIEW_MODELS.WorkerRequestViewModel> model = await requestService
                 .GetAllWorkersViewModelsAsync();
 
             return View(model);
@@ -97,7 +99,7 @@ public class WorkerRequestController(
     [HttpPost]
     [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
     public async Task<IActionResult> ApproveWorkerRequest(
-        ActionWorkerRequestViewModel model)
+        VIEW_MODELS.ActionWorkerRequestViewModel model)
     {
         if (!ModelState.IsValid
             || model is null)
@@ -114,13 +116,13 @@ public class WorkerRequestController(
 
             return RedirectToAction(nameof(PreviewWorkerRequests));
         }
-        catch (ItemNotFoundException ex)
+        catch (EXCEPTIONS.ItemNotFoundException ex)
         {
             logger.LogError($"No worker request found with ID {model.Id}. Exception: {ex.Message}");
             TempData["ErrorMessage"] = $"Worker request with ID {model.Id} not found. {ex.Message}";
             return NotFound();
         }
-        catch (ItemNotUpdatedException ex)
+        catch (EXCEPTIONS.ItemNotUpdatedException ex)
         {
             logger.LogError($"Failed to approve worker request with ID {model.Id}. Exception: {ex.Message}");
             TempData["ErrorMessage"] = $"Unable to approve worker request with ID {model.Id}. {ex.Message}";
@@ -137,7 +139,7 @@ public class WorkerRequestController(
     [HttpPost]
     [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
     public async Task<IActionResult> DeclineWorkerRequest(
-        ActionWorkerRequestViewModel model)
+        VIEW_MODELS.ActionWorkerRequestViewModel model)
     {
         if (!ModelState.IsValid
             || model is null)
@@ -154,13 +156,13 @@ public class WorkerRequestController(
 
             return RedirectToAction(nameof(PreviewWorkerRequests));
         }
-        catch (ItemNotFoundException ex)
+        catch (EXCEPTIONS.ItemNotFoundException ex)
         {
             logger.LogError($"No worker request found with ID {model.Id}. Exception: {ex.Message}");
             TempData["ErrorMessage"] = $"Worker request with ID {model.Id} not found. {ex.Message}";
             return NotFound();
         }
-        catch (ItemNotUpdatedException ex)
+        catch (EXCEPTIONS.ItemNotUpdatedException ex)
         {
             logger.LogError($"Failed to decline worker request with ID {model.Id}. Exception: {ex.Message}");
             TempData["ErrorMessage"] = $"Unable to decline worker request with ID {model.Id}. {ex.Message}";

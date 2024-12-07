@@ -1,19 +1,21 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Profais.Common.Exceptions;
-using Profais.Data.Models;
-using Profais.Services.Interfaces;
-using Profais.Services.ViewModels.Shared;
-using Profais.Services.ViewModels.Task;
+
+using EXCEPTIONS = Profais.Common.Exceptions;
+using MODELS = Profais.Data.Models;
+using INTERFACES = Profais.Services.Interfaces;
+using VIEW_MODELS_TASK = Profais.Services.ViewModels.Task;
+using VIEW_MODELS_SHARED = Profais.Services.ViewModels.Shared;
+
 using static Profais.Common.Constants.UserConstants;
 
 namespace Profais.Controllers;
 
 [Authorize]
 public class TaskController(
-    UserManager<ProfUser> userManager,
-    ITaskService taskService,
+    INTERFACES.ITaskService taskService,
+    UserManager<MODELS.ProfUser> userManager,
     ILogger<TaskController> logger)
     : Controller
 {
@@ -32,12 +34,12 @@ public class TaskController(
 
         try
         {
-            MyTaskViewModel model = await taskService
+            VIEW_MODELS_TASK.MyTaskViewModel model = await taskService
                 .GetMyTaskByIdAsync(userId);
 
             return View(model);
         }
-        catch (ItemNotFoundException ex)
+        catch (EXCEPTIONS.ItemNotFoundException ex)
         {
             logger.LogError($"No task found for user with id `{userId}`. Exception: {ex.Message}");
             TempData["ErrorMessage"] = $"No task found for user with id `{userId}`. {ex.Message}";
@@ -60,7 +62,7 @@ public class TaskController(
     {
         try
         {
-            PagedResult<TaskViewModel> model = await taskService
+            VIEW_MODELS_SHARED.PagedResult<VIEW_MODELS_TASK.TaskViewModel> model = await taskService
                 .GetPagedTasksByProjectIdAsync(projectId, pageNumber, pageSize);
 
             model.AdditionalProperty = projectId;
@@ -81,12 +83,12 @@ public class TaskController(
     {
         try
         {
-            TaskViewModel model = await taskService
+            VIEW_MODELS_TASK.TaskViewModel model = await taskService
                 .GetTaskByIdAsync(taskId);
 
             return View(model);
         }
-        catch (ItemNotFoundException ex)
+        catch (EXCEPTIONS.ItemNotFoundException ex)
         {
             logger.LogError($"No task found with id `{taskId}`. Exception: {ex.Message}");
             TempData["ErrorMessage"] = $"No task found with id `{taskId}`. {ex.Message}";
@@ -116,13 +118,13 @@ public class TaskController(
 
             return RedirectToAction(nameof(ViewTask), new { taskId });
         }
-        catch (ItemNotFoundException ex)
+        catch (EXCEPTIONS.ItemNotFoundException ex)
         {
             logger.LogError($"No task found with id `{taskId}` while trying to complete it. Exception: {ex.Message}");
             TempData["ErrorMessage"] = $"No task found with id `{taskId}`. {ex.Message}";
             return NotFound();
         }
-        catch (ItemNotUpdatedException ex)
+        catch (EXCEPTIONS.ItemNotUpdatedException ex)
         {
             logger.LogError($"Failed to update task with id `{taskId}` while completing it. Exception: {ex.Message}");
             TempData["ErrorMessage"] = $"Unable to update task with id `{taskId}`. {ex.Message}";
@@ -153,13 +155,13 @@ public class TaskController(
 
             return RedirectToAction(nameof(ViewTasks), new { projectId });
         }
-        catch (ItemNotFoundException ex)
+        catch (EXCEPTIONS.ItemNotFoundException ex)
         {
             logger.LogError($"No task found with id `{taskId}` while trying to delete it. Exception: {ex.Message}");
             TempData["ErrorMessage"] = $"No task found with id `{taskId}`. {ex.Message}";
             return NotFound();
         }
-        catch (ItemNotUpdatedException ex)
+        catch (EXCEPTIONS.ItemNotUpdatedException ex)
         {
             logger.LogError($"Failed to update task with id `{taskId}` while attempting to delete it. Exception: {ex.Message}");
             TempData["ErrorMessage"] = $"Unable to update task with id `{taskId}`. {ex.Message}";
@@ -180,7 +182,7 @@ public class TaskController(
     {
         try
         {
-            AddTaskViewModel model = taskService
+            VIEW_MODELS_TASK.AddTaskViewModel model = taskService
                 .GetAddTaskViewModel(projectId);
 
             return View(model);
@@ -196,7 +198,7 @@ public class TaskController(
     [HttpPost]
     [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
     public async Task<IActionResult> AddTask(
-        AddTaskViewModel model)
+        VIEW_MODELS_TASK.AddTaskViewModel model)
     {
         if (!ModelState.IsValid)
         {
@@ -225,12 +227,12 @@ public class TaskController(
     {
         try
         {
-            EditTaskViewModel model = await taskService
+            VIEW_MODELS_TASK.EditTaskViewModel model = await taskService
                 .GetEditTaskByIdAsync(taskId);
 
             return View(model);
         }
-        catch (ItemNotFoundException ex)
+        catch (EXCEPTIONS.ItemNotFoundException ex)
         {
             logger.LogError($"No task found with id {taskId} for editing. Exception: {ex.Message}");
             ViewData["ErrorMessage"] = $"Task with id {taskId} not found for editing. {ex.Message}";
@@ -247,7 +249,7 @@ public class TaskController(
     [HttpPost]
     [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
     public async Task<IActionResult> EditTask(
-        EditTaskViewModel model)
+        VIEW_MODELS_TASK.EditTaskViewModel model)
     {
         if (!ModelState.IsValid)
         {
@@ -261,13 +263,13 @@ public class TaskController(
 
             return RedirectToAction(nameof(ViewTask), new { taskId = model.Id });
         }
-        catch (ItemNotFoundException ex)
+        catch (EXCEPTIONS.ItemNotFoundException ex)
         {
             logger.LogError($"No task found with id {model.Id} for updating. Exception: {ex.Message}");
             TempData["ErrorMessage"] = $"Task with id {model.Id} not found for updating. {ex.Message}";
             return NotFound();
         }
-        catch (ItemNotUpdatedException ex)
+        catch (EXCEPTIONS.ItemNotUpdatedException ex)
         {
             logger.LogError($"Failed to update task with id {model.Id}. Exception: {ex.Message}");
             TempData["ErrorMessage"] = $"Unable to update task with id {model.Id}. {ex.Message}";
@@ -292,15 +294,15 @@ public class TaskController(
             await taskService
                 .VoteAsync(userId, taskId);
 
-            return RedirectToAction("Index","Home");
+            return RedirectToAction("Index", "Home");
         }
-        catch (ItemNotFoundException ex)
+        catch (EXCEPTIONS.ItemNotFoundException ex)
         {
             logger.LogError($"No task found with id {taskId} for voting by user {userId}. Exception: {ex.Message}");
             TempData["ErrorMessage"] = $"Task with id {taskId} not found for voting. {ex.Message}";
             return NotFound();
         }
-        catch (ItemNotUpdatedException ex)
+        catch (EXCEPTIONS.ItemNotUpdatedException ex)
         {
             logger.LogError($"Failed to update task with id {taskId} during the voting process. Exception: {ex.Message}");
             TempData["ErrorMessage"] = $"Unable to update task with id {taskId} during the voting process. {ex.Message}";
@@ -322,7 +324,7 @@ public class TaskController(
     {
         try
         {
-            PagedResult<DailyTaskViewModel> model = await taskService
+            VIEW_MODELS_SHARED.PagedResult<VIEW_MODELS_TASK.DailyTaskViewModel> model = await taskService
                 .GetPagedDailyTasksAsync(pageNumber, pageSize);
 
             return View(model);

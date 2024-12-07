@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
+
 using Profais.Common.Options;
 using Profais.Data;
 using Profais.Data.Models;
 using Profais.Extensions;
+
 using static Profais.Common.Constants.UserConstants;
 
 namespace Profais;

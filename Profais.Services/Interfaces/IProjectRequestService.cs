@@ -1,6 +1,6 @@
-﻿using Profais.Services.ViewModels.ProjectRequest;
+﻿using Profais.Common.Enums;
+using Profais.Services.ViewModels.ProjectRequest;
 using Profais.Services.ViewModels.Shared;
-using Profais.Common.Enums;
 
 namespace Profais.Services.Interfaces;
 

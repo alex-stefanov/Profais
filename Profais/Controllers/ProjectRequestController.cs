@@ -1,20 +1,22 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Profais.Data.Models;
-using Profais.Services.Interfaces;
-using Profais.Services.ViewModels.ProjectRequest;
-using Profais.Services.ViewModels.Shared;
+
+using EXCEPTIONS = Profais.Common.Exceptions;
+using MODELS = Profais.Data.Models;
+using INTERFACES = Profais.Services.Interfaces;
+using VIEW_MODELS_PROJECT_REQUEST = Profais.Services.ViewModels.ProjectRequest;
+using VIEW_MODELS_SHARED = Profais.Services.ViewModels.Shared;
+
 using static Profais.Common.Enums.RequestStatus;
 using static Profais.Common.Constants.UserConstants;
-using Profais.Common.Exceptions;
 
 namespace Profais.Controllers;
 
 [Authorize]
 public class ProjectRequestController(
-    IProjectRequestService projectRequestService,
-    UserManager<ProfUser> userManager,
+    INTERFACES.IProjectRequestService projectRequestService,
+    UserManager<MODELS.ProfUser> userManager,
     ILogger<ProjectRequestController> logger)
     : Controller
 {
@@ -34,7 +36,7 @@ public class ProjectRequestController(
 
         try
         {
-            AddProjectRequestViewModel model = projectRequestService
+            VIEW_MODELS_PROJECT_REQUEST.AddProjectRequestViewModel model = projectRequestService
                 .CreateEmptyProjectRequestViewModel(userId);
 
             return View(model);
@@ -50,7 +52,7 @@ public class ProjectRequestController(
     [HttpPost]
     [Authorize(Roles = ClientRoleName)]
     public async Task<IActionResult> CreateProjectRequest(
-        AddProjectRequestViewModel model)
+        VIEW_MODELS_PROJECT_REQUEST.AddProjectRequestViewModel model)
     {
         if (!ModelState.IsValid)
         {
@@ -80,7 +82,7 @@ public class ProjectRequestController(
     {
         try
         {
-            PagedResult<CollectionProjectRequestViewModel> model = await projectRequestService
+            VIEW_MODELS_SHARED.PagedResult<VIEW_MODELS_PROJECT_REQUEST.CollectionProjectRequestViewModel> model = await projectRequestService
                 .GetPagedProjectRequestsAsync(pageNumber, pageSize, Pending);
 
             return View(model);
@@ -101,7 +103,7 @@ public class ProjectRequestController(
     {
         try
         {
-            PagedResult<CollectionProjectRequestViewModel> model = await projectRequestService
+            VIEW_MODELS_SHARED.PagedResult<VIEW_MODELS_PROJECT_REQUEST.CollectionProjectRequestViewModel> model = await projectRequestService
                 .GetPagedProjectRequestsAsync(pageNumber, pageSize, Approved);
 
             return View(model);
@@ -122,7 +124,7 @@ public class ProjectRequestController(
     {
         try
         {
-            PagedResult<CollectionProjectRequestViewModel> model = await projectRequestService
+            VIEW_MODELS_SHARED.PagedResult<VIEW_MODELS_PROJECT_REQUEST.CollectionProjectRequestViewModel> model = await projectRequestService
                 .GetPagedProjectRequestsAsync(pageNumber, pageSize, Declined);
 
             return View(model);
@@ -142,12 +144,12 @@ public class ProjectRequestController(
     {
         try
         {
-            ProjectRequestViewModel model = await projectRequestService
+            VIEW_MODELS_PROJECT_REQUEST.ProjectRequestViewModel model = await projectRequestService
                 .GetProjectRequestsByIdAsync(projectRequestId);
 
             return View(model);
         }
-        catch (ItemNotFoundException ex)
+        catch (EXCEPTIONS.ItemNotFoundException ex)
         {
             logger.LogError($"No project request found with id {projectRequestId}. Exception: {ex.Message}");
             TempData["ErrorMessage"] = $"Project request with id {projectRequestId} not found. {ex.Message}";
@@ -173,13 +175,13 @@ public class ProjectRequestController(
 
             return RedirectToAction(nameof(ViewApprovedProjectRequests));
         }
-        catch (ItemNotFoundException ex)
+        catch (EXCEPTIONS.ItemNotFoundException ex)
         {
             logger.LogError($"No project request found with id {projectRequestId} for approval. Exception: {ex.Message}");
             TempData["ErrorMessage"] = $"Project request with id {projectRequestId} not found. {ex.Message}";
             return NotFound();
         }
-        catch (ItemNotUpdatedException ex)
+        catch (EXCEPTIONS.ItemNotUpdatedException ex)
         {
             logger.LogError($"Failed to update project request with id {projectRequestId} during approval. Exception: {ex.Message}");
             TempData["ErrorMessage"] = $"Unable to update project request with id {projectRequestId} during approval. {ex.Message}";
@@ -205,13 +207,13 @@ public class ProjectRequestController(
 
             return RedirectToAction(nameof(ViewDeclinedProjectRequests));
         }
-        catch (ItemNotFoundException ex)
+        catch (EXCEPTIONS.ItemNotFoundException ex)
         {
             logger.LogError($"No project request found with id {projectRequestId} for declining. Exception: {ex.Message}");
             TempData["ErrorMessage"] = $"Project request with id {projectRequestId} not found. {ex.Message}";
             return NotFound();
         }
-        catch (ItemNotUpdatedException ex)
+        catch (EXCEPTIONS.ItemNotUpdatedException ex)
         {
             logger.LogError($"Failed to update project request with id {projectRequestId} during decline. Exception: {ex.Message}");
             TempData["ErrorMessage"] = $"Unable to update project request with id {projectRequestId} during decline. {ex.Message}";

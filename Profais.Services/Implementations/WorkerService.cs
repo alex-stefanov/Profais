@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+
 using Profais.Common.Exceptions;
 using Profais.Data.Models;
 using Profais.Data.Repositories;
 using Profais.Services.Interfaces;
 using Profais.Services.ViewModels.Worker;
 using Profais.Services.ViewModels.Shared;
+
 using static Profais.Common.Constants.UserConstants;
 
 namespace Profais.Services.Implementations;
@@ -22,28 +24,7 @@ public class WorkerService(
         int pageSize,
         int taskId)
     {
-        IEnumerable<ProfUser> adminUsers = await userManager
-            .GetUsersInRoleAsync(AdminRoleName);
-
-        IEnumerable<ProfUser> managerUsers = await userManager
-            .GetUsersInRoleAsync(ManagerRoleName);
-
-        IEnumerable<ProfUser> clientUsers = await userManager
-            .GetUsersInRoleAsync(ClientRoleName);
-
-        List<string> idsNotToSelect = [];
-
-        idsNotToSelect
-            .AddRange(adminUsers
-                .Select(x => x.Id));
-
-        idsNotToSelect
-            .AddRange(managerUsers
-                .Select(x => x.Id));
-
-        idsNotToSelect
-            .AddRange(clientUsers
-                .Select(x => x.Id));
+        List<string> idsNotToSelect = await GetExcludedUserIdsAsync();
 
         IQueryable<ProfUser> query = userRepository
             .GetAllAttached()
@@ -53,8 +34,7 @@ public class WorkerService(
                 .Any(ut => !ut.Task.IsCompleted)
                      && !idsNotToSelect.Contains(u.Id));
 
-        int totalCount = await query
-            .CountAsync();
+        int totalCount = await query.CountAsync();
 
         List<UserViewModel> items = await query
             .OrderBy(x => x.FirstName)
@@ -65,10 +45,20 @@ public class WorkerService(
                 Id = u.Id,
                 UserFirstName = u.FirstName,
                 UserLastName = u.LastName,
-                Role = userManager.GetRolesAsync(u).Result
-                    .FirstOrDefault()!
+                Role = string.Empty,
             })
             .ToListAsync();
+
+        foreach (UserViewModel user in items)
+        {
+            ProfUser profUser = await userManager
+                .FindByIdAsync(user.Id)
+                ?? throw new ItemNotFoundException($"User wasnt found with id `{user.Id}`");
+
+            var roles = await userManager.GetRolesAsync(profUser);
+
+            user.Role = roles.FirstOrDefault()!;
+        }
 
         return new PagedResult<UserViewModel>
         {
@@ -95,8 +85,7 @@ public class WorkerService(
             .Where(u => u.UserTasks
                 .Any(ut => ut.TaskId == taskId));
 
-        int totalCount = await query
-            .CountAsync();
+        int totalCount = await query.CountAsync();
 
         List<UserViewModel> items = await query
             .OrderBy(x => x.FirstName)
@@ -107,10 +96,20 @@ public class WorkerService(
                 Id = u.Id,
                 UserFirstName = u.FirstName,
                 UserLastName = u.LastName,
-                Role = userManager.GetRolesAsync(u).Result
-                    .FirstOrDefault()!
+                Role = string.Empty,
             })
             .ToListAsync();
+
+        foreach (UserViewModel user in items)
+        {
+            ProfUser profUser = await userManager
+                .FindByIdAsync(user.Id)
+                ?? throw new ItemNotFoundException($"User wasnt found with id `{user.Id}`");
+
+            var roles = await userManager.GetRolesAsync(profUser);
+
+            user.Role = roles.FirstOrDefault()!;
+        }
 
         return new PagedResult<UserViewModel>
         {
@@ -129,15 +128,10 @@ public class WorkerService(
        int taskId,
        IEnumerable<string> workerIds)
     {
-        ProfTask task = await taskRepository.
-            GetByIdAsync(taskId)
+        ProfTask task = await taskRepository.GetByIdAsync(taskId)
             ?? throw new ItemNotFoundException($"Task with id `{taskId}` not found");
 
-        List<ProfUserTask> existingAssignments = await userTaskRepository
-            .GetAllAttached()
-            .Where(ut => ut.TaskId == taskId && workerIds
-                .Contains(ut.WorkerId))
-            .ToListAsync();
+        List<ProfUserTask> existingAssignments = await GetExistingUserAssignmentsAsync(taskId, workerIds);
 
         List<string> workersToAssign = workerIds
             .Where(workerId => !existingAssignments
@@ -152,8 +146,7 @@ public class WorkerService(
                 WorkerId = workerId
             };
 
-            await userTaskRepository
-                .AddAsync(userTask);
+            await userTaskRepository.AddAsync(userTask);
         }
     }
 
@@ -161,20 +154,39 @@ public class WorkerService(
         int taskId,
         IEnumerable<string> workerIds)
     {
-        ProfTask task = await taskRepository.
-             GetByIdAsync(taskId)
-             ?? throw new ItemNotFoundException($"Task with id `{taskId}` not found");
-
-        List<ProfUserTask> existingAssignments = await userTaskRepository
-            .GetAllAttached()
-            .Where(ut => ut.TaskId == taskId && workerIds
-                .Contains(ut.WorkerId))
-            .ToListAsync();
+        List<ProfUserTask> existingAssignments = await GetExistingUserAssignmentsAsync(taskId, workerIds);
 
         foreach (ProfUserTask assignment in existingAssignments)
         {
-            await userTaskRepository
-                .DeleteAsync(assignment);
+            await userTaskRepository.DeleteAsync(assignment);
         }
+    }
+
+    private async Task<List<string>> GetExcludedUserIdsAsync()
+    {
+        var adminUsers = await userManager.GetUsersInRoleAsync(AdminRoleName);
+        var managerUsers = await userManager.GetUsersInRoleAsync(ManagerRoleName);
+        var clientUsers = await userManager.GetUsersInRoleAsync(ClientRoleName);
+
+        List<string> excludedUserIds =
+        [
+            .. adminUsers.Select(x => x.Id),
+            .. managerUsers.Select(x => x.Id),
+            .. clientUsers.Select(x => x.Id),
+        ];
+
+        return excludedUserIds;
+    }
+
+    private async Task<List<ProfUserTask>> GetExistingUserAssignmentsAsync(
+        int taskId,
+        IEnumerable<string> workerIds)
+    {
+        List<ProfUserTask> result = await userTaskRepository
+            .GetAllAttached()
+            .Where(ut => ut.TaskId == taskId && workerIds.Contains(ut.WorkerId))
+            .ToListAsync();
+
+        return result;
     }
 }

@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Profais.Common.Exceptions;
-using Profais.Services.Interfaces;
-using Profais.Services.ViewModels.Material;
-using Profais.Services.ViewModels.Shared;
+
+using EXCEPTIONS = Profais.Common.Exceptions;
+using INTERFACES = Profais.Services.Interfaces;
+using VIEW_MODELS_MATERIAl = Profais.Services.ViewModels.Material;
+using VIEW_MODELS_SHARED = Profais.Services.ViewModels.Shared;
+
 using static Profais.Common.Constants.UserConstants;
 
 namespace Profais.Areas.Admin.Controllers;
@@ -11,7 +13,7 @@ namespace Profais.Areas.Admin.Controllers;
 [Area(AdminRoleName)]
 [Authorize(Roles = AdminRoleName)]
 public class MaterialPanelController(
-    IMaterialService materialService,
+    INTERFACES.IMaterialService materialService,
     ILogger<MaterialPanelController> logger)
     : Controller
 {
@@ -25,7 +27,7 @@ public class MaterialPanelController(
 
     [HttpPost]
     public async Task<IActionResult> Register(
-        MaterialCreateViewModel model)
+        VIEW_MODELS_MATERIAl.MaterialCreateViewModel model)
     {
         if (!ModelState.IsValid)
         {
@@ -55,7 +57,7 @@ public class MaterialPanelController(
     {
         try
         {
-            PagedResult<MaterialViewModel> model = await materialService
+            VIEW_MODELS_SHARED.PagedResult<VIEW_MODELS_MATERIAl.MaterialViewModel> model = await materialService
                 .GetPagedMaterialsAsync(searchTerm, pageNumber, pageSize);
 
             ViewData["SearchTerm"] = searchTerm;
@@ -81,13 +83,13 @@ public class MaterialPanelController(
 
             return RedirectToAction(nameof(ViewAll));
         }
-        catch (ItemNotFoundException ex)
+        catch (EXCEPTIONS.ItemNotFoundException ex)
         {
             logger.LogError($"No material found while removing material. Exception: {ex.Message}");
             TempData["ErrorMessage"] = $"Material not found. {ex.Message}";
             return NotFound();
         }
-        catch (ItemNotDeletedException ex)
+        catch (EXCEPTIONS.ItemNotDeletedException ex)
         {
             logger.LogError($"Attempt to delete material failed. Exception: {ex.Message}");
             TempData["ErrorMessage"] = $"Unable to delete material. {ex.Message}";

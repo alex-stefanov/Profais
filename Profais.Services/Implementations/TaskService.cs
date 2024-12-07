@@ -1,5 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Profais.Common.Enums;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+
+using Profais.Common.Exceptions;
 using Profais.Data.Models;
 using Profais.Data.Repositories;
 using Profais.Services.Interfaces;
@@ -7,8 +9,6 @@ using Profais.Services.ViewModels.Task;
 using Profais.Services.ViewModels.Material;
 using Profais.Services.ViewModels.Worker;
 using Profais.Services.ViewModels.Shared;
-using Profais.Common.Exceptions;
-using Microsoft.AspNetCore.Identity;
 
 namespace Profais.Services.Implementations;
 
@@ -16,14 +16,12 @@ public class TaskService(
     UserManager<ProfUser> userManager,
     IRepository<ProfTask, int> taskRepository,
     IRepository<ProfUserTask, object> userTasksRepository,
-    IRepository<TaskMaterial, object> taskMaterialRepository,
-    IRepository<Material, int> materialRepository,
     IRepository<UserProject, object> userProjectRepository)
     : ITaskService
 {
     public AddTaskViewModel GetAddTaskViewModel(
       int projectId)
-      => new AddTaskViewModel
+      => new()
       {
           Title = string.Empty,
           Description = string.Empty,
@@ -59,6 +57,20 @@ public class TaskService(
             .FirstOrDefaultAsync()
             ?? throw new ItemNotFoundException($"Task with id `{taskId}` not found");
 
+        var userIds = task.UserTasks
+            .Select(x => x.WorkerId)
+            .Distinct()
+            .ToList();
+
+        var usersWithRoles = await Task.WhenAll(userIds.Select(async userId =>
+        {
+            var contributer = await userManager.FindByIdAsync(userId)
+                ?? throw new ItemNotFoundException($"User with id `{userId}` not found");
+
+            var roles = await userManager.GetRolesAsync(contributer);
+            return new { UserId = userId, Role = roles.FirstOrDefault() };
+        }));
+
         var model = new TaskViewModel
         {
             Id = taskId,
@@ -79,8 +91,8 @@ public class TaskService(
                 Id = x.WorkerId,
                 UserFirstName = x.Worker.FirstName,
                 UserLastName = x.Worker.LastName,
-                Role = userManager.GetRolesAsync(x.Worker).Result
-                    .FirstOrDefault()!
+                Role = usersWithRoles.FirstOrDefault(u => u.UserId == x.WorkerId)?.Role
+                    ?? string.Empty,
             }),
         };
 
@@ -109,7 +121,7 @@ public class TaskService(
     {
         IQueryable<ProfTask> query = taskRepository
             .GetAllAttached()
-            .Where(x => x.ProfProjectId == projectId && x.IsDeleted == false)
+            .Where(x => x.ProfProjectId == projectId && !x.IsDeleted)
             .Include(x => x.TaskMaterials)
                 .ThenInclude(t => t.Material)
             .Include(x => x.UserTasks)
@@ -171,87 +183,6 @@ public class TaskService(
         };
     }
 
-    public async Task AddMaterialsToTaskAsync(
-        int taskId,
-        IEnumerable<int> materialIds)
-    {
-        ProfTask? task = await taskRepository
-            .GetByIdAsync(taskId);
-
-        if (task is null
-            || task.IsDeleted == true)
-        {
-            throw new ItemNotFoundException($"Task with id `{taskId}` not found or deleted");
-        }
-
-        List<int> existingMaterials = await taskMaterialRepository
-            .GetAllAttached()
-            .Where(tm => tm.TaskId == taskId)
-            .Select(tm => tm.MaterialId)
-            .ToListAsync();
-
-        List<int> newMaterialIds = materialIds
-            .Where(materialId => !existingMaterials
-                .Contains(materialId))
-            .ToList();
-
-        if (newMaterialIds.Any())
-        {
-            TaskMaterial[] newTaskMaterials = newMaterialIds
-            .Select(materialId => new TaskMaterial
-            {
-                TaskId = taskId,
-                MaterialId = materialId
-            })
-            .ToArray();
-
-            await taskMaterialRepository
-                .AddRangeAsync(newTaskMaterials);
-        }
-    }
-
-    public async Task<PaginatedMaterialsViewModel> GetMaterialsWithPaginationAsync(
-        int taskId,
-        int page,
-        int pageSize,
-        IEnumerable<UsedFor> usedForFilter)
-    {
-        IQueryable<Material> query = materialRepository.GetAllAttached();
-
-        if (usedForFilter.Any())
-        {
-            query = query.Where(m => usedForFilter.Contains(m.UsedForId));
-        }
-
-        var totalMaterials = await query
-            .CountAsync();
-
-        var totalPages = (int)Math.Ceiling(totalMaterials / (double)pageSize);
-
-        var materials = await query
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .ToListAsync();
-
-        var model = new PaginatedMaterialsViewModel
-        {
-            Materials = materials
-            .Select(x => new MaterialViewModel
-            {
-                Id = x.Id,
-                Name = x.Name,
-                UsedFor = x.UsedForId,
-            })
-            .ToList(),
-            TotalPages = totalPages,
-            CurrentPage = page,
-            UsedForEnumValues = Enum.GetValues(typeof(UsedFor)).Cast<UsedFor>().ToList(),
-            TaskId = taskId,
-        };
-
-        return model;
-    }
-
     public async Task<EditTaskViewModel> GetEditTaskByIdAsync(
         int taskId)
     {
@@ -259,7 +190,7 @@ public class TaskService(
             .GetByIdAsync(taskId);
 
         if (task is null
-            || task.IsDeleted == true)
+            || task.IsDeleted)
         {
             throw new ItemNotFoundException($"Task with id `{taskId}` not found");
         }
@@ -389,6 +320,13 @@ public class TaskService(
         ProfTask task = userTask.Task 
             ?? throw new ItemNotFoundException($"No available daily task");
 
+        var contributer = await userManager.FindByIdAsync(userId)
+            ?? throw new ItemNotFoundException($"User with id `{userId}` not found");
+
+        var roles = await userManager.GetRolesAsync(contributer);
+
+        var role = roles.FirstOrDefault();
+
         var model = new MyTaskViewModel
         {
             Id = userTask.TaskId,
@@ -411,8 +349,8 @@ public class TaskService(
                 Id = x.WorkerId,
                 UserFirstName = x.Worker.FirstName,
                 UserLastName = x.Worker.LastName,
-                Role = userManager.GetRolesAsync(x.Worker).Result
-                    .FirstOrDefault()!
+                Role = role
+                ?? string.Empty,
             }),
         };
 

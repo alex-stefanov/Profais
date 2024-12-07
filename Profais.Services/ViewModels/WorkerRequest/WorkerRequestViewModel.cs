@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
+
 using Profais.Common.Enums;
+
 using static Profais.Common.Constants.UserRequestConstants;
 
 namespace Profais.Services.ViewModels.WorkerRequest;

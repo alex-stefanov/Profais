@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+
 using Profais.Common.Exceptions;
 using Profais.Data.Models;
 using Profais.Data.Repositories;
 using Profais.Services.Interfaces;
 using Profais.Services.ViewModels.Penalty;
 using Profais.Services.ViewModels.Shared;
+
 using static Profais.Common.Constants.UserConstants;
 
 namespace Profais.Services.Implementations;
@@ -42,7 +44,7 @@ public class PenaltyService(
 
         if (!await userPenaltyRepository.DeleteAsync(profUserPenalty))
         {
-            throw new ItemNotDeletedException($"UserProject with ids: userId `{userId}`, penaltyId `{penaltyId}` couldn't be removed");
+            throw new ItemNotDeletedException($"UserPenalty with ids: userId `{userId}`, penaltyId `{penaltyId}` couldn't be removed");
         }
     }
 
@@ -50,7 +52,7 @@ public class PenaltyService(
         string userId,
         int penaltyId)
     {
-        var profUserPenalty = new ProfUserPenalty()
+        var profUserPenalty = new ProfUserPenalty
         {
             PenaltyId = penaltyId,
             UserId = userId,
@@ -69,10 +71,9 @@ public class PenaltyService(
             .Include(x => x.User)
             .Include(x => x.Penalty);
 
-        int totalCount = await query
-            .CountAsync();
+        int totalCount = await query.CountAsync();
 
-        List<FullCollectionPenaltyViewModel> items = await query
+        var items = await query
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
             .Select(x => new FullCollectionPenaltyViewModel
@@ -81,8 +82,7 @@ public class PenaltyService(
                 Title = x.Penalty.Title,
                 UserId = x.UserId,
                 UserName = $"{x.User.FirstName} {x.User.LastName}",
-                Role = userManager.GetRolesAsync(x.User).Result
-                    .FirstOrDefault()!
+                Role = userManager.GetRolesAsync(x.User).Result.FirstOrDefault()!
             })
             .ToListAsync();
 
@@ -100,46 +100,19 @@ public class PenaltyService(
 
     public async Task<UserPenaltyViewModel> GetAllPenaltyUsersAsync()
     {
-        IQueryable<ProfUser> userQuery = userRepository
-             .GetAllAttached();
+        var penalties = await penaltyRepository.GetAllAttached()
+            .Select(x => new PenaltyViewModel
+            {
+                Id = x.Id,
+                Title = x.Title,
+                Description = x.Description,
+            })
+            .ToListAsync();
 
-        IQueryable<Penalty> penaltyQuery = penaltyRepository
-             .GetAllAttached();
+        var excludedIds = await GetExcludedUserIdsAsync();
 
-        IEnumerable<ProfUser> adminUsers = await userManager
-            .GetUsersInRoleAsync(AdminRoleName);
-
-        IEnumerable<ProfUser> managerUsers = await userManager
-            .GetUsersInRoleAsync(ManagerRoleName);
-
-        IEnumerable<ProfUser> clientUsers = await userManager
-            .GetUsersInRoleAsync(ClientRoleName);
-
-        List<string> idsNotToSelect = [];
-
-        idsNotToSelect
-            .AddRange(adminUsers
-                .Select(x => x.Id));
-
-        idsNotToSelect
-            .AddRange(managerUsers
-                .Select(x => x.Id));
-
-        idsNotToSelect
-            .AddRange(clientUsers
-                .Select(x => x.Id));
-
-        var penalties = await penaltyQuery
-        .Select(x => new PenaltyViewModel
-        {
-            Id = x.Id,
-            Title = x.Title,
-            Description = x.Description,
-        })
-        .ToListAsync();
-
-        var usersData = await userQuery
-            .Where(x => !idsNotToSelect.Contains(x.Id))
+        var usersData = await userRepository.GetAllAttached()
+            .Where(x => !excludedIds.Contains(x.Id))
             .ToListAsync();
 
         var users = new List<UserForPenaltyViewModel>();
@@ -155,13 +128,11 @@ public class PenaltyService(
             });
         }
 
-        var model = new UserPenaltyViewModel
+        return new UserPenaltyViewModel
         {
             Penalties = penalties,
             Users = users
         };
-
-        return model;
     }
 
     public async Task<PagedResult<CollectionPenaltyViewModel>> GetPagedPenaltiesByUserIdAsync(
@@ -172,13 +143,11 @@ public class PenaltyService(
         IQueryable<Penalty> query = penaltyRepository
             .GetAllAttached()
             .Include(x => x.UserPenalties)
-            .Where(x => x.UserPenalties
-                .Any(up => up.UserId == userId));
+            .Where(x => x.UserPenalties.Any(up => up.UserId == userId));
 
-        int totalCount = await query
-            .CountAsync();
+        int totalCount = await query.CountAsync();
 
-        List<CollectionPenaltyViewModel> items = await query
+        var items = await query
             .OrderBy(x => x.Title)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
@@ -199,5 +168,23 @@ public class PenaltyService(
                 PageSize = pageSize,
             },
         };
+    }
+
+    private async Task<List<string>> GetExcludedUserIdsAsync()
+    {
+        var excludedIds = new List<string>();
+
+        excludedIds.AddRange(await GetUsersInRoleAsync(AdminRoleName));
+        excludedIds.AddRange(await GetUsersInRoleAsync(ManagerRoleName));
+        excludedIds.AddRange(await GetUsersInRoleAsync(ClientRoleName));
+
+        return excludedIds;
+    }
+
+    private async Task<List<string>> GetUsersInRoleAsync(
+        string roleName)
+    {
+        var usersInRole = await userManager.GetUsersInRoleAsync(roleName);
+        return usersInRole.Select(x => x.Id).ToList();
     }
 }

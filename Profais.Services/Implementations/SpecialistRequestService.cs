@@ -1,12 +1,14 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+
+using Profais.Common.Exceptions;
 using Profais.Data.Models;
 using Profais.Data.Repositories;
 using Profais.Services.Interfaces;
 using Profais.Services.ViewModels.SpecialistRequest;
+
 using static Profais.Common.Enums.RequestStatus;
 using static Profais.Common.Constants.UserConstants;
-using Profais.Common.Exceptions;
 
 namespace Profais.Services.Implementations;
 
@@ -19,19 +21,17 @@ public class SpecialistRequestService(
     public async Task<MakeSpecialistRequestViewModel> GetEmptySpecialistViewModelAsync(
         string userId)
     {
-        ProfUser user = await userRepository
-            .GetByIdAsync(userId)
-            ?? throw new ItemNotFoundException($"User with id `{userId}` not found"); ;
+        ProfUser user = await GetUserByIdOrThrowAsync(userId);
 
-        ProfSpecialistRequest? result = await specialistRequestRepository
+        ProfSpecialistRequest? existingRequest = await specialistRequestRepository
             .FirstOrDefaultAsync(x => x.ClientId == userId && x.Status == Pending);
 
-        if (result is not null)
+        if (existingRequest != null)
         {
-            throw new ArgumentException($"User with id `{userId}` already has a specialist request"); ;
+            throw new ArgumentException($"User with id `{userId}` already has a pending specialist request.");
         }
 
-        return new MakeSpecialistRequestViewModel()
+        return new MakeSpecialistRequestViewModel
         {
             UserId = userId,
             FirstName = user.FirstName,
@@ -41,26 +41,27 @@ public class SpecialistRequestService(
     }
 
     public async Task CreateSpecialistRequestAsync(
-        MakeSpecialistRequestViewModel specialistRequestViewModel)
+        MakeSpecialistRequestViewModel model)
     {
-        var profSpecialistRequest = new ProfSpecialistRequest
+        var newRequest = new ProfSpecialistRequest
         {
-            ClientId = specialistRequestViewModel.UserId,
-            FirstName = specialistRequestViewModel.FirstName,
-            LastName = specialistRequestViewModel.LastName,
-            ProfixId = specialistRequestViewModel.ProfixId,
+            ClientId = model.UserId,
+            FirstName = model.FirstName,
+            LastName = model.LastName,
+            ProfixId = model.ProfixId,
+            Status = Pending
         };
 
         await specialistRequestRepository
-            .AddAsync(profSpecialistRequest);
+            .AddAsync(newRequest);
     }
 
     public async Task<IEnumerable<SpecialistRequestViewModel>> GetAllSpecialistViewModelsAsync()
     {
-        IEnumerable<SpecialistRequestViewModel> model = await specialistRequestRepository
+        IEnumerable<SpecialistRequestViewModel> result = await specialistRequestRepository
             .GetAllAttached()
             .Where(x => x.Status == Pending)
-            .Select(x => new SpecialistRequestViewModel()
+            .Select(x => new SpecialistRequestViewModel
             {
                 Id = x.Id,
                 UserId = x.ClientId,
@@ -71,57 +72,21 @@ public class SpecialistRequestService(
             })
             .ToListAsync();
 
-        return model;
+        return result;
     }
 
     public async Task ApproveSpecialistRequestAsync(
         int requestId,
         string userId)
     {
-        ProfSpecialistRequest specialistRequest = await specialistRequestRepository
-            .GetByIdAsync(requestId)
-            ?? throw new ItemNotFoundException($"Specialist request with id `{requestId}` not found");
+        ProfSpecialistRequest request = await GetSpecialistRequestByIdOrThrowAsync(requestId);
+        ProfUser user = await GetUserByIdOrThrowAsync(userId);
 
-        ProfUser user = await userManager
-           .FindByIdAsync(userId)
-           ?? throw new ItemNotFoundException("No user found");
+        await EnsureUserHasSpecialistRoleAsync(user);
 
-        if (!await userManager.IsInRoleAsync(user, SpecialistRoleName))
-        {
-            IdentityResult userResult = await userManager
-                .AddToRoleAsync(user, SpecialistRoleName);
+        request.Status = Approved;
 
-            if (!userResult.Succeeded)
-            {
-                throw new InvalidOperationException($"Error occurred while adding the user {user.UserName} to the {SpecialistRoleName} role!");
-            }
-
-            if (await userManager.IsInRoleAsync(user, WorkerRoleName))
-            {
-                IdentityResult userResult1 = await userManager
-                    .RemoveFromRoleAsync(user, WorkerRoleName);
-
-                if (!userResult1.Succeeded)
-                {
-                    throw new InvalidOperationException($"Error occurred while removing the user {user.UserName} from {WorkerRoleName} role!");
-                }
-            }
-
-            if (await userManager.IsInRoleAsync(user, ClientRoleName))
-            {
-                IdentityResult userResult1 = await userManager
-                    .RemoveFromRoleAsync(user, ClientRoleName);
-
-                if (!userResult1.Succeeded)
-                {
-                    throw new InvalidOperationException($"Error occurred while removing the user {user.UserName} from {ClientRoleName} role!");
-                }
-            }
-        }
-
-        specialistRequest.Status = Approved;
-
-        if (!await specialistRequestRepository.UpdateAsync(specialistRequest))
+        if (!await specialistRequestRepository.UpdateAsync(request))
         {
             throw new ItemNotUpdatedException($"Specialist request with id `{requestId}` couldn't be updated");
         }
@@ -130,15 +95,62 @@ public class SpecialistRequestService(
     public async Task DeclineSpecialistRequestAsync(
         int requestId)
     {
-        ProfSpecialistRequest? specialistRequest = await specialistRequestRepository
-            .GetByIdAsync(requestId)
-            ?? throw new ItemNotFoundException($"Specialist request with id `{requestId}` not found");
+        ProfSpecialistRequest request = await GetSpecialistRequestByIdOrThrowAsync(requestId);
 
-        specialistRequest.Status = Declined;
+        request.Status = Declined;
 
-        if (!await specialistRequestRepository.UpdateAsync(specialistRequest))
+        if (!await specialistRequestRepository.UpdateAsync(request))
         {
             throw new ItemNotUpdatedException($"Specialist request with id `{requestId}` couldn't be updated");
+        }
+    }
+
+    private async Task<ProfUser> GetUserByIdOrThrowAsync(
+        string userId)
+    {
+        ProfUser user = await userRepository
+            .GetByIdAsync(userId)
+            ?? throw new ItemNotFoundException($"User with id `{userId}` not found");
+
+        return user;
+    }
+
+    private async Task<ProfSpecialistRequest> GetSpecialistRequestByIdOrThrowAsync(
+        int requestId)
+    {
+        ProfSpecialistRequest? request = await specialistRequestRepository.GetByIdAsync(requestId) 
+            ?? throw new ItemNotFoundException($"Specialist request with id `{requestId}` not found");
+
+        return request;
+    }
+
+    private async Task EnsureUserHasSpecialistRoleAsync(
+        ProfUser user)
+    {
+        if (!await userManager.IsInRoleAsync(user, SpecialistRoleName))
+        {
+            IdentityResult result = await userManager.AddToRoleAsync(user, SpecialistRoleName);
+            if (!result.Succeeded)
+            {
+                throw new InvalidOperationException($"Failed to add user {user.UserName} to the {SpecialistRoleName} role.");
+            }
+
+            await RemoveUserFromRoleAsync(user, WorkerRoleName);
+            await RemoveUserFromRoleAsync(user, ClientRoleName);
+        }
+    }
+
+    private async Task RemoveUserFromRoleAsync(
+        ProfUser user,
+        string roleName)
+    {
+        if (await userManager.IsInRoleAsync(user, roleName))
+        {
+            IdentityResult result = await userManager.RemoveFromRoleAsync(user, roleName);
+            if (!result.Succeeded)
+            {
+                throw new InvalidOperationException($"Error occurred while removing the user {user.UserName} from {roleName} role!");
+            }
         }
     }
 }

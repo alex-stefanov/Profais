@@ -1,4 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+
+using Profais.Common.Exceptions;
 using Profais.Data.Models;
 using Profais.Data.Repositories;
 using Profais.Services.Interfaces;
@@ -7,8 +10,6 @@ using Profais.Services.ViewModels.Shared;
 using Profais.Services.ViewModels.Task;
 using Profais.Services.ViewModels.Material;
 using Profais.Services.ViewModels.Worker;
-using Profais.Common.Exceptions;
-using Microsoft.AspNetCore.Identity;
 
 namespace Profais.Services.Implementations;
 
@@ -18,6 +19,17 @@ public class ProjectService(
     IRepository<UserProject, object> userProjectRepository)
     : IProjectService
 {
+    private async Task<ProfProject> GetProjectByIdOrThrowAsync(
+        int projectId)
+    {
+        ProfProject project = await projectRepository
+            .GetAllAttached()
+            .FirstOrDefaultAsync(x => x.Id == projectId && !x.IsDeleted)
+            ?? throw new ItemNotFoundException($"Project with id `{projectId}` not found or deleted");
+
+        return project;
+    }
+
     public async Task<PagedResult<ProjectViewModel>> GetPagedCompletedProjectsAsync(
         int pageNumber,
         int pageSize)
@@ -45,26 +57,29 @@ public class ProjectService(
     }
 
     public async Task<ProjectViewModel> GetProjectByIdAsync(
-       int projectId)
+        int projectId)
     {
-        ProfProject? project = await projectRepository
-            .GetAllAttached()
-            .Include(x => x.Tasks)
-                .ThenInclude(x => x.TaskMaterials)
-                .ThenInclude(x => x.Material)
-            .FirstOrDefaultAsync(x => x.Id == projectId);
-
-        if (project is null
-            || project.IsDeleted == true)
-        {
-            throw new ItemNotFoundException($"Project with id `{projectId}` not found or deleted");
-        }
+        ProfProject project = await GetProjectByIdOrThrowAsync(projectId);
 
         List<UserProject> userProjects = await userProjectRepository
             .GetAllAttached()
             .Include(x => x.Contributer)
             .Where(x => x.ProfProjectId == projectId)
             .ToListAsync();
+
+        var userIds = userProjects
+            .Select(x => x.ContributerId)
+            .Distinct()
+            .ToList();
+
+        var usersWithRoles = await Task.WhenAll(userIds.Select(async userId =>
+        {
+            var contributer = await userManager.FindByIdAsync(userId)
+                ?? throw new ItemNotFoundException($"User with id `{userId}` not found");
+
+            var roles = await userManager.GetRolesAsync(contributer);
+            return new { UserId = userId, Role = roles.FirstOrDefault() };
+        }));
 
         var model = new ProjectViewModel
         {
@@ -74,31 +89,33 @@ public class ProjectService(
             IsCompleted = project.IsCompleted,
             Scheme = project.Scheme,
             Tasks = project.Tasks
-            .Select(x => new TaskViewModel
-            {
-                Id = x.Id,
-                Title = x.Title,
-                Description = x.Description,
-                IsCompleted = x.IsCompleted,
-                ProjectId = projectId,
-                Materials = x.TaskMaterials
-                .Select(t => new MaterialViewModel
+                .Select(x => new TaskViewModel
                 {
-                    Id = t.MaterialId,
-                    Name = t.Material.Name,
-                    UsedFor = t.Material.UsedForId,
+                    Id = x.Id,
+                    Title = x.Title,
+                    Description = x.Description,
+                    IsCompleted = x.IsCompleted,
+                    ProjectId = projectId,
+                    Materials = x.TaskMaterials
+                        .Select(t => new MaterialViewModel
+                        {
+                            Id = t.MaterialId,
+                            Name = t.Material.Name,
+                            UsedFor = t.Material.UsedForId,
+                        })
+                        .ToArray(),
                 })
-                .ToArray(),
-            }),
+                .ToList(),
             Contributers = userProjects
-            .Select(x => new UserViewModel
-            {
-                Id = x.ContributerId,
-                UserFirstName = x.Contributer.FirstName,
-                UserLastName = x.Contributer.LastName,
-                Role = userManager.GetRolesAsync(x.Contributer).Result
-                    .FirstOrDefault()!
-            }),
+                .Select(x => new UserViewModel
+                {
+                    Id = x.ContributerId,
+                    UserFirstName = x.Contributer.FirstName,
+                    UserLastName = x.Contributer.LastName,
+                    Role = usersWithRoles.FirstOrDefault(u => u.UserId == x.ContributerId)?.Role
+                        ?? string.Empty,
+                })
+                .ToList(),
         };
 
         return model;
@@ -107,14 +124,7 @@ public class ProjectService(
     public async Task<EditProjectViewModel> GetEditProjectByIdAsync(
         int projectId)
     {
-        ProfProject? project = await projectRepository
-            .GetByIdAsync(projectId);
-
-        if (project is null
-            || project.IsDeleted == true)
-        {
-            throw new ItemNotFoundException($"Project with id `{projectId}` not found or deleted");
-        }
+        ProfProject project = await GetProjectByIdOrThrowAsync(projectId);
 
         return new EditProjectViewModel
         {
@@ -129,14 +139,7 @@ public class ProjectService(
     public async Task UpdateProjectAsync(
         EditProjectViewModel model)
     {
-        ProfProject? project = await projectRepository
-            .GetByIdAsync(model.Id);
-
-        if (project is null
-            || project.IsDeleted == true)
-        {
-            throw new ItemNotFoundException($"Project with id `{model.Id}` not found or deleted");
-        }
+        ProfProject project = await GetProjectByIdOrThrowAsync(model.Id);
 
         project.Title = model.Title;
         project.Scheme = model.Scheme;
@@ -150,7 +153,7 @@ public class ProjectService(
     }
 
     public AddProjectViewModel GetAddProjectViewModel()
-        => new AddProjectViewModel
+        => new()
         {
             Title = string.Empty,
             AbsoluteAddress = string.Empty,
@@ -160,14 +163,7 @@ public class ProjectService(
     public async Task RemoveProjectByIdAsync(
         int projectId)
     {
-        ProfProject? project = await projectRepository
-            .GetByIdAsync(projectId);
-
-        if (project is null
-            || project.IsDeleted)
-        {
-            throw new ItemNotFoundException($"Project with id `{projectId}` not found or deleted");
-        }
+        ProfProject project = await GetProjectByIdOrThrowAsync(projectId);
 
         project.IsDeleted = true;
 
@@ -182,11 +178,10 @@ public class ProjectService(
         int pageSize)
     {
         IQueryable<ProfProject> query = projectRepository
-             .GetAllAttached()
-             .Where(x => x.IsDeleted);
+            .GetAllAttached()
+            .Where(x => x.IsDeleted);
 
-        int totalCount = await query
-            .CountAsync();
+        int totalCount = await query.CountAsync();
 
         RecoverProjectViewModel[] tasks = await query
             .Skip((pageNumber - 1) * pageSize)
@@ -214,9 +209,7 @@ public class ProjectService(
     public async Task RecoverProjectByIdAsync(
         int projectId)
     {
-        ProfProject project = await projectRepository
-            .GetByIdAsync(projectId)
-            ?? throw new ItemNotFoundException($"Project with id `{projectId}` not found or deleted");
+        ProfProject project = await GetProjectByIdOrThrowAsync(projectId);
 
         project.IsDeleted = false;
 
@@ -252,23 +245,23 @@ public class ProjectService(
                 IsCompleted = x.IsCompleted,
                 Scheme = x.Scheme,
                 Tasks = x.Tasks
-                .Select(z => new TaskViewModel
-                {
-                    Id = z.Id,
-                    Title = z.Title,
-                    Description = z.Description,
-                    ProjectId = z.ProfProjectId,
-                    IsCompleted = z.IsCompleted,
-                    Materials = z.TaskMaterials
-                    .Select(t => new MaterialViewModel
+                    .Select(z => new TaskViewModel
                     {
-                        Id = t.MaterialId,
-                        Name = t.Material.Name,
-                        UsedFor = t.Material.UsedForId,
+                        Id = z.Id,
+                        Title = z.Title,
+                        Description = z.Description,
+                        ProjectId = z.ProfProjectId,
+                        IsCompleted = z.IsCompleted,
+                        Materials = z.TaskMaterials
+                            .Select(t => new MaterialViewModel
+                            {
+                                Id = t.MaterialId,
+                                Name = t.Material.Name,
+                                UsedFor = t.Material.UsedForId,
+                            })
+                            .ToArray(),
                     })
                     .ToArray(),
-                })
-                .ToArray(),
             })
             .ToListAsync();
 

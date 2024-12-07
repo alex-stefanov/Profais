@@ -17,9 +17,7 @@ public class MyTaskViewModel
 
     public required bool IsVoted {  get; set; }
 
-    public virtual IEnumerable<MaterialViewModel> Materials { get; set; }
-        = new HashSet<MaterialViewModel>();
+    public virtual IEnumerable<MaterialViewModel> Materials { get; set; } = [];
 
-    public virtual IEnumerable<UserViewModel> Users { get; set; }
-        = new HashSet<UserViewModel>();
+    public virtual IEnumerable<UserViewModel> Users { get; set; } = [];
 }

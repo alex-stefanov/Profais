@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+
 using static Profais.Common.Constants.TaskConstants;
 
 namespace Profais.Data.Models;

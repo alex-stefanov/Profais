@@ -1,10 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
+
 using Profais.Common.Exceptions;
 using Profais.Data.Models;
 using Profais.Data.Repositories;
 using Profais.Services.Interfaces;
-using Profais.Services.ViewModels.Material;
 using Profais.Services.ViewModels.Shared;
+using Profais.Services.ViewModels.Material;
 
 namespace Profais.Services.Implementations;
 
@@ -18,15 +19,11 @@ public class MaterialService(
         int taskId,
         IEnumerable<int> materialIds)
     {
-        ProfTask task = await taskRepository.
-            GetByIdAsync(taskId)
+        ProfTask task = await taskRepository
+            .GetByIdAsync(taskId)
             ?? throw new ItemNotFoundException($"Task with id `{taskId}` not found");
 
-        List<TaskMaterial> existingAssignments = await taskMaterialRepository
-            .GetAllAttached()
-            .Where(ut => ut.TaskId == taskId && materialIds
-                .Contains(ut.MaterialId))
-            .ToListAsync();
+        List<TaskMaterial> existingAssignments = await GetExistingTaskMaterialAssignments(taskId, materialIds);
 
         List<int> materialsToAssign = materialIds
             .Where(materialId => !existingAssignments
@@ -85,30 +82,7 @@ public class MaterialService(
             query = query.Where(m => m.Name.Contains(searchTerm));
         }
 
-        int totalCount = await query.CountAsync();
-
-        List<MaterialViewModel> items = await query
-            .OrderBy(x => x.Name)
-            .Skip((pageNumber - 1) * pageSize)
-            .Take(pageSize)
-            .Select(x => new MaterialViewModel
-            {
-                Id = x.Id,
-                Name = x.Name,
-                UsedFor = x.UsedForId,
-            })
-            .ToListAsync();
-
-        return new PagedResult<MaterialViewModel>
-        {
-            Items = items,
-            PaginationViewModel = new PaginationViewModel
-            {
-                CurrentPage = pageNumber,
-                TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize),
-                PageSize = pageSize,
-            },
-        };
+        return await GetPagedMaterials(query, pageNumber, pageSize);
     }
 
     public async Task<PagedResult<MaterialViewModel>> GetPagedMaterialsForTaskAsync(
@@ -119,32 +93,7 @@ public class MaterialService(
         IQueryable<Material> query = materialRepository
             .GetAllAttached();
 
-        int totalCount = await query
-            .CountAsync();
-
-        List<MaterialViewModel> items = await query
-            .OrderBy(x => x.Name)
-            .Skip((pageNumber - 1) * pageSize)
-            .Take(pageSize)
-            .Select(x => new MaterialViewModel
-            {
-                Id = x.Id,
-                Name = x.Name,
-                UsedFor = x.UsedForId,
-            })
-            .ToListAsync();
-
-        return new PagedResult<MaterialViewModel>
-        {
-            Items = items,
-            AdditionalProperty = taskId,
-            PaginationViewModel = new PaginationViewModel
-            {
-                CurrentPage = pageNumber,
-                TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize),
-                PageSize = pageSize,
-            },
-        };
+        return await GetPagedMaterials(query, pageNumber, pageSize, taskId);
     }
 
     public async Task<PagedResult<MaterialViewModel>> GetPagedMaterialsForDeletionTaskAsync(
@@ -157,6 +106,41 @@ public class MaterialService(
             .Include(x => x.TaskMaterials)
             .Where(x => x.TaskMaterials.Any(x => x.TaskId == taskId));
 
+        return await GetPagedMaterials(query, pageNumber, pageSize, taskId);
+    }
+
+    public async Task RemoveMaterialsFromTaskAsync(
+        int taskId,
+        IEnumerable<int> materialIds)
+    {
+        List<TaskMaterial> existingAssignments = await GetExistingTaskMaterialAssignments(taskId, materialIds);
+
+        foreach (TaskMaterial assignment in existingAssignments)
+        {
+            await taskMaterialRepository
+                .DeleteAsync(assignment);
+        }
+    }
+
+    private async Task<List<TaskMaterial>> GetExistingTaskMaterialAssignments(
+        int taskId,
+        IEnumerable<int> materialIds)
+    {
+        List<TaskMaterial> result = await taskMaterialRepository
+            .GetAllAttached()
+            .Where(ut => ut.TaskId == taskId && materialIds
+                .Contains(ut.MaterialId))
+            .ToListAsync();
+
+        return result;
+    }
+
+    private async Task<PagedResult<MaterialViewModel>> GetPagedMaterials(
+        IQueryable<Material> query,
+        int pageNumber,
+        int pageSize,
+        int? taskId = null)
+    {
         int totalCount = await query
             .CountAsync();
 
@@ -172,10 +156,9 @@ public class MaterialService(
             })
             .ToListAsync();
 
-        return new PagedResult<MaterialViewModel>
+        var result = new PagedResult<MaterialViewModel>
         {
             Items = items,
-            AdditionalProperty = taskId,
             PaginationViewModel = new PaginationViewModel
             {
                 CurrentPage = pageNumber,
@@ -183,26 +166,12 @@ public class MaterialService(
                 PageSize = pageSize,
             },
         };
-    }
 
-    public async Task RemoveMaterialsFromTaskAsync(
-        int taskId,
-        IEnumerable<int> materialIds)
-    {
-        ProfTask task = await taskRepository.
-             GetByIdAsync(taskId)
-             ?? throw new ItemNotFoundException($"Task with id `{taskId}` not found");
-
-        List<TaskMaterial> existingAssignments = await taskMaterialRepository
-            .GetAllAttached()
-            .Where(ut => ut.TaskId == taskId && materialIds
-                .Contains(ut.MaterialId))
-            .ToListAsync();
-
-        foreach (TaskMaterial assignment in existingAssignments)
+        if (taskId.HasValue)
         {
-            await taskMaterialRepository
-                .DeleteAsync(assignment);
+            result.AdditionalProperty = taskId.Value;
         }
+
+        return result;
     }
 }

@@ -1,5 +1,7 @@
-﻿using Profais.Common.Enums;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+
+using Profais.Common.Enums;
+
 using static Profais.Common.Constants.MaterialConstants;
 
 namespace Profais.Services.ViewModels.Material;

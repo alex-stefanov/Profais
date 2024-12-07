@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+
 using static Profais.Common.Constants.ProjectConstants;
 
 namespace Profais.Services.ViewModels.Project;

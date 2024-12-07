@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Profais.Services.Interfaces;
-using Profais.Services.ViewModels.User;
+
+using INTERFACES = Profais.Services.Interfaces;
+using VIEW_MODELS = Profais.Services.ViewModels.User;
+
 using static Profais.Common.Constants.UserConstants;
 
 namespace Profais.Areas.Admin.Controllers;
@@ -9,13 +11,13 @@ namespace Profais.Areas.Admin.Controllers;
 [Area(AdminRoleName)]
 [Authorize(Roles = AdminRoleName)]
 public class UserPanelController(
-    IUserService userService)
+    INTERFACES.IUserService userService)
     : Controller
 {
     [HttpGet]
     public async Task<IActionResult> Index()
     {
-        IEnumerable<AllUsersViewModel> allUsers = await userService
+        IEnumerable<VIEW_MODELS.AllUsersViewModel> allUsers = await userService
             .GetAllUsersAsync();
 
         return View(allUsers);

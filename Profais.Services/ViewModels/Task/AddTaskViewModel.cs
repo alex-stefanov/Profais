@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+
 using static Profais.Common.Constants.TaskConstants;
 
 namespace Profais.Services.ViewModels.Task;

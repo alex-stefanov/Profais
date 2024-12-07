@@ -2,8 +2,7 @@
 
 public class PagedResult<T>
 {
-    public IEnumerable<T> Items { get; set; } 
-        = new HashSet<T>();
+    public IEnumerable<T> Items { get; set; } = [];
 
     public int? AdditionalProperty { get; set; }
     

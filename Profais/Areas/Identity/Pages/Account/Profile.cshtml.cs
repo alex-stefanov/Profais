@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Identity;
+
 using Profais.Data.Models;
 
 namespace Profais.Areas.Identity.Pages.Account

@@ -1,17 +1,18 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+
+using Profais.Common.Exceptions;
 using Profais.Data.Models;
 using Profais.Data.Repositories;
 using Profais.Services.Interfaces;
 using Profais.Services.ViewModels.WorkerRequest;
+
 using static Profais.Common.Enums.RequestStatus;
 using static Profais.Common.Constants.UserConstants;
-using Profais.Common.Exceptions;
 
 namespace Profais.Services.Implementations;
 
 public class WorkerRequestService(
-    IRepository<ProfUser, string> userRepository,
     IRepository<ProfWorkerRequest, int> workerRequestRepository,
     UserManager<ProfUser> userManager)
     : IWorkerRequestService
@@ -19,14 +20,12 @@ public class WorkerRequestService(
     public async Task<MakeWorkerRequestViewModel> GetEmptyWorkerViewModelAsync(
         string userId)
     {
-        ProfUser? user = await userRepository
-            .GetByIdAsync(userId)
-            ?? throw new ItemNotFoundException($"User with id `{userId}` not found"); ;
+        ProfUser user = await GetUserAsync(userId);
 
-        ProfWorkerRequest? result = await workerRequestRepository
+        ProfWorkerRequest? existingRequest = await workerRequestRepository
             .FirstOrDefaultAsync(x => x.ClientId == userId && x.Status == Pending);
 
-        if (result is not null)
+        if (existingRequest is not null)
         {
             throw new ArgumentException($"User with id `{userId}` already has a worker request");
         }
@@ -42,21 +41,21 @@ public class WorkerRequestService(
 
     public async Task<IEnumerable<WorkerRequestViewModel>> GetAllWorkersViewModelsAsync()
     {
-        IEnumerable<WorkerRequestViewModel> model = await workerRequestRepository
-           .GetAllAttached()
-           .Where(x => x.Status == Pending)
-           .Select(x => new WorkerRequestViewModel()
-           {
-               Id = x.Id,
-               UserId = x.ClientId,
-               FirstName = x.FirstName,
-               LastName = x.LastName,
-               ProfixId = x.ProfixId,
-               Status = x.Status,
-           })
-           .ToListAsync();
+        IEnumerable<WorkerRequestViewModel> result = await workerRequestRepository
+            .GetAllAttached()
+            .Where(x => x.Status == Pending)
+            .Select(x => new WorkerRequestViewModel()
+            {
+                Id = x.Id,
+                UserId = x.ClientId,
+                FirstName = x.FirstName,
+                LastName = x.LastName,
+                ProfixId = x.ProfixId,
+                Status = x.Status,
+            })
+            .ToListAsync();
 
-        return model;
+        return result;
     }
 
     public async Task CreateWorkerRequestAsync(
@@ -78,14 +77,8 @@ public class WorkerRequestService(
        int requestId,
        string userId)
     {
-
-        ProfWorkerRequest? workerRequest = await workerRequestRepository
-            .GetByIdAsync(requestId)
-            ?? throw new ItemNotFoundException($"Worker request with id `{requestId}` not found"); ;
-
-        ProfUser? user = await userManager
-            .FindByIdAsync(userId)
-            ?? throw new ItemNotFoundException($"User with id `{userId}` not found");
+        ProfWorkerRequest workerRequest = await GetWorkerRequestAsync(requestId);
+        ProfUser user = await GetUserAsync(userId);
 
         if (!await userManager.IsInRoleAsync(user, WorkerRoleName))
         {
@@ -120,9 +113,7 @@ public class WorkerRequestService(
     public async Task DeclineWorkerRequestAsync(
         int requestId)
     {
-        ProfWorkerRequest? workerRequest = await workerRequestRepository
-            .GetByIdAsync(requestId)
-            ?? throw new ItemNotFoundException($"Worker request with id `{requestId}` not found");
+        ProfWorkerRequest workerRequest = await GetWorkerRequestAsync(requestId);
 
         workerRequest.Status = Declined;
 
@@ -130,5 +121,25 @@ public class WorkerRequestService(
         {
             throw new ItemNotUpdatedException($"Worker request with id `{requestId}` couldn't be updated");
         }
+    }
+
+    private async Task<ProfWorkerRequest> GetWorkerRequestAsync(
+        int requestId)
+    {
+        ProfWorkerRequest workerRequest = await workerRequestRepository
+            .GetByIdAsync(requestId)
+            ?? throw new ItemNotFoundException($"Worker request with id `{requestId}` not found");
+
+        return workerRequest;
+    }
+
+    private async Task<ProfUser> GetUserAsync(
+        string userId)
+    {
+        ProfUser user = await userManager
+            .FindByIdAsync(userId)
+            ?? throw new ItemNotFoundException($"User with id `{userId}` not found");
+
+        return user;
     }
 }

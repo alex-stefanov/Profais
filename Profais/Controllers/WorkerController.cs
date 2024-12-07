@@ -1,16 +1,18 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Profais.Common.Exceptions;
-using Profais.Services.Interfaces;
-using Profais.Services.ViewModels.Worker;
-using Profais.Services.ViewModels.Shared;
+
+using EXCEPTIONS = Profais.Common.Exceptions;
+using INTERFACES = Profais.Services.Interfaces;
+using VIEW_MODELS_WORKER = Profais.Services.ViewModels.Worker;
+using VIEW_MODELS_SHARED = Profais.Services.ViewModels.Shared;
+
 using static Profais.Common.Constants.UserConstants;
 
 namespace Profais.Controllers;
 
 [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
 public class WorkerController(
-    IWorkerService workerService,
+    INTERFACES.IWorkerService workerService,
     ILogger<WorkerController> logger)
     : Controller
 {
@@ -22,7 +24,7 @@ public class WorkerController(
     {
         try
         {
-            PagedResult<UserViewModel> model = await workerService
+            VIEW_MODELS_SHARED.PagedResult<VIEW_MODELS_WORKER.UserViewModel> model = await workerService
                 .GetPagedAvaliableWorkersAsync(pageNumber, pageSize, taskId);
 
             return View(model);
@@ -55,7 +57,7 @@ public class WorkerController(
 
             return RedirectToAction("ViewTask", "Task", new { taskId });
         }
-        catch (ItemNotFoundException ex)
+        catch (EXCEPTIONS.ItemNotFoundException ex)
         {
             logger.LogError($"No workers or task found for task {taskId}. Exception: {ex.Message}");
             TempData["ErrorMessage"] = $"No workers or task found for task {taskId}. {ex.Message}";
@@ -77,7 +79,7 @@ public class WorkerController(
     {
         try
         {
-            PagedResult<UserViewModel> model = await workerService
+            VIEW_MODELS_SHARED.PagedResult<VIEW_MODELS_WORKER.UserViewModel> model = await workerService
                 .GetPagedWorkersFromTaskAsync(pageNumber, pageSize, taskId);
 
             return View(model);
@@ -110,7 +112,7 @@ public class WorkerController(
 
             return RedirectToAction("ViewTask", "Task", new { taskId });
         }
-        catch (ItemNotFoundException ex)
+        catch (EXCEPTIONS.ItemNotFoundException ex)
         {
             logger.LogError($"No workers found to remove from task {taskId}. Exception: {ex.Message}");
             TempData["ErrorMessage"] = $"No workers found to remove from task {taskId}. {ex.Message}";

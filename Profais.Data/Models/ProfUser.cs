@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
+
 using Microsoft.AspNetCore.Identity;
+
 using static Profais.Common.Constants.UserConstants;
 
 namespace Profais.Data.Models;

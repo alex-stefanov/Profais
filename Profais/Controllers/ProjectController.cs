@@ -1,16 +1,18 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Profais.Common.Exceptions;
-using Profais.Services.Interfaces;
-using Profais.Services.ViewModels.Project;
-using Profais.Services.ViewModels.Shared;
+
+using EXCEPTIONS = Profais.Common.Exceptions;
+using INTERFACES = Profais.Services.Interfaces;
+using VIEW_MODELS_PROJECT = Profais.Services.ViewModels.Project;
+using VIEW_MODELS_SHARED = Profais.Services.ViewModels.Shared;
+
 using static Profais.Common.Constants.UserConstants;
 
 namespace Profais.Controllers;
 
 [Authorize]
 public class ProjectController(
-    IProjectService projectService,
+    INTERFACES.IProjectService projectService,
     ILogger<HomeController> logger)
     : Controller
 {
@@ -22,7 +24,7 @@ public class ProjectController(
     {
         try
         {
-            PagedResult<ProjectViewModel> model = await projectService
+            VIEW_MODELS_SHARED.PagedResult<VIEW_MODELS_PROJECT.ProjectViewModel> model = await projectService
                 .GetPagedInCompletedProjectsAsync(pageNumber, pageSize);
 
             return View(model);
@@ -43,7 +45,7 @@ public class ProjectController(
     {
         try
         {
-            PagedResult<ProjectViewModel> model = await projectService
+            VIEW_MODELS_SHARED.PagedResult<VIEW_MODELS_PROJECT.ProjectViewModel> model = await projectService
                 .GetPagedCompletedProjectsAsync(pageNumber, pageSize);
 
             return View(model);
@@ -62,12 +64,12 @@ public class ProjectController(
     {
         try
         {
-            ProjectViewModel model = await projectService
+            VIEW_MODELS_PROJECT.ProjectViewModel model = await projectService
                 .GetProjectByIdAsync(projectId);
 
             return View(model);
         }
-        catch (ItemNotFoundException ex)
+        catch (EXCEPTIONS.ItemNotFoundException ex)
         {
             logger.LogError($"No project found with id `{projectId}`. Exception: {ex.Message}");
             TempData["ErrorMessage"] = $"Project with id `{projectId}` not found. {ex.Message}";
@@ -87,7 +89,7 @@ public class ProjectController(
     {
         try
         {
-            AddProjectViewModel model = projectService
+            VIEW_MODELS_PROJECT.AddProjectViewModel model = projectService
                 .GetAddProjectViewModel();
 
             return View(model);
@@ -103,7 +105,7 @@ public class ProjectController(
     [HttpPost]
     [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
     public async Task<IActionResult> AddProject(
-        AddProjectViewModel model)
+        VIEW_MODELS_PROJECT.AddProjectViewModel model)
     {
         if (!ModelState.IsValid)
         {
@@ -132,12 +134,12 @@ public class ProjectController(
     {
         try
         {
-            EditProjectViewModel model = await projectService
+            VIEW_MODELS_PROJECT.EditProjectViewModel model = await projectService
                 .GetEditProjectByIdAsync(projectId);
 
             return View(model);
         }
-        catch (ItemNotFoundException ex)
+        catch (EXCEPTIONS.ItemNotFoundException ex)
         {
             logger.LogError($"No project found with id `{projectId}` for editing. Exception: {ex.Message}");
             TempData["ErrorMessage"] = $"Project with id `{projectId}` not found for editing. {ex.Message}";
@@ -154,7 +156,7 @@ public class ProjectController(
     [HttpPost]
     [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
     public async Task<IActionResult> EditProject(
-        EditProjectViewModel model)
+        VIEW_MODELS_PROJECT.EditProjectViewModel model)
     {
         if (!ModelState.IsValid)
         {
@@ -168,13 +170,13 @@ public class ProjectController(
 
             return RedirectToAction(nameof(ViewProject), new { projectId = model.Id });
         }
-        catch (ItemNotFoundException ex)
+        catch (EXCEPTIONS.ItemNotFoundException ex)
         {
             logger.LogError($"No project found with id `{model.Id}` for updating. Exception: {ex.Message}");
             TempData["ErrorMessage"] = $"Project with id `{model.Id}` not found for updating. {ex.Message}";
             return NotFound();
         }
-        catch (ItemNotUpdatedException ex)
+        catch (EXCEPTIONS.ItemNotUpdatedException ex)
         {
             logger.LogError($"Failed to update project with id `{model.Id}`. Exception: {ex.Message}");
             TempData["ErrorMessage"] = $"Unable to update project with id `{model.Id}`. {ex.Message}";
@@ -205,13 +207,13 @@ public class ProjectController(
 
             return RedirectToAction(nameof(IncompletedProjects));
         }
-        catch (ItemNotFoundException ex)
+        catch (EXCEPTIONS.ItemNotFoundException ex)
         {
             logger.LogError($"No project found with id `{projectId}` to remove. Exception: {ex.Message}");
             TempData["ErrorMessage"] = $"Project with id `{projectId}` not found for removal. {ex.Message}";
             return NotFound();
         }
-        catch (ItemNotUpdatedException ex)
+        catch (EXCEPTIONS.ItemNotUpdatedException ex)
         {
             logger.LogError($"Failed to update project with id `{projectId}` while removing. Exception: {ex.Message}");
             TempData["ErrorMessage"] = $"Unable to update project with id `{projectId}` while removing. {ex.Message}";

@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using Profais.Services.ViewModels.Shared;
+
+using VIEW_MODELS = Profais.Services.ViewModels.Shared;
 
 namespace Profais.Controllers;
 
@@ -15,7 +16,7 @@ public class HomeController()
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        return View(new VIEW_MODELS.ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 
     public IActionResult Error404()

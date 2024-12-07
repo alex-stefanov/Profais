@@ -1,16 +1,18 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Profais.Common.Exceptions;
-using Profais.Services.Interfaces;
-using Profais.Services.ViewModels.Material;
-using Profais.Services.ViewModels.Shared;
+
+using INTERFACES = Profais.Services.Interfaces;
+using VIEW_MODELS_MATERIAL = Profais.Services.ViewModels.Material;
+using VIEW_MODELS_SHARED = Profais.Services.ViewModels.Shared;
+
 using static Profais.Common.Constants.UserConstants;
 
 namespace Profais.Controllers;
 
 [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
 public class MaterialController(
-    IMaterialService materialService,
+    INTERFACES.IMaterialService materialService,
     ILogger<MaterialController> logger)
     : Controller
 {
@@ -22,7 +24,7 @@ public class MaterialController(
     {
         try
         {
-            PagedResult<MaterialViewModel> model = await materialService
+            VIEW_MODELS_SHARED.PagedResult<VIEW_MODELS_MATERIAL.MaterialViewModel> model = await materialService
                 .GetPagedMaterialsForTaskAsync(pageNumber, pageSize, taskId);
 
             return View(model);
@@ -77,7 +79,7 @@ public class MaterialController(
     {
         try
         {
-            PagedResult<MaterialViewModel> model = await materialService
+            VIEW_MODELS_SHARED.PagedResult<VIEW_MODELS_MATERIAL.MaterialViewModel> model = await materialService
                 .GetPagedMaterialsForDeletionTaskAsync(pageNumber, pageSize, taskId);
 
             return View(model);

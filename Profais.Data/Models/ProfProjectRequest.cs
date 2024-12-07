@@ -1,6 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+
 using Profais.Common.Enums;
+
 using static Profais.Common.Constants.ProjectRequestConstants;
 
 namespace Profais.Data.Models;

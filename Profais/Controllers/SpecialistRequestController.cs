@@ -1,18 +1,20 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Profais.Common.Exceptions;
-using Profais.Data.Models;
-using Profais.Services.Interfaces;
-using Profais.Services.ViewModels.SpecialistRequest;
+
+using EXCEPTIONS = Profais.Common.Exceptions;
+using MODELS = Profais.Data.Models;
+using INTERFACES = Profais.Services.Interfaces;
+using VIEW_MODELS = Profais.Services.ViewModels.SpecialistRequest;
+
 using static Profais.Common.Constants.UserConstants;
 
 namespace Profais.Controllers;
 
 [Authorize]
 public class SpecialistRequestController(
-    ISpecialistRequestService requestService,
-    UserManager<ProfUser> userManager,
+    INTERFACES.ISpecialistRequestService requestService,
+    UserManager<MODELS.ProfUser> userManager,
     ILogger<SpecialistRequestController> logger)
     : Controller
 {
@@ -32,12 +34,12 @@ public class SpecialistRequestController(
 
         try
         {
-            MakeSpecialistRequestViewModel model = await requestService
+            VIEW_MODELS.MakeSpecialistRequestViewModel model = await requestService
                 .GetEmptySpecialistViewModelAsync(userId);
 
             return View(model);
         }
-        catch (ItemNotFoundException ex)
+        catch (EXCEPTIONS.ItemNotFoundException ex)
         {
             logger.LogError($"No data found while creating empty specialist request for user {userId}. Exception: {ex.Message}");
             TempData["ErrorMessage"] = $"Specialist request data not found for user {userId}. {ex.Message}";
@@ -54,7 +56,7 @@ public class SpecialistRequestController(
     [HttpPost]
     [Authorize(Roles = $"{WorkerRoleName},{ClientRoleName}")]
     public async Task<IActionResult> MakeSpecialistRequest(
-        MakeSpecialistRequestViewModel model)
+        VIEW_MODELS.MakeSpecialistRequestViewModel model)
     {
         if (!ModelState.IsValid)
         {
@@ -82,7 +84,7 @@ public class SpecialistRequestController(
     {
         try
         {
-            IEnumerable<SpecialistRequestViewModel> model = await requestService
+            IEnumerable<VIEW_MODELS.SpecialistRequestViewModel> model = await requestService
                 .GetAllSpecialistViewModelsAsync();
 
             return View(model);
@@ -98,7 +100,7 @@ public class SpecialistRequestController(
     [HttpPost]
     [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
     public async Task<IActionResult> ApproveSpecialistRequest(
-        ActionSpecialistRequestViewModel model)
+        VIEW_MODELS.ActionSpecialistRequestViewModel model)
     {
         if (!ModelState.IsValid 
             || model is null)
@@ -115,13 +117,13 @@ public class SpecialistRequestController(
 
             return RedirectToAction(nameof(PreviewSpecialistRequests));
         }
-        catch (ItemNotFoundException ex)
+        catch (EXCEPTIONS.ItemNotFoundException ex)
         {
             logger.LogError($"No specialist request found to approve. Exception: {ex.Message}");
             TempData["ErrorMessage"] = $"Specialist request not found. {ex.Message}";
             return NotFound();
         }
-        catch (ItemNotUpdatedException ex)
+        catch (EXCEPTIONS.ItemNotUpdatedException ex)
         {
             logger.LogError($"Failed to update specialist request while approving. Exception: {ex.Message}");
             TempData["ErrorMessage"] = $"Unable to update specialist request. {ex.Message}";
@@ -138,7 +140,7 @@ public class SpecialistRequestController(
     [HttpPost]
     [Authorize(Roles = $"{ManagerRoleName},{AdminRoleName}")]
     public async Task<IActionResult> DeclineSpecialistRequest(
-        ActionSpecialistRequestViewModel model)
+        VIEW_MODELS.ActionSpecialistRequestViewModel model)
     {
         if (!ModelState.IsValid 
             || model is null)
@@ -155,13 +157,13 @@ public class SpecialistRequestController(
 
             return RedirectToAction(nameof(PreviewSpecialistRequests));
         }
-        catch (ItemNotFoundException ex)
+        catch (EXCEPTIONS.ItemNotFoundException ex)
         {
             logger.LogError($"No specialist request found to decline. Exception: {ex.Message}");
             TempData["ErrorMessage"] = $"Specialist request not found. {ex.Message}";
             return NotFound();
         }
-        catch (ItemNotUpdatedException ex)
+        catch (EXCEPTIONS.ItemNotUpdatedException ex)
         {
             logger.LogError($"Failed to update specialist request while declining. Exception: {ex.Message}");
             TempData["ErrorMessage"] = $"Unable to update specialist request. {ex.Message}";

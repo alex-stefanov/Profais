@@ -1,20 +1,21 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Profais.Services.Interfaces;
-using Profais.Services.ViewModels.Task;
-using Profais.Services.ViewModels.Shared;
-using Profais.Services.ViewModels.Project;
 using Microsoft.AspNetCore.Authorization;
+
+using EXCEPTIONS = Profais.Common.Exceptions;
+using INTERFACES = Profais.Services.Interfaces;
+using VIEW_MODELS_TASK = Profais.Services.ViewModels.Task;
+using VIEW_MODELS_PROJECT = Profais.Services.ViewModels.Project;
+using VIEW_MODELS_SHARED = Profais.Services.ViewModels.Shared;
+
 using static Profais.Common.Constants.UserConstants;
-using Profais.Common.Exceptions;
-using System.Threading.Tasks;
 
 namespace Profais.Areas.Admin.Controllers;
 
 [Area(AdminRoleName)]
 [Authorize(Roles = AdminRoleName)]
 public class RecoveryPanelController(
-    ITaskService taskService,
-    IProjectService projectService,
+    INTERFACES.ITaskService taskService,
+    INTERFACES.IProjectService projectService,
     ILogger<RecoveryPanelController> logger)
     : Controller
 {
@@ -31,7 +32,7 @@ public class RecoveryPanelController(
     {
         try
         {
-            PagedResult<RecoverTaskViewModel> model = await taskService
+            VIEW_MODELS_SHARED.PagedResult<VIEW_MODELS_TASK.RecoverTaskViewModel> model = await taskService
                 .GetPagedDeletedTasksAsync(pageNumber, pageSize);
 
             return View(model);
@@ -55,13 +56,13 @@ public class RecoveryPanelController(
 
             return RedirectToAction(nameof(ViewDeletedTasks));
         }
-        catch (ItemNotFoundException ex)
+        catch (EXCEPTIONS.ItemNotFoundException ex)
         {
             logger.LogError($"No material found with id `{id}` while trying to recover it. Exception: {ex.Message}");
             TempData["ErrorMessage"] = $"No material found with id `{id}`. {ex.Message}";
             return NotFound();
         }
-        catch (ItemNotUpdatedException ex)
+        catch (EXCEPTIONS.ItemNotUpdatedException ex)
         {
             logger.LogError($"Failed to recover task with id `{id}`. Exception: {ex.Message}");
             TempData["ErrorMessage"] = $"Unable to recover material with id `{id}`. {ex.Message}";
@@ -82,7 +83,7 @@ public class RecoveryPanelController(
     {
         try
         {
-            PagedResult<RecoverProjectViewModel> model = await projectService
+            VIEW_MODELS_SHARED.PagedResult<VIEW_MODELS_PROJECT.RecoverProjectViewModel> model = await projectService
                 .GetPagedDeletedProjectsAsync(pageNumber, pageSize);
 
             return View(model);
@@ -106,13 +107,13 @@ public class RecoveryPanelController(
 
             return RedirectToAction(nameof(ViewDeletedProjects));
         }
-        catch (ItemNotFoundException ex)
+        catch (EXCEPTIONS.ItemNotFoundException ex)
         {
             logger.LogError($"No project found with id `{id}` while trying to recover it. Exception: {ex.Message}");
             TempData["ErrorMessage"] = $"No project found with id `{id}`. {ex.Message}";
             return NotFound();
         }
-        catch (ItemNotUpdatedException ex)
+        catch (EXCEPTIONS.ItemNotUpdatedException ex)
         {
             logger.LogError($"Failed to recover project with id `{id}`. Exception: {ex.Message}");
             TempData["ErrorMessage"] = $"Unable to recover project with id `{id}`. {ex.Message}";
