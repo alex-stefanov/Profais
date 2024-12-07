@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Profais.Services", "Profais
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Profais.Common", "Profais.Common\Profais.Common.csproj", "{564E7DF5-C9A1-415D-B448-78327C07C3CE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Profais.Services.Tests", "Profais.Services.Tests\Profais.Services.Tests.csproj", "{7F1AAC1E-374A-4960-8E93-64EB92C16F11}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Profais.Services.Tests", "Profais.Services.Tests\Profais.Services.Tests.csproj", "{7F1AAC1E-374A-4960-8E93-64EB92C16F11}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

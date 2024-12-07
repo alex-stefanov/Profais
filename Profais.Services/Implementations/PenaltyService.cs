@@ -170,7 +170,7 @@ public class PenaltyService(
         };
     }
 
-    private async Task<List<string>> GetExcludedUserIdsAsync()
+    public async Task<List<string>> GetExcludedUserIdsAsync()
     {
         var excludedIds = new List<string>();
 

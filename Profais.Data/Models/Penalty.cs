@@ -32,6 +32,6 @@ public class Penalty
     /// <summary>
     /// Navigation property for the collection of user-penalty relationships.
     /// </summary>
-    public virtual ICollection<ProfUserPenalty> UserPenalties { get; }
+    public virtual ICollection<ProfUserPenalty> UserPenalties { get; set; }
         = new HashSet<ProfUserPenalty>();
 }

@@ -26,7 +26,7 @@ public class SpecialistRequestService(
         ProfSpecialistRequest? existingRequest = await specialistRequestRepository
             .FirstOrDefaultAsync(x => x.ClientId == userId && x.Status == Pending);
 
-        if (existingRequest != null)
+        if (existingRequest is not null)
         {
             throw new ArgumentException($"User with id `{userId}` already has a pending specialist request.");
         }
