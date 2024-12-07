@@ -20,7 +20,6 @@ public class PenaltyServiceTest
     private Mock<IRepository<ProfUserPenalty, object>> mockUserPenaltyRepository;
     private Mock<RoleManager<IdentityRole<string>>> mockRoleManager;
     private PenaltyService penaltyService;
-    private UserService userService;
 
     [SetUp]
     public void SetUp()
@@ -43,10 +42,6 @@ public class PenaltyServiceTest
             mockPenaltyRepository.Object,
             mockUserPenaltyRepository.Object
         );
-
-        userService = new UserService(
-            mockUserManager.Object,
-            mockRoleManager.Object);
     }
 
     [Test]
