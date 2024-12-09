@@ -77,18 +77,25 @@ public class PenaltyService(
 
         int totalCount = await query.CountAsync();
 
-        var items = await query
+        var items = new List<FullCollectionPenaltyViewModel>();
+
+        await foreach (ProfUserPenalty penalty in query
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
-            .Select(x => new FullCollectionPenaltyViewModel
+            .AsAsyncEnumerable())
+        {
+            string? role = (await userManager.GetRolesAsync(penalty.User)).FirstOrDefault();
+
+            items.Add(new FullCollectionPenaltyViewModel
             {
-                Id = x.PenaltyId,
-                Title = x.Penalty.Title,
-                UserId = x.UserId,
-                UserName = $"{x.User.FirstName} {x.User.LastName}",
-                Role = userManager.GetRolesAsync(x.User).Result.FirstOrDefault()!
-            })
-            .ToListAsync();
+                Id = penalty.PenaltyId,
+                Title = penalty.Penalty.Title,
+                UserId = penalty.UserId,
+                UserName = $"{penalty.User.FirstName} {penalty.User.LastName}",
+                Role = role 
+                    ?? string.Empty
+            });
+        }
 
         return new PagedResult<FullCollectionPenaltyViewModel>
         {

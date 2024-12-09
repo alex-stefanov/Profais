@@ -1,6 +1,7 @@
 ﻿#region Usings
 
 using Moq;
+using MockQueryable.Moq;
 
 using Microsoft.AspNetCore.Identity;
 
@@ -226,5 +227,197 @@ public class PenaltyServiceTest
 
         var expectedIds = new List<string> { "admin1", "admin2", "manager1", "manager2", "client1", "client2" };
         Assert.That(excludedUserIds, Is.EquivalentTo(expectedIds));
+    }
+
+    [Test]
+    public async Task GetAllPagedPenaltiesAsync_ReturnsPagedResult()
+    {
+        int pageNumber = 1;
+        int pageSize = 2;
+
+        var mockPenalties = new List<ProfUserPenalty>
+        {
+            new ProfUserPenalty
+            {
+                PenaltyId = 1,
+                Penalty = new Penalty { Title = "Penalty 1" },
+                UserId = "user1",
+                User = new ProfUser { FirstName = "John", LastName = "Doe" }
+            },
+            new ProfUserPenalty
+            {
+                PenaltyId = 2,
+                Penalty = new Penalty { Title = "Penalty 2" },
+                UserId = "user2",
+                User = new ProfUser { FirstName = "Jane", LastName = "Smith" }
+            }
+        };
+
+        mockUserPenaltyRepository.Setup(repo => repo.GetAllAttached())
+            .Returns(mockPenalties.AsQueryable().BuildMockDbSet().Object);
+
+        mockUserManager.Setup(um => um.GetRolesAsync(It.IsAny<ProfUser>()))
+            .ReturnsAsync(["UserRole"]);;
+
+        var result = await penaltyService.GetAllPagedPenaltiesAsync(pageNumber, pageSize);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.PaginationViewModel.CurrentPage, Is.EqualTo(pageNumber));
+            Assert.That(result.PaginationViewModel.TotalPages, Is.EqualTo((int)Math.Ceiling(mockPenalties.Count / (double)pageSize)));
+            Assert.That(result.PaginationViewModel.PageSize, Is.EqualTo(pageSize));
+
+            Assert.That(result.Items.Count(), Is.EqualTo(2));
+
+            var itemsArray = result.Items.ToArray();
+
+            Assert.That(itemsArray[0].Title, Is.EqualTo("Penalty 1"));
+            Assert.That(itemsArray[0].UserName, Is.EqualTo("John Doe"));
+            Assert.That(itemsArray[0].Role, Is.EqualTo("UserRole"));
+
+            Assert.That(itemsArray[1].Title, Is.EqualTo("Penalty 2"));
+            Assert.That(itemsArray[1].UserName, Is.EqualTo("Jane Smith"));
+            Assert.That(itemsArray[1].Role, Is.EqualTo("UserRole"));
+        });
+    }
+
+    [Test]
+    public async Task GetAllPagedPenaltiesAsync_HandlesEmptyResult()
+    {
+        int pageNumber = 1;
+        int pageSize = 2;
+
+        var mockPenalties = new List<ProfUserPenalty>();
+
+        mockUserPenaltyRepository.Setup(repo => repo.GetAllAttached())
+           .Returns(mockPenalties.AsQueryable().BuildMockDbSet().Object);
+
+        var result = await penaltyService.GetAllPagedPenaltiesAsync(pageNumber, pageSize);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Items.Count(), Is.EqualTo(0));
+            Assert.That(result.PaginationViewModel.CurrentPage, Is.EqualTo(pageNumber));
+            Assert.That(result.PaginationViewModel.TotalPages, Is.EqualTo(0));
+        });
+    }
+
+    [Test]
+    public async Task GetPagedPenaltiesByUserIdAsync_ReturnsPagedResult()
+    {
+        string userId = "user1";
+        int pageNumber = 1;
+        int pageSize = 2;
+
+        var mockPenalties = new List<Penalty>
+        {
+            new Penalty
+            {
+                Id = 1,
+                Title = "Penalty 1",
+                UserPenalties = new List<ProfUserPenalty>
+                {
+                    new ProfUserPenalty { UserId = "user1" }
+                }
+            },
+            new Penalty
+            {
+                Id = 2,
+                Title = "Penalty 2",
+                UserPenalties = new List<ProfUserPenalty>
+                {
+                    new ProfUserPenalty { UserId = "user1" }
+                }
+            }
+        };
+
+        mockPenaltyRepository.Setup(repo => repo.GetAllAttached())
+           .Returns(mockPenalties.AsQueryable().BuildMockDbSet().Object);
+
+        var result = await penaltyService.GetPagedPenaltiesByUserIdAsync(userId, pageNumber, pageSize);
+
+        var itemsArray = result.Items.ToArray();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.Not.Null);
+            Assert.That(itemsArray, Has.Length.EqualTo(2));
+            Assert.That(result.PaginationViewModel.TotalPages, Is.EqualTo(1));
+            Assert.That(result.PaginationViewModel.PageSize, Is.EqualTo(pageSize));
+            Assert.That(result.PaginationViewModel.CurrentPage, Is.EqualTo(pageNumber));
+            Assert.That(itemsArray[0].Title, Is.EqualTo("Penalty 1"));
+            Assert.That(itemsArray[1].Title, Is.EqualTo("Penalty 2"));
+        });
+    }
+
+    [Test]
+    public async Task GetPagedPenaltiesByUserIdAsync_ReturnsEmpty_WhenNoPenaltiesForUser()
+    {
+        string userId = "user3";
+        int pageNumber = 1;
+        int pageSize = 2;
+
+        var mockPenalties = new List<Penalty>();
+
+        mockPenaltyRepository.Setup(repo => repo.GetAllAttached())
+           .Returns(mockPenalties.AsQueryable().BuildMockDbSet().Object);
+
+        var result = await penaltyService.GetPagedPenaltiesByUserIdAsync(userId, pageNumber, pageSize);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Items.Count(), Is.EqualTo(0));
+            Assert.That(result.PaginationViewModel.TotalPages, Is.EqualTo(0));
+        });
+    }
+
+    [Test]
+    public async Task GetPagedPenaltiesByUserIdAsync_ReturnsPagedResult_WithDifferentPageSizes()
+    {
+        string userId = "user1";
+        int pageNumber = 1;
+        int pageSize = 1;
+
+        var mockPenalties = new List<Penalty>
+        {
+            new Penalty
+            {
+                Id = 1,
+                Title = "Penalty 1",
+                UserPenalties = new List<ProfUserPenalty>
+                {
+                    new ProfUserPenalty { UserId = "user1" }
+                }
+            },
+            new Penalty
+            {
+                Id = 2,
+                Title = "Penalty 2",
+                UserPenalties = new List<ProfUserPenalty>
+                {
+                    new ProfUserPenalty { UserId = "user1" }
+                }
+            }
+        };
+
+        mockPenaltyRepository.Setup(repo => repo.GetAllAttached())
+            .Returns(mockPenalties.AsQueryable().BuildMockDbSet().Object);
+
+        var result = await penaltyService.GetPagedPenaltiesByUserIdAsync(userId, pageNumber, pageSize);
+
+        var itemsArray = result.Items.ToArray();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.Not.Null);
+            Assert.That(itemsArray, Has.Length.EqualTo(1));  
+            Assert.That(result.PaginationViewModel.TotalPages, Is.EqualTo(2));  
+            Assert.That(result.PaginationViewModel.PageSize, Is.EqualTo(pageSize));
+            Assert.That(result.PaginationViewModel.CurrentPage, Is.EqualTo(pageNumber));
+            Assert.That(itemsArray[0].Title, Is.EqualTo("Penalty 1")); 
+        });
     }
 }
