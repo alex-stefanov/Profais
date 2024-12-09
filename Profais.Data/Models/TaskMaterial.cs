@@ -1,7 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿#region Usings
+
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
+#endregion
+
 namespace Profais.Data.Models;
+
 /// <summary>
 /// Represents the association between a task and the materials used in that task.
 /// </summary>

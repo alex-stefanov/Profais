@@ -1,10 +1,14 @@
-﻿using System.Net;
+﻿#region Usings
+
+using System.Net;
 using System.Net.Mail;
 
 using Microsoft.Extensions.Options;
 
 using Profais.Common.Options;
 using Profais.Services.Interfaces;
+
+#endregion
 
 namespace Profais.Services.Implementations;
 

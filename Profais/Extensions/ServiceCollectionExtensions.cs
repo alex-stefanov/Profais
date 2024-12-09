@@ -1,7 +1,11 @@
-﻿using Profais.Data.Models;
+﻿#region Usings
+
+using Profais.Data.Models;
 using Profais.Data.Repositories;
 using Profais.Services.Implementations;
 using Profais.Services.Interfaces;
+
+#endregion
 
 namespace Profais.Extensions;
 

@@ -1,4 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿#region Usings
+
+using System.ComponentModel.DataAnnotations;
+
+#endregion
 
 namespace Profais.Common.Enums;
 

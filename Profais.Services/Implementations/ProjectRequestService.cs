@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿#region Usings
+
+using Microsoft.EntityFrameworkCore;
 
 using Profais.Common.Enums;
 using Profais.Common.Exceptions;
@@ -9,6 +11,8 @@ using Profais.Services.ViewModels.Shared;
 using Profais.Services.ViewModels.ProjectRequest;
 
 using static Profais.Common.Enums.RequestStatus;
+
+#endregion
 
 namespace Profais.Services.Implementations;
 

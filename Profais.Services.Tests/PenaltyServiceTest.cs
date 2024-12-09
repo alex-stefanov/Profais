@@ -1,4 +1,6 @@
-﻿using Moq;
+﻿#region Usings
+
+using Moq;
 
 using Microsoft.AspNetCore.Identity;
 
@@ -8,6 +10,8 @@ using Profais.Data.Repositories;
 using Profais.Services.Implementations;
 
 using static Profais.Common.Constants.UserConstants;
+
+#endregion
 
 namespace Profais.Services.Tests;
 

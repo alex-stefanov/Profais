@@ -1,4 +1,6 @@
-﻿using Moq;
+﻿#region Usings
+
+using Moq;
 using MockQueryable;
 
 using System.Linq.Expressions;
@@ -12,6 +14,8 @@ using Profais.Services.Implementations;
 using Profais.Services.ViewModels.SpecialistRequest;
 
 using static Profais.Common.Enums.RequestStatus;
+
+#endregion
 
 namespace Profais.Services.Tests
 {

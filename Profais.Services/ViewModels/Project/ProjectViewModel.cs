@@ -1,5 +1,9 @@
-﻿using Profais.Services.ViewModels.Task;
+﻿#region Usings
+
+using Profais.Services.ViewModels.Task;
 using Profais.Services.ViewModels.Worker;
+
+#endregion
 
 namespace Profais.Services.ViewModels.Project;
 

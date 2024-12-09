@@ -1,5 +1,9 @@
-﻿using Profais.Services.ViewModels.Penalty;
+﻿#region Usings
+
+using Profais.Services.ViewModels.Penalty;
 using Profais.Services.ViewModels.Shared;
+
+#endregion
 
 namespace Profais.Services.Interfaces;
 

@@ -1,7 +1,12 @@
+#region Usings
+
 using System.Diagnostics;
+
 using Microsoft.AspNetCore.Mvc;
 
 using VIEW_MODELS = Profais.Services.ViewModels.Shared;
+
+#endregion
 
 namespace Profais.Controllers;
 

@@ -1,8 +1,12 @@
-﻿using Moq;
+﻿#region Usings
+
+using Moq;
 using Microsoft.AspNetCore.Identity;
 
 using Profais.Data.Models;
 using Profais.Services.Implementations;
+
+#endregion
 
 namespace Profais.Services.Tests;
 

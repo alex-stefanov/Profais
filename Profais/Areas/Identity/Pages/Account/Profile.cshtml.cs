@@ -1,8 +1,12 @@
+#region Usings
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Identity;
 
 using Profais.Data.Models;
+
+#endregion
 
 namespace Profais.Areas.Identity.Pages.Account
 {

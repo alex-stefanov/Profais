@@ -1,4 +1,6 @@
-﻿using Moq;
+﻿#region Usings
+
+using Moq;
 
 using Microsoft.AspNetCore.Identity;
 
@@ -10,6 +12,8 @@ using Profais.Services.ViewModels.WorkerRequest;
 
 using static Profais.Common.Enums.RequestStatus;
 using static Profais.Common.Constants.UserConstants;
+
+#endregion
 
 namespace Profais.Services.Tests;
 

@@ -1,5 +1,9 @@
-﻿using Profais.Services.ViewModels.Material;
+﻿#region Usings
+
+using Profais.Services.ViewModels.Material;
 using Profais.Services.ViewModels.Shared;
+
+#endregion
 
 namespace Profais.Services.Interfaces;
 

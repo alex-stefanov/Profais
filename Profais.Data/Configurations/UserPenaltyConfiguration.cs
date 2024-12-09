@@ -1,7 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿#region Usings
+
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 using Profais.Data.Models;
+
+#endregion
 
 namespace Profais.Data.Configurations;
 

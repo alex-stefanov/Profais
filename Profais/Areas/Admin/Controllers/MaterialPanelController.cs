@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿#region Usings
+
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using EXCEPTIONS = Profais.Common.Exceptions;
@@ -7,6 +9,8 @@ using VIEW_MODELS_MATERIAl = Profais.Services.ViewModels.Material;
 using VIEW_MODELS_SHARED = Profais.Services.ViewModels.Shared;
 
 using static Profais.Common.Constants.UserConstants;
+
+#endregion
 
 namespace Profais.Areas.Admin.Controllers;
 

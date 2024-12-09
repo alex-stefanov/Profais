@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿#region Usings
+
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 using Profais.Common.Exceptions;
@@ -9,6 +11,8 @@ using Profais.Services.ViewModels.WorkerRequest;
 
 using static Profais.Common.Enums.RequestStatus;
 using static Profais.Common.Constants.UserConstants;
+
+#endregion
 
 namespace Profais.Services.Implementations;
 

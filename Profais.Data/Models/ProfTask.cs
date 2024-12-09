@@ -1,7 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿#region Usings
+
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 using static Profais.Common.Constants.TaskConstants;
+
+#endregion
 
 namespace Profais.Data.Models;
 

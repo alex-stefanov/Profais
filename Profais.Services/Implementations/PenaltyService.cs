@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿#region Usings
+
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 using Profais.Common.Exceptions;
@@ -9,6 +11,8 @@ using Profais.Services.ViewModels.Penalty;
 using Profais.Services.ViewModels.Shared;
 
 using static Profais.Common.Constants.UserConstants;
+
+#endregion
 
 namespace Profais.Services.Implementations;
 

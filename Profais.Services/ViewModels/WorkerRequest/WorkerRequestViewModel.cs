@@ -1,8 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿#region Usings
+
+using System.ComponentModel.DataAnnotations;
 
 using Profais.Common.Enums;
 
 using static Profais.Common.Constants.UserRequestConstants;
+
+#endregion
 
 namespace Profais.Services.ViewModels.WorkerRequest;
 

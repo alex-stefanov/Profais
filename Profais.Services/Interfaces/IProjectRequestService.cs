@@ -1,6 +1,10 @@
-﻿using Profais.Common.Enums;
+﻿#region Usings
+
+using Profais.Common.Enums;
 using Profais.Services.ViewModels.ProjectRequest;
 using Profais.Services.ViewModels.Shared;
+
+#endregion
 
 namespace Profais.Services.Interfaces;
 

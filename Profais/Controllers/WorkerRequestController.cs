@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿#region Usings
+
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,6 +10,8 @@ using INTERFACES = Profais.Services.Interfaces;
 using VIEW_MODELS = Profais.Services.ViewModels.WorkerRequest;
 
 using static Profais.Common.Constants.UserConstants;
+
+#endregion
 
 namespace Profais.Controllers;
 

@@ -1,4 +1,8 @@
-﻿using System.Linq.Expressions;
+﻿#region Usings
+
+using System.Linq.Expressions;
+
+#endregion
 
 namespace Profais.Data.Repositories;
 

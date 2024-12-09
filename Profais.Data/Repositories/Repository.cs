@@ -1,6 +1,10 @@
-﻿using System.Linq.Expressions;
+﻿#region Usings
+
+using System.Linq.Expressions;
 
 using Microsoft.EntityFrameworkCore;
+
+#endregion
 
 namespace Profais.Data.Repositories;
 

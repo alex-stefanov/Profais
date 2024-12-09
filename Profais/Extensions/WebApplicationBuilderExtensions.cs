@@ -1,4 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿#region Usings
+
+using Microsoft.AspNetCore.Identity;
+
+#endregion
 
 namespace Profais.Extensions;
 

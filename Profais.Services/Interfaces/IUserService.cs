@@ -1,4 +1,8 @@
-﻿using Profais.Services.ViewModels.User;
+﻿#region Usings
+
+using Profais.Services.ViewModels.User;
+
+#endregion
 
 namespace Profais.Services.Interfaces;
 

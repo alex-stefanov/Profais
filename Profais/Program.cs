@@ -1,3 +1,5 @@
+#region Usings
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +10,8 @@ using Profais.Data.Models;
 using Profais.Extensions;
 
 using static Profais.Common.Constants.UserConstants;
+
+#endregion
 
 namespace Profais;
 

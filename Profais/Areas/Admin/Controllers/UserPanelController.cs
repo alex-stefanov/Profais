@@ -1,10 +1,14 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿#region Usings
+
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using INTERFACES = Profais.Services.Interfaces;
 using VIEW_MODELS = Profais.Services.ViewModels.User;
 
 using static Profais.Common.Constants.UserConstants;
+
+#endregion
 
 namespace Profais.Areas.Admin.Controllers;
 

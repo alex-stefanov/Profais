@@ -1,5 +1,9 @@
-﻿using Profais.Services.ViewModels.Worker;
+﻿#region Usings
+
+using Profais.Services.ViewModels.Worker;
 using Profais.Services.ViewModels.Shared;
+
+#endregion
 
 namespace Profais.Services.Interfaces;
 

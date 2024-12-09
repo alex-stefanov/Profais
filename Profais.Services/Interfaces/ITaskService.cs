@@ -1,7 +1,9 @@
-﻿using Profais.Common.Enums;
+﻿#region Usings
+
 using Profais.Services.ViewModels.Task;
-using Profais.Services.ViewModels.Material;
 using Profais.Services.ViewModels.Shared;
+
+#endregion
 
 namespace Profais.Services.Interfaces;
 

@@ -1,8 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿#region Usings
+
+using System.ComponentModel.DataAnnotations;
 
 using Profais.Common.Enums;
 
 using static Profais.Common.Constants.MaterialConstants;
+
+#endregion
 
 namespace Profais.Services.ViewModels.Material;
 

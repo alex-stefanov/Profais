@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿#region Usings
+
+using Microsoft.EntityFrameworkCore;
 
 using Profais.Common.Exceptions;
 using Profais.Data.Models;
@@ -6,6 +8,8 @@ using Profais.Data.Repositories;
 using Profais.Services.Interfaces;
 using Profais.Services.ViewModels.Shared;
 using Profais.Services.ViewModels.Material;
+
+#endregion
 
 namespace Profais.Services.Implementations;
 

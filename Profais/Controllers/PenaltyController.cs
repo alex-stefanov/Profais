@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿#region Usings
+
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,6 +11,8 @@ using VIEW_MODELS_PENALTY = Profais.Services.ViewModels.Penalty;
 using VIEW_MODELS_SHARED = Profais.Services.ViewModels.Shared;
 
 using static Profais.Common.Constants.UserConstants;
+
+#endregion
 
 namespace Profais.Controllers;
 

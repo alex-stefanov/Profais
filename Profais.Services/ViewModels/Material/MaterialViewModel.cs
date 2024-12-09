@@ -1,4 +1,8 @@
-﻿using Profais.Common.Enums;
+﻿#region Usings
+
+using Profais.Common.Enums;
+
+#endregion
 
 namespace Profais.Services.ViewModels.Material;
 
