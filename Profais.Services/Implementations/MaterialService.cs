@@ -126,7 +126,7 @@ public class MaterialService(
         }
     }
 
-    private async Task<List<TaskMaterial>> GetExistingTaskMaterialAssignments(
+    public async Task<List<TaskMaterial>> GetExistingTaskMaterialAssignments(
         int taskId,
         IEnumerable<int> materialIds)
     {
@@ -139,7 +139,7 @@ public class MaterialService(
         return result;
     }
 
-    private async Task<PagedResult<MaterialViewModel>> GetPagedMaterials(
+    public async Task<PagedResult<MaterialViewModel>> GetPagedMaterials(
         IQueryable<Material> query,
         int pageNumber,
         int pageSize,
