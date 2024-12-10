@@ -166,7 +166,7 @@ public class WorkerService(
         }
     }
 
-    private async Task<List<string>> GetExcludedUserIdsAsync()
+    public async Task<List<string>> GetExcludedUserIdsAsync()
     {
         var adminUsers = await userManager.GetUsersInRoleAsync(AdminRoleName);
         var managerUsers = await userManager.GetUsersInRoleAsync(ManagerRoleName);
@@ -182,7 +182,7 @@ public class WorkerService(
         return excludedUserIds;
     }
 
-    private async Task<List<ProfUserTask>> GetExistingUserAssignmentsAsync(
+    public async Task<List<ProfUserTask>> GetExistingUserAssignmentsAsync(
         int taskId,
         IEnumerable<string> workerIds)
     {

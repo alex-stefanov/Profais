@@ -47,6 +47,6 @@ public class ProfUser
     /// <summary>
     /// Navigation property for the tasks assigned to the user.
     /// </summary>
-    public virtual ICollection<ProfUserTask> UserTasks { get; }
+    public virtual ICollection<ProfUserTask> UserTasks { get; set; }
         = new HashSet<ProfUserTask>();
 }
