@@ -23,12 +23,23 @@ public class ProjectService(
     IRepository<UserProject, object> userProjectRepository)
     : IProjectService
 {
-    private async Task<ProfProject> GetProjectByIdOrThrowAsync(
+    public async Task<ProfProject> GetProjectByIdOrThrowAsync(
         int projectId)
     {
         ProfProject project = await projectRepository
             .GetAllAttached()
             .FirstOrDefaultAsync(x => x.Id == projectId && !x.IsDeleted)
+            ?? throw new ItemNotFoundException($"Project with id `{projectId}` not found or deleted");
+
+        return project;
+    }
+
+    public async Task<ProfProject> GetDeletedProjectByIdOrThrowAsync(
+        int projectId)
+    {
+        ProfProject project = await projectRepository
+            .GetAllAttached()
+            .FirstOrDefaultAsync(x => x.Id == projectId && x.IsDeleted)
             ?? throw new ItemNotFoundException($"Project with id `{projectId}` not found or deleted");
 
         return project;
@@ -213,7 +224,7 @@ public class ProjectService(
     public async Task RecoverProjectByIdAsync(
         int projectId)
     {
-        ProfProject project = await GetProjectByIdOrThrowAsync(projectId);
+        ProfProject project = await GetDeletedProjectByIdOrThrowAsync(projectId);
 
         project.IsDeleted = false;
 
@@ -223,7 +234,7 @@ public class ProjectService(
         }
     }
 
-    private async Task<PagedResult<ProjectViewModel>> InternalGetPagedProjectsAsync(
+    public async Task<PagedResult<ProjectViewModel>> InternalGetPagedProjectsAsync(
        int pageNumber,
        int pageSize,
        bool isCompleted)
