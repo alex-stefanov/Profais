@@ -1,6 +1,6 @@
 # Profais
 
-**Profais** is a .NET web application built with Entity Framework (EF) that uses SQL Server Management Studio (SSMS). It is designed to streamline project and worker management for [Profix](https://profix.bg/), a company specializing in **water distribution, irrigation systems (поливни системи), and hydrofores (хидрофори)**. The application aims to modernize and simplify the management processes, enhancing efficiency and convenience for both workers, clients and managers.
+**Profais** is a .NET web application built with Entity Framework (EF) that uses SQL Server Management Studio (SSMS). It is designed to streamline project and worker management for [Profix](https://profix.bg/), a company specializing in **water distribution, irrigation systems (поливни системи), and hydrofores (хидрофори)**. The application aims to modernize and simplify the management processes, enhancing efficiency and convenience for workers, clients and managers.
 
 ## Features
 
