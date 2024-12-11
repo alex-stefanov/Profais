@@ -108,11 +108,7 @@ public class Program
 
         if (app.Environment.IsDevelopment())
         {
-            app.UseExceptionHandler("/Home/Error500");
-
-            app.UseStatusCodePagesWithRedirects("/Home/Error{0}");
-
-            //app.UseDeveloperExceptionPage();
+            app.UseDeveloperExceptionPage();
         }
         else
         {
