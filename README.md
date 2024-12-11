@@ -29,6 +29,7 @@ This project is my **final-year project** for the **C# Web module at SoftUni (So
 - **MVC Architecture**: Implements the Model-View-Controller design pattern for better separation of concerns.
 - **Unit Testing**: Ensures reliability and robustness through comprehensive testing.
 - **Design Patterns**: Adopts industry-standard design patterns for scalability and maintainability.
+- **Code First Approach**: Uses code first for creating the database
 
 ## Purpose and Vision
 
@@ -41,6 +42,41 @@ This project is:
 - **ASP.NET Core**
 - **Entity Framework (EF)**
 - **SQL Server (SSMS)**
+
+## Database Design
+
+The database for Profais is built using **Entity Framework** and represents the relationships and structure required for managing projects, tasks, workers, and client requests effectively. Below is the database diagram:
+
+![Database Diagram](https://cdn.discordapp.com/attachments/776883257596968991/1316519520449462342/image.png?ex=675b57d9&is=675a0659&hm=c5479c0e0db751d808aac837b0e8df21b779ff2b5dc8015927b2cbe04fb6c0c2&)
+
+### Key Entities (Excluding Users and Roles)
+
+The database contains **11 key entities** (excluding `AspNetUsers`, `AspNetRoles`, and related user-role mappings):
+
+1. **ProjectsRequests**: Stores client-submitted project requests.
+2. **Projects**: Represents the projects managed by the firm.
+3. **Tasks**: Contains tasks assigned under specific projects.
+4. **UserProjects**: Tracks the contributors working on each project.
+5. **UsersTasks**: Maps workers to their assigned tasks.
+6. **WorkerRequests**: Holds requests from workers for project involvement.
+7. **SpecialistRequests**: Tracks requests for specialists.
+8. **Materials**: Stores the materials required for completing tasks.
+9. **TasksMaterials**: Tracks the materials used for specific tasks.
+10. **Penalties**: Defines penalties that can be assigned to users.
+11. **UsersPenalties**: Maps penalties to specific users.
+
+### Connections and Relationships
+
+- **ProjectsRequests** → **Projects**: A project is linked to its initial client request.
+- **Projects** → **Tasks**: A project can have multiple tasks associated with it.
+- **Tasks** → **TasksMaterials**: A task may require multiple materials.
+- **TasksMaterials** → **Materials**: Links tasks to the specific materials used.
+- **UserProjects**: Tracks which workers contribute to specific projects.
+- **UsersTasks**: Maps tasks to workers for assignment and progress tracking.
+- **Penalties** → **UsersPenalties**: Assigns penalties to users for tracking performance or issues.
+- **WorkerRequests** and **SpecialistRequests**: Manage worker and specialist involvement requests.
+
+This structure supports efficient management of project workflows, task delegation, and resource allocation while ensuring traceability and accountability for all activities within the firm.
 
 ## Contact
 
