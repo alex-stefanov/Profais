@@ -1,6 +1,6 @@
 # Profais
 
-**Profais** is a .NET web application built with Entity Framework (EF) that uses SQL Server Management Studio (SSMS). It is designed to streamline project and worker management for **Profix**, a company specializing in **water distribution, irrigation systems (поливни системи), and hydrofores (хидрофори)**. The application aims to modernize and simplify the management processes, enhancing efficiency and convenience for both workers, clients and managers.
+**Profais** is a .NET web application built with Entity Framework (EF) that uses SQL Server Management Studio (SSMS). It is designed to streamline project and worker management for [Profix](https://profix.bg/), a company specializing in **water distribution, irrigation systems (поливни системи), and hydrofores (хидрофори)**. The application aims to modernize and simplify the management processes, enhancing efficiency and convenience for both workers, clients and managers.
 
 ## Features
 
@@ -34,7 +34,7 @@ This project is my **final-year project** for the **C# Web module at [SoftUni](h
 ## Purpose and Vision
 
 This project is:
-- **Personal and Practical**: Created to address the real-world needs of [Profix](https://profix.bg/), owned by Alex Stefanov's father, by solving the challenge of efficient worker management.
+- **Personal and Practical**: Created to address the real-world needs of Profix, owned by Alex Stefanov's father, by solving the challenge of efficient worker management.
 - **Future-Ready**: With further development, it has the potential to become a fully functional application that adds significant value to Profix's operations.
 
 ## Technologies Used
