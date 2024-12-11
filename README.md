@@ -23,7 +23,7 @@ The application supports five distinct user roles, reflecting the organizational
 
 ## Educational Purpose
 
-This project is my **final-year project** for the **C# Web module at SoftUni (Software University)**. It incorporates best practices in software development to meet academic standards and produce high-quality, maintainable code. 
+This project is my **final-year project** for the **C# Web module at [SoftUni](https://softuni.bg/) (Software University)**. It incorporates best practices in software development to meet academic standards and produce high-quality, maintainable code. 
 
 ### Practices and Architectures Used:
 - **MVC Architecture**: Implements the Model-View-Controller design pattern for better separation of concerns.
@@ -34,7 +34,7 @@ This project is my **final-year project** for the **C# Web module at SoftUni (So
 ## Purpose and Vision
 
 This project is:
-- **Personal and Practical**: Created to address the real-world needs of Profix, owned by Alex Stefanov's father, by solving the challenge of efficient worker management.
+- **Personal and Practical**: Created to address the real-world needs of [Profix](https://profix.bg/), owned by Alex Stefanov's father, by solving the challenge of efficient worker management.
 - **Future-Ready**: With further development, it has the potential to become a fully functional application that adds significant value to Profix's operations.
 
 ## Technologies Used
