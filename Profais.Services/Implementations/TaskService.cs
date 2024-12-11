@@ -48,12 +48,11 @@ public class TaskService(
             .AddAsync(profTask);
     }
 
-    public async Task<TaskViewModel> GetTaskByIdAsync(
-        int taskId)
+    public async Task<TaskViewModel> GetTaskByIdAsync(int taskId)
     {
         ProfTask task = await taskRepository
             .GetAllAttached()
-            .Where(x => x.Id == taskId && x.IsDeleted == false)
+            .Where(x => x.Id == taskId && !x.IsDeleted)
             .Include(x => x.TaskMaterials)
                 .ThenInclude(t => t.Material)
             .Include(x => x.UserTasks)
@@ -66,14 +65,17 @@ public class TaskService(
             .Distinct()
             .ToList();
 
-        var usersWithRoles = await Task.WhenAll(userIds.Select(async userId =>
-        {
-            var contributer = await userManager.FindByIdAsync(userId)
-                ?? throw new ItemNotFoundException($"User with id `{userId}` not found");
+        var users = await userManager.Users
+            .Where(u => userIds.Contains(u.Id))
+            .ToListAsync();
 
-            var roles = await userManager.GetRolesAsync(contributer);
-            return new { UserId = userId, Role = roles.FirstOrDefault() };
-        }));
+        var userRoles = new Dictionary<string, string>();
+
+        foreach (var user in users)
+        {
+            var roles = await userManager.GetRolesAsync(user);
+            userRoles[user.Id] = roles.FirstOrDefault() ?? string.Empty;
+        }
 
         var model = new TaskViewModel
         {
@@ -83,21 +85,20 @@ public class TaskService(
             ProjectId = task.ProfProjectId,
             IsCompleted = task.IsCompleted,
             Materials = task.TaskMaterials
-            .Select(x => new MaterialViewModel
-            {
-                Id = x.MaterialId,
-                Name = x.Material.Name,
-                UsedFor = x.Material.UsedForId,
-            }),
+                .Select(x => new MaterialViewModel
+                {
+                    Id = x.MaterialId,
+                    Name = x.Material.Name,
+                    UsedFor = x.Material.UsedForId,
+                }).ToList(),
             Users = task.UserTasks
-            .Select(x => new UserViewModel
-            {
-                Id = x.WorkerId,
-                UserFirstName = x.Worker.FirstName,
-                UserLastName = x.Worker.LastName,
-                Role = usersWithRoles.FirstOrDefault(u => u.UserId == x.WorkerId)?.Role
-                    ?? string.Empty,
-            }),
+                .Select(x => new UserViewModel
+                {
+                    Id = x.WorkerId,
+                    UserFirstName = x.Worker.FirstName,
+                    UserLastName = x.Worker.LastName,
+                    Role = userRoles.GetValueOrDefault(x.WorkerId, string.Empty),
+                }).ToList(),
         };
 
         return model;
@@ -161,17 +162,28 @@ public class TaskService(
             })
             .ToListAsync();
 
-        foreach (TaskViewModel task in tasks)
+        var userIds = tasks
+            .SelectMany(t => t.Users.Select(u => u.Id))
+            .Distinct()
+            .ToList();
+
+        var users = await userManager.Users
+            .Where(u => userIds.Contains(u.Id))
+            .ToListAsync();
+
+        var userRoleDict = new Dictionary<string, string>();
+
+        foreach (var user in users)
         {
-            foreach (UserViewModel user in task.Users)
+            var roles = await userManager.GetRolesAsync(user);
+            userRoleDict[user.Id] = roles.FirstOrDefault() ?? string.Empty;
+        }
+
+        foreach (var task in tasks)
+        {
+            foreach (var user in task.Users)
             {
-                ProfUser profUser = await userManager
-                    .FindByIdAsync(user.Id)
-                    ?? throw new ItemNotFoundException($"User wasnt found with id `{user.Id}`");
-
-                var roles = await userManager.GetRolesAsync(profUser);
-
-                user.Role = roles.FirstOrDefault()!;
+                user.Role = userRoleDict.GetValueOrDefault(user.Id, string.Empty);
             }
         }
 
@@ -327,9 +339,23 @@ public class TaskService(
         var contributer = await userManager.FindByIdAsync(userId)
             ?? throw new ItemNotFoundException($"User with id `{userId}` not found");
 
-        var roles = await userManager.GetRolesAsync(contributer);
+        var userIds = task.UserTasks
+            .Where(x => x.WorkerId != userId)
+            .Select(x => x.WorkerId)
+            .Distinct()
+            .ToList();
 
-        var role = roles.FirstOrDefault();
+        var users = await userManager.Users
+            .Where(u => userIds.Contains(u.Id))
+            .ToListAsync();
+
+        var userRoles = new Dictionary<string, string>();
+
+        foreach (var user in users)
+        {
+            var userRolesList = await userManager.GetRolesAsync(user);
+            userRoles[user.Id] = userRolesList.FirstOrDefault() ?? string.Empty;
+        }
 
         var model = new MyTaskViewModel
         {
@@ -340,22 +366,23 @@ public class TaskService(
             ProjectId = task.ProfProjectId,
             IsVoted = userTask.IsVoted,
             Materials = task.TaskMaterials
-            .Select(x => new MaterialViewModel
-            {
-                Id = x.MaterialId,
-                Name = x.Material.Name,
-                UsedFor = x.Material.UsedForId,
-            }),
+                .Select(x => new MaterialViewModel
+                {
+                    Id = x.MaterialId,
+                    Name = x.Material.Name,
+                    UsedFor = x.Material.UsedForId,
+                })
+                .ToList(),
             Users = task.UserTasks
-            .Where(x => x.WorkerId != userId)
-            .Select(x => new UserViewModel
-            {
-                Id = x.WorkerId,
-                UserFirstName = x.Worker.FirstName,
-                UserLastName = x.Worker.LastName,
-                Role = role
-                ?? string.Empty,
-            }),
+                .Where(x => x.WorkerId != userId)
+                .Select(x => new UserViewModel
+                {
+                    Id = x.WorkerId,
+                    UserFirstName = x.Worker.FirstName,
+                    UserLastName = x.Worker.LastName,
+                    Role = userRoles.GetValueOrDefault(x.WorkerId, string.Empty)
+                })
+                .ToList(),
         };
 
         return model;

@@ -60,8 +60,7 @@ public class ProjectService(
             .AddAsync(profProject);
     }
 
-    public async Task<ProjectViewModel> GetProjectByIdAsync(
-        int projectId)
+    public async Task<ProjectViewModel> GetProjectByIdAsync(int projectId)
     {
         ProfProject project = await GetProjectByIdOrThrowAsync(projectId);
 
@@ -72,18 +71,21 @@ public class ProjectService(
             .ToListAsync();
 
         var userIds = userProjects
-            .Select(x => x.ContributerId)
-            .Distinct()
-            .ToList();
+        .Select(x => x.ContributerId)
+        .Distinct()
+        .ToList();
 
-        var usersWithRoles = await Task.WhenAll(userIds.Select(async userId =>
+        var users = await userManager.Users
+            .Where(u => userIds.Contains(u.Id))
+            .ToListAsync();
+
+        var userRoles = new Dictionary<string, string>();
+
+        foreach (var user in users)
         {
-            var contributer = await userManager.FindByIdAsync(userId)
-                ?? throw new ItemNotFoundException($"User with id `{userId}` not found");
-
-            var roles = await userManager.GetRolesAsync(contributer);
-            return new { UserId = userId, Role = roles.FirstOrDefault() };
-        }));
+            var roles = await userManager.GetRolesAsync(user);
+            userRoles[user.Id] = roles.FirstOrDefault() ?? string.Empty;
+        }
 
         var model = new ProjectViewModel
         {
@@ -116,14 +118,14 @@ public class ProjectService(
                     Id = x.ContributerId,
                     UserFirstName = x.Contributer.FirstName,
                     UserLastName = x.Contributer.LastName,
-                    Role = usersWithRoles.FirstOrDefault(u => u.UserId == x.ContributerId)?.Role
-                        ?? string.Empty,
+                    Role = userRoles.GetValueOrDefault(x.ContributerId, string.Empty),
                 })
                 .ToList(),
         };
 
         return model;
     }
+
 
     public async Task<EditProjectViewModel> GetEditProjectByIdAsync(
         int projectId)
@@ -213,7 +215,10 @@ public class ProjectService(
     public async Task RecoverProjectByIdAsync(
         int projectId)
     {
-        ProfProject project = await GetProjectByIdOrThrowAsync(projectId);
+        ProfProject project = await projectRepository
+            .GetAllAttached()
+            .FirstOrDefaultAsync(x => x.Id == projectId)
+            ?? throw new ItemNotFoundException($"Project with id `{projectId}` not found");
 
         project.IsDeleted = false;
 

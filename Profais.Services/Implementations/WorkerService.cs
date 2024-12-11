@@ -112,7 +112,8 @@ public class WorkerService(
 
             var roles = await userManager.GetRolesAsync(profUser);
 
-            user.Role = roles.FirstOrDefault()!;
+            user.Role = roles.FirstOrDefault()
+                ?? string.Empty;
         }
 
         return new PagedResult<UserViewModel>

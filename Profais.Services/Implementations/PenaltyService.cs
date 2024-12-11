@@ -135,7 +135,8 @@ public class PenaltyService(
             {
                 Id = user.Id,
                 UserName = $"{user.FirstName} {user.LastName}",
-                Role = roles.FirstOrDefault()!,
+                Role = roles.FirstOrDefault() 
+                    ?? string.Empty,
             });
         }
 

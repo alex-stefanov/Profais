@@ -1,5 +1,5 @@
 ﻿@using Profais.Services.ViewModels.WorkerRequest;
-@model WorkerRequestViewModel;
+@model MakeWorkerRequestViewModel;
 
 @{
     ViewData["Title"] = "Worker Request - Make";
@@ -31,12 +31,6 @@
             <label asp-for="ProfixId" class="form-label"></label>
             <input asp-for="ProfixId" class="form-control" />
             <span asp-validation-for="ProfixId" class="text-danger"></span>
-        </div>
-
-        <div hidden class="form-group">
-            <label asp-for="Status" class="form-label"></label>
-            <input asp-for="Status" readonly class="form-control" />
-            <span asp-validation-for="Status" class="text-danger"></span>
         </div>
 
         <div class="form-group">
